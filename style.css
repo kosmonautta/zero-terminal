@@ -145,8 +145,8 @@ a:hover{
 }
 
 .nav-link{
-    display:inline-block;
-    margin-top:16px;
+    display:block;
+    margin-top:18px;
     font-family:"Courier New", monospace;
     font-size:13px;
     letter-spacing:2px;
