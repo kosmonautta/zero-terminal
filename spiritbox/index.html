@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>SPIRITBOX</title>
+<link rel="stylesheet" href="../style.css">
+<style>
+
+    body{
+        font-family:"Courier New", monospace;
+    }
+
+    main.wide{
+        width:900px;
+    }
+
+    h1{
+        font-family:"Courier New", monospace;
+        letter-spacing:4px;
+    }
+
+    .meta{
+        font-size:15px;
+        letter-spacing:1px;
+        margin:4px 0;
+    }
+
+    .dash{
+        margin:20px 0;
+    }
+
+    .cipher-frame{
+        border:1px solid #fff;
+        padding:35px 40px;
+        margin-top:30px;
+    }
+
+    .cipher-label{
+        font-size:15px;
+        letter-spacing:1px;
+        margin-bottom:20px;
+    }
+
+    .cipher-text{
+        font-size:19px;
+        letter-spacing:2px;
+        line-height:2;
+        word-spacing:14px;
+        min-height:9em;
+        white-space:pre-wrap;
+    }
+
+    .cipher-text.decoded{
+        color:#D4A853;
+    }
+
+    .key-row{
+        margin-top:30px;
+        display:flex;
+        gap:12px;
+    }
+
+    .key-row input{
+        font-family:"Courier New", monospace;
+        letter-spacing:2px;
+    }
+
+    .key-row button{
+        font-family:"Courier New", monospace;
+        white-space:nowrap;
+    }
+
+    .decode-status{
+        margin-top:15px;
+        font-size:14px;
+        font-style:italic;
+        letter-spacing:1px;
+    }
+
+</style>
+</head>
+<body>
+<main class="wide">
+
+<h1>SPIRITBOX</h1>
+
+<p class="meta">ARCHIVE NODE // 07</p>
+<p class="meta">CLASSIFICATION: ULTRABLACK</p>
+<p class="meta">ACCESS: OPERATORS ONLY</p>
+
+<div class="dash">—</div>
+
+<p class="meta">DOCUMENT ID: <span id="doc-id">SPIRITBOX-CIPHER-01</span></p>
+<p class="meta">STATUS: <span id="doc-status">ENCRYPTED</span></p>
+
+<div class="cipher-frame">
+
+    <p class="cipher-label">ENCRYPTED MESSAGE // VIGENÈRE CIPHER</p>
+    <div class="dash">—</div>
+
+    <div id="cipher-display" class="cipher-text"></div>
+
+</div>
+
+<div class="key-row">
+    <input id="cipher-key" autocomplete="off" placeholder="ENTER DECRYPTION KEY">
+    <button onclick="clearKey()">CLEAR</button>
+</div>
+
+<div id="decode-status" class="decode-status"></div>
+
+<div class="dash">—</div>
+<p class="meta">[END OF TRANSMISSION]</p>
+
+</main>
+
+<script src="spiritbox.js"></script>
+</body>
+</html>
