@@ -90,6 +90,7 @@ input::placeholder{
 }
 
 button{
+    margin-top: 35px;
     background:transparent;
     color:var(--fg);
     border:1px solid var(--fg);
