@@ -40,10 +40,14 @@ main.wide{
 }
 
 h1{
-    font-size:56px;
+    font-family:"Times New Roman", serif;
+    font-size:48px;
     margin:0 0 28px 0;
-    font-weight:700;
+    font-weight:400;
     letter-spacing:1px;
+
+    transform:scaleY(1.25);
+    transform-origin:center;
 }
 
 h2{
