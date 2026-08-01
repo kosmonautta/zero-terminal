@@ -6,58 +6,112 @@
 <link rel="stylesheet" href="../style.css">
 <style>
 
-    body{
+    .archive-entry{
+        border:1px solid var(--line);
+        margin-bottom:14px;
+    }
+
+    .archive-entry summary{
+        list-style:none;
+        cursor:pointer;
+        user-select:none;
+        display:flex;
+        align-items:center;
+        justify-content:space-between;
+        gap:16px;
+        padding:20px 24px;
         font-family:"Courier New", monospace;
+        font-size:12px;
+        letter-spacing:2px;
+        text-transform:uppercase;
     }
 
-    main.wide{
-        width:900px;
+    .archive-entry summary::-webkit-details-marker{
+        display:none;
     }
 
-    h1{
-        font-family:"Courier New", monospace;
-        letter-spacing:4px;
+    .archive-entry summary::marker{
+        content:"";
     }
 
-    .meta{
-        font-size:15px;
-        letter-spacing:1px;
-        margin:4px 0;
+    .entry-left{
+        display:flex;
+        align-items:center;
+        gap:20px;
+        min-width:0;
     }
 
-    .dash{
-        margin:20px 0;
+    .entry-index{
+        color:var(--dim);
     }
 
-    .cipher-frame{
-        border:1px solid #fff;
-        padding:35px 40px;
-        margin-top:30px;
+    .entry-title{
+        color:var(--fg);
     }
 
-    .cipher-label{
-        font-size:15px;
-        letter-spacing:1px;
-        margin-bottom:20px;
+    .entry-class{
+        color:var(--dim);
+    }
+
+    .entry-right{
+        display:flex;
+        align-items:center;
+        gap:18px;
+        flex-shrink:0;
+    }
+
+    .entry-status{
+        padding:4px 9px;
+        border:1px solid var(--fg);
+    }
+
+    .entry-status.decoded{
+        color:var(--fg);
+    }
+
+    .toggle-icon::before{
+        content:"+";
+    }
+
+    .archive-entry[open] .toggle-icon::before{
+        content:"–";
+    }
+
+    .archive-entry[open] summary{
+        border-bottom:1px solid var(--line);
+    }
+
+    .entry-body{
+        padding:28px 24px 32px 24px;
     }
 
     .cipher-text{
-        font-size:19px;
+        font-family:"Courier New", monospace;
+        font-size:18px;
         letter-spacing:2px;
         line-height:2;
         word-spacing:14px;
-        min-height:9em;
         white-space:pre-wrap;
+        min-height:6.5em;
+        color:var(--fg);
+        transition:color .2s ease, text-shadow .2s ease;
+        will-change:transform;
+    }
+
+    .cipher-text.noise{
+        text-shadow:
+            1px 0 rgba(255,255,255,0.25),
+            -1px 0 rgba(255,255,255,0.15);
     }
 
     .cipher-text.decoded{
-        color:#D4A853;
+        color:var(--fg);
     }
 
     .key-row{
-        margin-top:30px;
         display:flex;
-        gap:12px;
+        gap:10px;
+        margin-top:28px;
     }
 
     .key-row input{
@@ -66,15 +120,29 @@
     }
 
     .key-row button{
-        font-family:"Courier New", monospace;
         white-space:nowrap;
     }
 
     .decode-status{
-        margin-top:15px;
-        font-size:14px;
-        font-style:italic;
+        margin-top:14px;
+        font-family:"Courier New", monospace;
+        font-size:12px;
+        letter-spacing:2px;
+        text-transform:uppercase;
+        color:var(--dim);
+        min-height:1.4em;
+    }
+
+    .decode-status.decoded{
+        color:var(--dim);
+    }
+
+    .archive-empty{
+        font-family:"Courier New", monospace;
+        font-size:13px;
         letter-spacing:1px;
+        color:var(--dim);
+        text-transform:uppercase;
     }
 
 </style>
@@ -82,35 +150,18 @@
 <body>
 <main class="wide">
 
+<p class="eyebrow">ARCHIVE NODE // 004</p>
 <h1>SPIRITBOX</h1>
 
-<p class="meta">ARCHIVE NODE // 07</p>
-<p class="meta">CLASSIFICATION: ULTRABLACK</p>
 <p class="meta">ACCESS: OPERATORS ONLY</p>
 
-<div class="dash">—</div>
+<hr>
 
-<p class="meta">DOCUMENT ID: <span id="doc-id">SPIRITBOX-CIPHER-01</span></p>
-<p class="meta">STATUS: <span id="doc-status">ENCRYPTED</span></p>
+<div id="archive"></div>
 
-<div class="cipher-frame">
+<hr>
 
-    <p class="cipher-label">ENCRYPTED MESSAGE // VIGENÈRE CIPHER</p>
-    <div class="dash">—</div>
-
-    <div id="cipher-display" class="cipher-text"></div>
-
-</div>
-
-<div class="key-row">
-    <input id="cipher-key" autocomplete="off" placeholder="ENTER DECRYPTION KEY">
-    <button onclick="clearKey()">CLEAR</button>
-</div>
-
-<div id="decode-status" class="decode-status"></div>
-
-<div class="dash">—</div>
-<p class="meta">[END OF TRANSMISSION]</p>
+<a class="nav-link" href="../index.html">← ZERO</a>
 
 </main>
 

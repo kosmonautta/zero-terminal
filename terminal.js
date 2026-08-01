@@ -1,12 +1,26 @@
 const ACCESS = {
 
-    "SOMNUS-17": "/esper/",
+    "DREAM": "esper/",
 
-    "THREAD-NULL": "/linkwalker/",
+    "THREAD": "linkwalker/",
 
-    "ASCENSION": "/forerunner/"
+    "NULL": "forerunner/",
+
+    "ECHO": "spiritbox/"
 
 };
+
+function targetURL(relPath){
+
+    // resolve relative to the actual folder this document lives in,
+    // rather than trusting a bare relative string (which breaks if
+    // the browser's address bar has no trailing slash)
+    const path = window.location.pathname;
+    const dir = path.substring(0, path.lastIndexOf("/") + 1);
+
+    return dir + relPath;
+
+}
 
 function verify(){
 
@@ -26,7 +40,7 @@ function verify(){
 
         setTimeout(()=>{
 
-            window.location.href = ACCESS[key];
+            window.location.href = targetURL(ACCESS[key]);
 
         },900);
 
