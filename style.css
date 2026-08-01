@@ -52,12 +52,12 @@ h1{
 
 .zero{
     font-family:"Times New Roman", serif;
-    font-size:58px;
+    font-size:62px;
     margin:0 0 20px 0;
-    font-weight:500;
+    font-weight:600;
     letter-spacing:1px;
 
-    transform:scaleY(1.45);
+    transform:scaleY(1.5);
     transform-origin:center;
 }
 
