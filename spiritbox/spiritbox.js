@@ -131,37 +131,68 @@ function buildEntryMarkup(msg, index){
 
 }
 
-const jitterTimers = {};
+const glitchTimers = {};
 
-function startJitter(id){
+function scramble(text){
 
-    stopJitter(id);
+    const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+    return text
+        .split("")
+        .map(c => {
+
+            if(c >= "A" && c <= "Z"){
+
+                return Math.random() < 0.65
+                    ? alphabet[Math.floor(Math.random() * 26)]
+                    : c;
+
+            }
+
+            return c;
+
+        })
+        .join("");
+
+}
+
+function playGlitch(id, finalText){
 
     const el = document.getElementById("display-" + id);
     if(!el) return;
 
-    jitterTimers[id] = setInterval(() => {
+    if(glitchTimers[id]){
 
-        const x = (Math.random() * 3 - 1.5).toFixed(1);
-        const y = (Math.random() * 3 - 1.5).toFixed(1);
-
-        el.style.transform = `translate(${x}px, ${y}px)`;
-
-    }, 70);
-
-}
-
-function stopJitter(id){
-
-    if(jitterTimers[id]){
-
-        clearInterval(jitterTimers[id]);
-        delete jitterTimers[id];
+        clearTimeout(glitchTimers[id]);
+        delete glitchTimers[id];
 
     }
 
-    const el = document.getElementById("display-" + id);
-    if(el) el.style.transform = "translate(0,0)";
+    el.classList.add("shake");
+
+    let frame = 0;
+    const totalFrames = 3;
+    const frameDelay = 45;
+
+    function step(){
+
+        if(frame < totalFrames){
+
+            el.textContent = scramble(finalText);
+            frame++;
+            glitchTimers[id] = setTimeout(step, frameDelay);
+
+        } else {
+
+            el.textContent = finalText;
+            el.classList.remove("shake");
+            delete glitchTimers[id];
+
+        }
+
+    }
+
+    step();
 
 }
 
@@ -175,10 +206,8 @@ function renderMessage(msg){
 
     if(key.length === 0){
 
-        display.textContent = lockedView(msg.ciphertext);
+        playGlitch(msg.id, lockedView(msg.ciphertext));
         display.classList.remove("decoded");
-        display.classList.add("noise");
-        startJitter(msg.id);
 
         status.textContent = "";
         status.classList.remove("decoded");
@@ -190,10 +219,8 @@ function renderMessage(msg){
 
     const decoded = vigDecrypt(msg.ciphertext, key);
 
-    display.textContent = decoded;
-    display.classList.remove("noise");
+    playGlitch(msg.id, decoded);
     display.classList.add("decoded");
-    stopJitter(msg.id);
 
     status.textContent = "— KEY APPLIED : " + key.toUpperCase() + " —";
     status.classList.add("decoded");

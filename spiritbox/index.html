@@ -94,14 +94,19 @@
         white-space:pre-wrap;
         min-height:6.5em;
         color:var(--fg);
-        transition:color .2s ease, text-shadow .2s ease;
-        will-change:transform;
     }
 
-    .cipher-text.noise{
-        text-shadow:
-            1px 0 rgba(255,255,255,0.25),
-            -1px 0 rgba(255,255,255,0.15);
+    @keyframes shakeKey{
+        0%{   transform:translate(0,0); }
+        20%{  transform:translate(-1.5px, 1px); }
+        40%{  transform:translate(1.5px, -1px); }
+        60%{  transform:translate(-1px, -1.5px); }
+        80%{  transform:translate(1px, 1.5px); }
+        100%{ transform:translate(0,0); }
+    }
+
+    .cipher-text.shake{
+        animation: shakeKey 0.09s linear infinite;
     }
 
     .cipher-text.decoded{
