@@ -69,14 +69,16 @@ p{
 
 input{
     width:100%;
-    box-sizing:border-box;
     background:transparent;
-    border:1px solid var(--fg);
+    box-sizing:border-box;
     color:var(--fg);
-    padding:14px 2px;
+    border:1px solid var(--fg);
+    padding:14px 16px;
     font-family:inherit;
     font-size:18px;
     transition:border-color .2s ease;
+    text-transform:uppercase;
+    outline:none;
 }
 
 input:focus{
@@ -85,7 +87,7 @@ input:focus{
 }
 
 input::placeholder{
-    color:var(--dim);
+    color:var(--fg);
 }
 
 button{
