@@ -1,12 +1,12 @@
 const ACCESS = {
 
-    "DREAM": "esper/",
+    "ESPER": "esper/",
 
-    "THREAD": "linkwalker/",
+    "LINKWALKER": "linkwalker/",
 
-    "NULL": "forerunner/",
+    "FORERUNNER": "forerunner/",
 
-    "ECHO": "spiritbox/"
+    "SPIRITBOX": "spiritbox/"
 
 };
 
@@ -72,6 +72,6 @@ console.log("OBSERVATION IS A FORM OF ENTRY");
 
 If you're reading this,
 
-you're already inside.
+follow sagittarius.
 
 */
