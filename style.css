@@ -50,6 +50,17 @@ h1{
     transform-origin:center;
 }
 
+.zero{
+    font-family:"Times New Roman", serif;
+    font-size:58px;
+    margin:0 0 20px 0;
+    font-weight:500;
+    letter-spacing:1px;
+
+    transform:scaleY(1.45);
+    transform-origin:center;
+    
+
 h2{
     font-size:19px;
     margin-top:60px;
