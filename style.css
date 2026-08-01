@@ -41,12 +41,12 @@ main.wide{
 
 h1{
     font-family:"Times New Roman", serif;
-    font-size:48px;
-    margin:0 0 28px 0;
-    font-weight:400;
+    font-size:50px;
+    margin:0 0 24px 0;
+    font-weight:450;
     letter-spacing:1px;
 
-    transform:scaleY(1.25);
+    transform:scaleY(1.30);
     transform-origin:center;
 }
 
