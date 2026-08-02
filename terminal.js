@@ -10,7 +10,17 @@ const ACCESS = {
 
     "ROUTINE": "routine/",
 
-    "KNOT": "link-and-knot/"
+    "KNOT": "link-and-knot/",
+
+    "LINK": "link-and-knot/",
+
+    "LINK AND KNOT": "link-and-knot/",
+
+    "HEX": "hex-grave/",
+
+    "GRAVE": "hex-grave/",
+
+    "HEX GRAVE": "hex-grave/"
 };
 
 function targetURL(relPath){
