@@ -8,7 +8,9 @@ const ACCESS = {
 
     "SPIRITBOX": "spiritbox/",
 
-    "ROUTINE": "routine/"
+    "ROUTINE": "routine/",
+
+    "KNOT": "link-and-knot/"
 };
 
 function targetURL(relPath){
