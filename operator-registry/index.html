@@ -262,73 +262,96 @@
 
     /* ===== PROCEDURES ===== */
 
-    table{
-        width:100%;
-        border-collapse:collapse;
-        margin:16px 0 0;
-        font-size:14px;
-    }
-
-    th, td{
-        border:1px solid var(--line);
-        padding:10px 10px;
-        vertical-align:middle;
-        text-align:left;
-    }
-
-    th{
+    .reading-group-head{
+        display:flex;
+        justify-content:space-between;
+        align-items:baseline;
         font-family:"Courier New", monospace;
-        font-size:10.5px;
-        letter-spacing:1.5px;
+        font-size:12px;
+        letter-spacing:2px;
         text-transform:uppercase;
         font-weight:700;
+        color:var(--fg);
+        border-bottom:1px solid var(--fg);
+        padding:18px 4px 6px;
+    }
+
+    .reading-group-head:first-child{
+        padding-top:6px;
+    }
+
+    .reading-group-head .rgh-val{
+        color:var(--dim);
+        font-weight:400;
+    }
+
+    .procedure-row{
+        display:flex;
+        align-items:center;
+        gap:14px;
+        padding:12px 4px;
+        border-bottom:1px solid var(--line);
+    }
+
+    .stamp-dot{
+        flex-shrink:0;
+        width:20px;
+        height:20px;
+        border:1px solid var(--fg);
+        background:var(--bg);
+        cursor:pointer;
+        padding:0;
+    }
+
+    .stamp-dot.on{
         background:var(--fg);
-        color:var(--bg);
-        border-color:var(--bg);
     }
 
-    td.proc-name{
+    .proc-info{
+        flex:1;
+        min-width:0;
+    }
+
+    .proc-name-line{
         font-family:"Times New Roman", serif;
-        font-size:15px;
+        font-size:16px;
     }
 
+    .proc-reading-tag{
+        font-family:"Courier New", monospace;
+        font-size:11px;
+        letter-spacing:1px;
+        color:var(--dim);
+    }
+
+    .proc-desc,
     .proc-tag{
         display:block;
         font-family:"Courier New", monospace;
-        font-size:9.5px;
-        letter-spacing:1px;
+        font-size:10.5px;
+        letter-spacing:0.8px;
         color:var(--dim);
         margin-top:2px;
         text-transform:uppercase;
     }
 
-    td.proc-reading,
-    td.proc-result{
+    .proc-actions{
+        display:flex;
+        align-items:center;
+        gap:10px;
+        flex-shrink:0;
+    }
+
+    .proc-result{
         font-family:"Courier New", monospace;
         font-size:12px;
         letter-spacing:0.5px;
         color:var(--dim);
+        min-width:11em;
+        text-align:right;
         white-space:nowrap;
-    }
-
-    .stamp-toggle{
-        background:var(--bg);
-        border:1px solid var(--line);
-        color:var(--dim);
-        font-family:"Courier New", monospace;
-        font-size:10.5px;
-        letter-spacing:1.5px;
-        text-transform:uppercase;
-        padding:7px 10px;
-        cursor:pointer;
-        white-space:nowrap;
-    }
-
-    .stamp-toggle.on{
-        background:var(--fg);
-        color:var(--bg);
-        border-color:var(--fg);
-        font-weight:700;
+        overflow:hidden;
+        text-overflow:ellipsis;
     }
 
     .roll-btn{
@@ -342,6 +365,7 @@
         padding:7px 10px;
         cursor:pointer;
         white-space:nowrap;
+        flex-shrink:0;
     }
 
     .roll-btn:hover{
@@ -354,8 +378,9 @@
         border:none;
         color:var(--dim);
         font-family:"Courier New", monospace;
-        font-size:13px;
+        font-size:14px;
         cursor:pointer;
+        flex-shrink:0;
     }
 
     .remove-btn:hover{
@@ -433,19 +458,17 @@
 
     @media (max-width: 600px){
         h1{ font-size:38px; }
-        table, thead, tbody, th, td, tr{ display:block; }
-        thead{ display:none; }
-        tr{ border:1px solid var(--line); margin-bottom:10px; }
-        td{ border:none; border-bottom:1px solid var(--line); }
-        td:last-child{ border-bottom:none; }
-        td::before{
-            content:attr(data-label);
-            display:block;
-            font-family:"Courier New", monospace;
-            font-size:9px;
-            letter-spacing:1px;
-            color:var(--dim);
-            margin-bottom:4px;
+        .procedure-row{
+            flex-wrap:wrap;
+        }
+        .proc-actions{
+            width:100%;
+            justify-content:space-between;
+            margin-left:34px;
+            margin-top:6px;
+        }
+        .proc-result{
+            text-align:left;
         }
     }
 </style>
@@ -569,19 +592,7 @@
     <h2>Procedure Index</h2>
     <p class="mono">Unstamped → 1d20 + Reading &nbsp;·&nbsp; Stamped → 2d20 (best) + Reading</p>
 
-    <table>
-        <thead>
-            <tr>
-                <th>Procedure</th>
-                <th>Reading</th>
-                <th>Stamp</th>
-                <th>Roll</th>
-                <th>Result</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody id="procBody"></tbody>
-    </table>
+    <div id="procBody"></div>
 
     <div class="add-row">
         <div>

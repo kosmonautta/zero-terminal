@@ -119,20 +119,30 @@ function renderReadings(){
 
 }
 
-["BRN","FRM","NRV"].forEach(key => {
+// reading input bindings live in the main init block below, alongside
+// everything else — see "bindReadingInputs()".
 
-    document.addEventListener("DOMContentLoaded", () => {
+function bindReadingInputs(){
 
-        document.getElementById("reading" + key).addEventListener("input", (e) => {
+    ["BRN","FRM","NRV"].forEach(key => {
+
+        const el = document.getElementById("reading" + key);
+
+        const handler = (e) => {
             state.readings[key] = Number(e.target.value) || 0;
             renderReadings();
             renderProcedures();
             saveState();
-        });
+        };
+
+        // both events bound defensively — some browsers only fire
+        // "change" (not "input") for number-field spinner clicks
+        el.addEventListener("input", handler);
+        el.addEventListener("change", handler);
 
     });
 
-});
+}
 
 // ---------- capacity ----------
 
@@ -197,49 +207,57 @@ function renderProcedures(){
     const body = document.getElementById("procBody");
     body.innerHTML = "";
 
-    state.procedures.forEach((proc) => {
+    ["BRN","FRM","NRV"].forEach(readingKey => {
 
-        const tr = document.createElement("tr");
+        const groupProcs = state.procedures.filter(p => p.reading === readingKey);
+        if(groupProcs.length === 0) return;
 
-        tr.innerHTML = `
-            <td class="proc-name" data-label="PROCEDURE">
-                ${proc.name}
-                ${proc.desc ? '<span class="proc-tag">' + proc.desc + '</span>' : ""}
-                ${proc.nonstandard ? '<span class="proc-tag">NON-STANDARD</span>' : ""}
-            </td>
-            <td class="proc-reading" data-label="READING">${proc.reading} · ${state.readings[proc.reading]}</td>
-            <td data-label="STAMP">
-                <button type="button" class="stamp-toggle ${proc.stamped ? "on" : ""}" data-act="stamp">
-                    ${proc.stamped ? "STAMPED" : "UNSTAMPED"}
-                </button>
-            </td>
-            <td data-label="ROLL">
-                <button type="button" class="roll-btn" data-act="roll">RUN</button>
-            </td>
-            <td class="proc-result" data-label="RESULT">${proc.lastResult || "—"}</td>
-            <td data-label="">${proc.locked ? "" : '<button type="button" class="remove-btn" data-act="remove" title="Remove">✕</button>'}</td>
-        `;
+        const head = document.createElement("div");
+        head.className = "reading-group-head";
+        head.innerHTML = readingKey + ' <span class="rgh-val">READING ' + state.readings[readingKey] + '</span>';
+        body.appendChild(head);
 
-        tr.querySelector('[data-act="stamp"]').addEventListener("click", () => {
-            proc.stamped = !proc.stamped;
-            renderProcedures();
-            saveState();
-        });
+        groupProcs.forEach((proc) => {
 
-        tr.querySelector('[data-act="roll"]').addEventListener("click", () => {
-            runProcedure(proc);
-        });
+            const row = document.createElement("div");
+            row.className = "procedure-row";
 
-        const removeBtn = tr.querySelector('[data-act="remove"]');
-        if(removeBtn){
-            removeBtn.addEventListener("click", () => {
-                state.procedures = state.procedures.filter(p => p.id !== proc.id);
+            row.innerHTML = `
+                <button type="button" class="stamp-dot ${proc.stamped ? "on" : ""}" data-act="stamp" title="Toggle Stamped"></button>
+                <div class="proc-info">
+                    <div class="proc-name-line">${proc.name}</div>
+                    ${proc.desc ? '<span class="proc-desc">' + proc.desc + '</span>' : ""}
+                    ${proc.nonstandard ? '<span class="proc-tag">NON-STANDARD</span>' : ""}
+                </div>
+                <div class="proc-actions">
+                    <div class="proc-result">${proc.lastResult || "—"}</div>
+                    <button type="button" class="roll-btn" data-act="roll">RUN</button>
+                    ${proc.locked ? "" : '<button type="button" class="remove-btn" data-act="remove" title="Remove">✕</button>'}
+                </div>
+            `;
+
+            row.querySelector('[data-act="stamp"]').addEventListener("click", () => {
+                proc.stamped = !proc.stamped;
                 renderProcedures();
                 saveState();
             });
-        }
 
-        body.appendChild(tr);
+            row.querySelector('[data-act="roll"]').addEventListener("click", () => {
+                runProcedure(proc);
+            });
+
+            const removeBtn = row.querySelector('[data-act="remove"]');
+            if(removeBtn){
+                removeBtn.addEventListener("click", () => {
+                    state.procedures = state.procedures.filter(p => p.id !== proc.id);
+                    renderProcedures();
+                    saveState();
+                });
+            }
+
+            body.appendChild(row);
+
+        });
 
     });
 
@@ -301,6 +319,8 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     document.getElementById("addProcBtn").addEventListener("click", addCustomProcedure);
+
+    bindReadingInputs();
 
     document.getElementById("newProcName").addEventListener("keydown", (e) => {
         if(e.key === "Enter"){
