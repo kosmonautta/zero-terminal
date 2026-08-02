@@ -46,7 +46,7 @@ h1{
     font-weight:550;
     letter-spacing:1px;
 
-    transform:scaleY(2);
+    transform:scaleY(1.35);
     transform-origin:center;
 }
 
