@@ -311,6 +311,52 @@
         margin-top:2px;
     }
 
+    /* ===== COMMIT PANEL ===== */
+
+    .commit-panel{
+        display:none;
+        margin-top:16px;
+        border:1px solid var(--fg);
+        padding:16px;
+    }
+
+    .commit-panel.active{
+        display:block;
+    }
+
+    .commit-panel label{
+        display:block;
+        margin-bottom:10px;
+    }
+
+    .commit-row{
+        display:flex;
+        gap:10px;
+        flex-wrap:wrap;
+    }
+
+    .hex-name-input{
+        flex:1;
+        min-width:220px;
+        background:var(--bg);
+        color:var(--fg);
+        border:1px solid var(--fg);
+        font-family:"Courier New", monospace;
+        font-size:13px;
+        letter-spacing:1px;
+        text-transform:uppercase;
+        padding:12px 14px;
+    }
+
+    .hex-name-input::placeholder{
+        color:var(--dim);
+    }
+
+    .hex-name-input:focus{
+        outline:none;
+        background:rgba(255,255,255,0.05);
+    }
+
     /* ===== STATS ===== */
 
     .stat-row{
@@ -521,6 +567,14 @@
     </div>
 
     <div class="hex-readout" id="hexReadout"></div>
+
+    <div class="commit-panel" id="commitPanel">
+        <label class="mono" for="hexNameInput">Name this Hex</label>
+        <div class="commit-row">
+            <input type="text" id="hexNameInput" class="hex-name-input" placeholder="UNNAMED HEX" autocomplete="off">
+            <button class="btn" id="commitBtn" type="button">COMMIT TO INTAKE BRIEF</button>
+        </div>
+    </div>
 
     <hr>
 

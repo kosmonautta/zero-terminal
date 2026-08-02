@@ -95,19 +95,36 @@ let graveCounter = 0;
 let slotCounter = 0;
 
 const glitchAlphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ-—";
-const matrixNoiseChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ#%&*░▒▓";
+
+// No Latin letters here on purpose — a letter-heavy pool reads as
+// almost-words. Block shades, box-drawing, geometric marks and a few
+// Braille cells read as pure interference instead.
+const matrixNoiseChars = [
+    "░","▒","▓","█","▀","▄","▌","▐","▖","▗","▘","▝","▚","▞",
+    "■","□","▪","▫","◆","◇","▲","△","▼","▽","●","○",
+    "─","│","┼","┤","├","┬","┴","╬","╫","╪",
+    "⠿","⠶","⠛","⠹","⠭","⠽","⠾","⠷",
+    "#","%","&","*","/","\\","~","^"
+];
 let ambientTimer = null;
 
+function noiseGlyph(){
+    return matrixNoiseChars[Math.floor(Math.random() * matrixNoiseChars.length)];
+}
+
+// Builds a run of noise glyphs, each with its own random opacity, so a
+// cell reads as a flickering field of static rather than flat text.
 function noiseGlyphs(len){
-    let s = "";
+    let html = "";
     for(let i = 0; i < len; i++){
-        s += matrixNoiseChars[Math.floor(Math.random() * matrixNoiseChars.length)];
+        const opacity = (0.25 + Math.random() * 0.75).toFixed(2);
+        html += `<span style="opacity:${opacity}">${noiseGlyph()}</span>`;
     }
-    return s;
+    return html;
 }
 
 function randNoiseLen(){
-    return 4 + Math.floor(Math.random() * 4);
+    return 3 + Math.floor(Math.random() * 6);
 }
 
 // Keeps every cell that hasn't been rolled yet flickering like dead signal —
@@ -117,7 +134,7 @@ function startAmbientNoise(){
     if(ambientTimer) return;
     ambientTimer = setInterval(() => {
         document.querySelectorAll("table.matrix td.cell-noise .cell-name").forEach(el => {
-            el.textContent = noiseGlyphs(randNoiseLen());
+            el.innerHTML = noiseGlyphs(randNoiseLen());
         });
     }, 160);
 }
@@ -206,6 +223,8 @@ function addLog(text){
 
 function renderIntake(){
     const grid = document.getElementById("intakeGrid");
+    document.getElementById("statHeld").textContent = intake.length;
+    document.getElementById("statGraved").textContent = graveCounter;
     if(intake.length === 0){
         grid.innerHTML = '<div class="intake-empty">NO HEXES ON FILE</div>';
         return;
@@ -246,7 +265,7 @@ function clearMatrixLocks(){
             const cell = document.getElementById(`cell-${p.key}-${d}`);
             cell.classList.remove("cell-active", "cell-locked", "cell-collapsed");
             cell.classList.add("cell-noise");
-            cell.querySelector(".cell-name").textContent = noiseGlyphs(randNoiseLen());
+            cell.querySelector(".cell-name").innerHTML = noiseGlyphs(randNoiseLen());
         }
     });
 }
@@ -267,7 +286,7 @@ function rollParameter(param, onSettled){
     // ambient noise is skipped here since these cells no longer carry .cell-noise
     const flickerInterval = setInterval(() => {
         cells.forEach(cell => {
-            cell.querySelector(".cell-name").textContent = noiseGlyphs(randNoiseLen());
+            cell.querySelector(".cell-name").innerHTML = noiseGlyphs(randNoiseLen());
         });
     }, 55);
 
