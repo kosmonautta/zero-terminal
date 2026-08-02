@@ -490,10 +490,11 @@
     <div class="whitebox">ULTRABLACK OPERATOR — LINKWALKER TERMINAL</div>
 
     <div class="terminal-note">
-        HEW A KNOT TO ROLL IT AND APPLY ITS SHIFT TO THE LINK.<br>
+        HEW A KNOT TO ROLL IT INTO INVENTORY — THE LINK DOES NOT MOVE YET.<br>
+        FIX A HELD KNOT TO SPEND IT AND APPLY ITS SHIFT TO THE LINK.<br>
         CORE KNOTS PULL TOWARD THE KEEN BAND. BROKEN KNOTS PULL TOWARD THE BREAK BAND.<br>
-        HELD KNOTS SIT IN INVENTORY UNTIL FIXED (SPENT).<br>
-        AT +3 THE LINK LOCKS — BROKEN KNOTS ARE SUPPRESSED. AT -3 THE LINK IS AT RUPTURE.
+        AT +3 THE LINK LOCKS — FIXING A BROKEN KNOT WHILE LOCKED SPENDS IT BUT SUPPRESSES ITS SHIFT.<br>
+        AT -3 THE LINK IS AT RUPTURE.
     </div>
 
     <hr>
@@ -518,6 +519,7 @@
         <span>LINK VALUE: <strong id="statValue">0</strong></span>
         <span>KNOTS HELD: <strong id="statHeld">0</strong></span>
         <span>TOTAL HEWED: <strong id="statHewed">0</strong></span>
+        <span>TOTAL FIXED: <strong id="statFixed">0</strong></span>
     </div>
 
     <div class="action-row">
@@ -550,19 +552,19 @@
     <div class="log-panel" id="logPanel"></div>
 
     <div class="category-head">CORE KNOTS — QUICK REFERENCE</div>
-    <p class="mono">Roll 1d12. Stable manipulations. Default: one step toward the Keen Band.</p>
+    <p class="mono">Roll 1d12. Stable manipulations. Default: one step toward the Keen Band, applied on Fix.</p>
     <div class="table-scroll">
         <table>
-            <thead><tr><th>d12</th><th>Knot</th><th>Output</th><th>Link Shift</th></tr></thead>
+            <thead><tr><th>d12</th><th>Knot</th><th>Output</th><th>Link Shift On Fix</th></tr></thead>
             <tbody id="coreRefBody"></tbody>
         </table>
     </div>
 
     <div class="category-head">BROKEN KNOTS — QUICK REFERENCE</div>
-    <p class="mono">Roll 1d12. Volatile manipulations. Default: one step toward the Break Band, plus a hit to the linked Reading.</p>
+    <p class="mono">Roll 1d12. Volatile manipulations. Default: one step toward the Break Band on Fix, plus a hit to the linked Reading.</p>
     <div class="table-scroll">
         <table>
-            <thead><tr><th>d12</th><th>Knot</th><th>Output</th><th>Noise</th><th>Link Shift</th></tr></thead>
+            <thead><tr><th>d12</th><th>Knot</th><th>Output</th><th>Noise</th><th>Link Shift On Fix</th></tr></thead>
             <tbody id="brokenRefBody"></tbody>
         </table>
     </div>

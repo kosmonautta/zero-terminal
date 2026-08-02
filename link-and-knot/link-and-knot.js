@@ -4,12 +4,16 @@ LINK AND KNOT — STABILITY TERMINAL
 
 CORE_KNOTS and BROKEN_KNOTS mirror the Ultrabrief reference tables.
 Each entry carries a "shift" — how far, and in which direction, the
-Link moves along the -3..+3 axis when that knot is Hewed. Negative
-shift pulls toward the Break Band, positive pulls toward the Keen
-Band. Most entries use the table's default (Core: +1, Broken: -1);
-entries that state their own movement in the source text carry that
-value instead (Quickened: -1, Dampen: +1, Overclock: -2, Ghost
-Fault: -3).
+Link moves along the -3..+3 axis. Negative shift pulls toward the
+Break Band, positive pulls toward the Keen Band. Most entries use
+the table's default (Core: +1, Broken: -1); entries that state
+their own movement in the source text carry that value instead
+(Quickened: -1, Dampen: +1, Overclock: -2, Ghost Fault: -3).
+
+Hewing a knot rolls it and adds it to inventory — the Link does NOT
+move yet. The shift is only applied when a held knot is Fixed
+(spent). A Broken Knot fixed while the Link is Locked (+3) is
+suppressed: it is still spent, but its shift is blocked.
 
 LINK STATE is a single integer clamped to [-3, 3], plus a running
 inventory of held (Hewed, not yet Fixed) knots and a session log.
@@ -49,6 +53,7 @@ const BROKEN_KNOTS = [
 let linkValue = 0;
 let inventory = [];      // held knots: { uid, type, d, name, output, noise, shift }
 let hewedCount = 0;
+let fixedCount = 0;
 let logEntries = [];     // { text, cls }
 let uidCounter = 0;
 
@@ -132,6 +137,7 @@ function renderStats(){
     document.getElementById("statValue").textContent = linkValue > 0 ? "+" + linkValue : String(linkValue);
     document.getElementById("statHeld").textContent = inventory.length;
     document.getElementById("statHewed").textContent = hewedCount;
+    document.getElementById("statFixed").textContent = fixedCount;
 }
 
 function renderInventory(){
@@ -143,22 +149,22 @@ function renderInventory(){
         return;
     }
 
+    const locked = (linkValue === 3);
+
     inventory.forEach(k => {
+        const willSuppress = locked && k.type === "broken";
+        const shiftStr = k.shift > 0 ? "+" + k.shift : String(k.shift);
         const card = document.createElement("div");
         card.className = "knot-card" + (k.type === "broken" ? " broken" : "");
         card.innerHTML = `
             <div>
-                <div class="kc-tag">${k.type === "broken" ? "BROKEN" : "CORE"} · D12:${k.d}</div>
+                <div class="kc-tag">${k.type === "broken" ? "BROKEN" : "CORE"} · D12:${k.d} · SHIFT ${shiftStr}${willSuppress ? " · LOCKED — WILL SUPPRESS" : ""}</div>
                 <div class="kc-name">${k.name}</div>
                 <div class="kc-output">${k.output}${k.noise ? "<br>NOISE: " + k.noise : ""}</div>
             </div>
             <button class="btn small kc-fix" type="button">FIX (SPEND)</button>
         `;
-        card.querySelector(".kc-fix").addEventListener("click", () => {
-            inventory = inventory.filter(x => x.uid !== k.uid);
-            addLog(`FIXED — ${k.name.toUpperCase()} SPENT AND REMOVED FROM INVENTORY.`, "");
-            renderAll();
-        });
+        card.querySelector(".kc-fix").addEventListener("click", () => fixKnot(k.uid));
         grid.appendChild(card);
     });
 }
@@ -208,7 +214,6 @@ function renderAll(){
 }
 
 function updateControlAvailability(){
-    document.getElementById("hewBrokenBtn").disabled = (linkValue === 3);
     document.getElementById("nudgePlusBtn").disabled = (linkValue === 3);
     document.getElementById("nudgeMinusBtn").disabled = (linkValue === -3);
     document.getElementById("driftBtn").disabled = (linkValue === 0);
@@ -231,42 +236,15 @@ function hewKnot(type){
     const roll = Math.floor(Math.random() * 12) + 1;
     const knot = table.find(k => k.d === roll);
 
-    // Lock suppresses Broken Knots
-    if(type === "broken" && linkValue === 3){
-        addLog(`SUPPRESSED — D12:${roll} (${knot.name.toUpperCase()}) BLOCKED. LINK LOCKED AT +3.`, "suppressed");
-        showResult(
-            "STATUS: BROKEN KNOT SUPPRESSED",
-            "LOCK",
-            `<p>The link is rigid. <strong>${knot.name}</strong> (d12:${roll}) failed to take hold.</p>`,
-            "NO KNOT ADDED · NO LINK SHIFT"
-        );
-        renderAll();
-        return;
-    }
-
     hewedCount++;
-
-    const before = linkValue;
-    linkValue = clamp(linkValue + knot.shift);
-    const after = linkValue;
 
     const uid = "k" + (++uidCounter);
     inventory.push({ uid, type, d: roll, name: knot.name, output: knot.output, noise: knot.noise, shift: knot.shift });
 
-    let flagCls = "";
-    let flagNote = "";
-    if(after === 3 && before !== 3){
-        flagCls = "lock";
-        flagNote = " LINK REACHES LOCK (+3).";
-    } else if(after === -3 && before !== -3){
-        flagCls = "rupture";
-        flagNote = " LINK REACHES RUPTURE (−3).";
-    }
-
     const shiftStr = knot.shift > 0 ? "+" + knot.shift : String(knot.shift);
     addLog(
-        `HEWED ${type === "core" ? "CORE" : "BROKEN"} — D12:${roll} ${knot.name.toUpperCase()} — LINK ${shiftStr} → ${before > 0 ? "+" + before : before} to ${after > 0 ? "+" + after : after}.${flagNote}`,
-        flagCls
+        `HEWED ${type === "core" ? "CORE" : "BROKEN"} — D12:${roll} ${knot.name.toUpperCase()} ADDED TO INVENTORY. PENDING SHIFT ${shiftStr} ON FIX.`,
+        ""
     );
 
     const bodyHtml = `
@@ -278,7 +256,61 @@ function hewKnot(type){
         `STATUS: ${type === "core" ? "CORE" : "BROKEN"} KNOT HEWED — D12:${roll}`,
         knot.name.toUpperCase(),
         bodyHtml,
-        `LINK SHIFT ${shiftStr} · NOW AT ${after > 0 ? "+" + after : after}${flagNote ? " ·" + flagNote : ""}`
+        `HELD IN INVENTORY · SHIFT ${shiftStr} PENDING UNTIL FIXED`
+    );
+
+    renderAll();
+
+}
+
+function fixKnot(uid){
+
+    const knot = inventory.find(k => k.uid === uid);
+    if(!knot) return;
+
+    // Lock suppresses Broken Knots at the moment they'd take effect
+    if(knot.type === "broken" && linkValue === 3){
+        inventory = inventory.filter(x => x.uid !== uid);
+        fixedCount++;
+        addLog(`SUPPRESSED ON FIX — ${knot.name.toUpperCase()} (D12:${knot.d}) SPENT BUT BLOCKED. LINK LOCKED AT +3.`, "suppressed");
+        showResult(
+            "STATUS: BROKEN KNOT SUPPRESSED",
+            "LOCK",
+            `<p>The link is rigid. <strong>${knot.name}</strong> was spent, but its shift failed to take hold.</p>`,
+            "KNOT REMOVED · NO LINK SHIFT"
+        );
+        renderAll();
+        return;
+    }
+
+    const before = linkValue;
+    linkValue = clamp(linkValue + knot.shift);
+    const after = linkValue;
+
+    inventory = inventory.filter(x => x.uid !== uid);
+    fixedCount++;
+
+    let flagNote = "";
+    let flagCls = "";
+    if(after === 3 && before !== 3){
+        flagCls = "lock";
+        flagNote = " LINK REACHES LOCK (+3).";
+    } else if(after === -3 && before !== -3){
+        flagCls = "rupture";
+        flagNote = " LINK REACHES RUPTURE (−3).";
+    }
+
+    const shiftStr = knot.shift > 0 ? "+" + knot.shift : String(knot.shift);
+    addLog(
+        `FIXED ${knot.type === "core" ? "CORE" : "BROKEN"} — ${knot.name.toUpperCase()} (D12:${knot.d}) SPENT — LINK ${shiftStr} → ${before > 0 ? "+" + before : before} to ${after > 0 ? "+" + after : after}.${flagNote}`,
+        flagCls
+    );
+
+    showResult(
+        `STATUS: KNOT FIXED — ${knot.name.toUpperCase()}`,
+        after > 0 ? "+" + after : String(after),
+        `<p>${knot.name} spent. Link shift ${shiftStr} applied.</p>`,
+        `LINK NOW AT ${after > 0 ? "+" + after : after}${flagNote ? " ·" + flagNote : ""}`
     );
 
     renderAll();
@@ -306,6 +338,7 @@ function resetSession(){
     linkValue = 0;
     inventory = [];
     hewedCount = 0;
+    fixedCount = 0;
     logEntries = [];
     showResult("STATUS: IDLE — NO KNOT HEWED", "", "", "");
     addLog("SESSION RESET. LINK RETURNED TO ZERO. INVENTORY CLEARED.", "");
