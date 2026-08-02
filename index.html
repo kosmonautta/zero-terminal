@@ -4,23 +4,102 @@
 <meta charset="utf-8">
 <title>ZERO</title>
 <link rel="stylesheet" href="style.css">
+<style>
+    /* Scoped to the new ambient elements only — doesn't touch anything
+       already defined in style.css for .eyebrow / .meta / .status / etc. */
+
+    .kernel-ticker{
+        margin-top:18px;
+        font-family:"Courier New", monospace;
+        font-size:11px;
+        letter-spacing:2px;
+        text-transform:uppercase;
+        color:rgba(255,255,255,0.4);
+        min-height:1.4em;
+    }
+
+    .static-band{
+        margin-top:30px;
+        height:24px;
+        overflow:hidden;
+        font-family:"Courier New", monospace;
+        font-size:14px;
+        line-height:24px;
+        letter-spacing:3px;
+        color:rgba(255,255,255,0.16);
+        white-space:nowrap;
+        user-select:none;
+    }
+
+    .watch-mark{
+        position:fixed;
+        top:0;
+        left:0;
+        width:14px;
+        height:14px;
+        border:1px solid rgba(255,255,255,0.3);
+        pointer-events:none;
+        z-index:9999;
+        opacity:0;
+        transition:opacity 0.5s;
+        will-change:transform;
+    }
+
+    .watch-mark::before,
+    .watch-mark::after{
+        content:"";
+        position:absolute;
+        background:rgba(255,255,255,0.3);
+    }
+
+    .watch-mark::before{
+        left:6px;
+        top:-7px;
+        width:1px;
+        height:6px;
+    }
+
+    .watch-mark::after{
+        left:6px;
+        top:15px;
+        width:1px;
+        height:6px;
+    }
+
+    .watch-label{
+        position:fixed;
+        top:0;
+        left:0;
+        font-family:"Courier New", monospace;
+        font-size:10px;
+        letter-spacing:1.5px;
+        color:rgba(255,255,255,0.3);
+        pointer-events:none;
+        z-index:9999;
+        opacity:0;
+        transition:opacity 0.5s;
+        white-space:nowrap;
+        will-change:transform;
+    }
+</style>
 </head>
 <body>
 <main>
-
 <p class="eyebrow">NODE // 000</p>
 <h1>KERNEL DIRECTORY</h1>
-
 <hr>
-
+<div class="kernel-ticker" id="ticker">&gt;&gt; CONTAINMENT HOLDING</div>
 <p class="meta">RUN AUTHORIZATION COMMAND</p>
-
 <input id="key" autocomplete="off">
 <button onclick="verify()">RUN</button>
-
 <div id="status" class="status"></div>
-
+<div class="static-band" id="staticBand" aria-hidden="true"></div>
 </main>
+
+<div class="watch-mark" id="watchMark" aria-hidden="true"></div>
+<div class="watch-label" id="watchLabel" aria-hidden="true"></div>
+
 <script src="terminal.js"></script>
+<script src="fx.js"></script>
 </body>
 </html>
