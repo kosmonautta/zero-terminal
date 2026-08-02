@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OPERATOR REGISTRY</title>
+<link rel="stylesheet" href="../style.css">
+<style>
+    :root{
+        --bg:#000;
+        --fg:#fff;
+        --dim:rgba(255,255,255,0.55);
+        --line:rgba(255,255,255,0.22);
+    }
+
+    *{ box-sizing:border-box; }
+
+    html, body{
+        margin:0;
+        padding:0;
+        background:var(--bg);
+        color:var(--fg);
+        font-family:"Times New Roman", Georgia, serif;
+        font-size:18px;
+        line-height:1.7;
+        -webkit-font-smoothing:antialiased;
+    }
+
+    body{ padding-bottom:80px; }
+
+    main{
+        width:min(1100px, 92vw);
+        margin:110px auto 80px;
+    }
+
+    .eyebrow{
+        font-family:"Courier New", monospace;
+        font-size:12px;
+        letter-spacing:3px;
+        text-transform:uppercase;
+        color:var(--dim);
+        margin:0 0 8px 0;
+    }
+
+    h1{
+        font-family:"Times New Roman", serif;
+        font-size:54px;
+        line-height:0.95;
+        margin:0 0 18px 0;
+        font-weight:550;
+        letter-spacing:1px;
+        transform:scaleY(1.15);
+        transform-origin:left top;
+    }
+
+    .whitebox{
+        background:var(--fg);
+        color:var(--bg);
+        display:inline-block;
+        padding:5px 10px;
+        font-family:"Courier New", monospace;
+        font-size:12px;
+        letter-spacing:2px;
+        text-transform:uppercase;
+        font-weight:700;
+    }
+
+    hr{
+        border:none;
+        border-top:1px solid var(--line);
+        margin:30px 0;
+    }
+
+    h2{
+        font-size:19px;
+        margin:0 0 6px 0;
+        font-weight:500;
+        font-style:italic;
+        color:var(--fg);
+    }
+
+    p{
+        margin:0 0 14px 0;
+    }
+
+    .mono{
+        font-family:"Courier New", monospace;
+        font-size:12px;
+        letter-spacing:1.5px;
+        text-transform:uppercase;
+        color:var(--dim);
+        line-height:1.8;
+    }
+
+    .terminal-note{
+        margin:14px 0 0;
+        padding:12px 14px;
+        border:1px solid var(--line);
+        font-family:"Courier New", monospace;
+        font-size:12px;
+        letter-spacing:1.5px;
+        text-transform:uppercase;
+        line-height:1.9;
+        color:var(--fg);
+    }
+
+    label{
+        display:block;
+        font-family:"Courier New", monospace;
+        font-size:10.5px;
+        letter-spacing:1.5px;
+        text-transform:uppercase;
+        color:var(--dim);
+        margin-bottom:6px;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    select{
+        width:100%;
+        background:var(--bg);
+        color:var(--fg);
+        border:1px solid var(--line);
+        font-family:"Courier New", monospace;
+        font-size:14px;
+        letter-spacing:1px;
+        padding:10px 12px;
+    }
+
+    input[type="number"]{
+        -moz-appearance:textfield;
+    }
+
+    select{
+        text-transform:uppercase;
+    }
+
+    /* ===== IDENTITY ===== */
+
+    .identity-grid{
+        display:grid;
+        grid-template-columns:2fr 1fr;
+        gap:16px;
+        margin-top:16px;
+    }
+
+    /* ===== READINGS ===== */
+
+    .readings-grid{
+        display:grid;
+        grid-template-columns:repeat(3, 1fr);
+        gap:16px;
+        margin-top:16px;
+    }
+
+    .reading-card{
+        border:1px solid var(--line);
+        padding:16px;
+    }
+
+    .reading-card .rc-title{
+        font-family:"Times New Roman", serif;
+        font-size:20px;
+        margin-bottom:2px;
+    }
+
+    .reading-card .rc-domain{
+        font-family:"Courier New", monospace;
+        font-size:10px;
+        letter-spacing:1px;
+        color:var(--dim);
+        margin-bottom:12px;
+        text-transform:uppercase;
+    }
+
+    .rc-row{
+        display:flex;
+        gap:10px;
+        align-items:flex-end;
+    }
+
+    .rc-pale{
+        border:1px solid var(--line);
+        padding:9px 12px;
+        font-family:"Courier New", monospace;
+        font-size:14px;
+        text-align:center;
+        min-width:70px;
+    }
+
+    .rc-pale-label{
+        font-size:9px;
+        letter-spacing:1px;
+        color:var(--dim);
+        display:block;
+        margin-bottom:4px;
+    }
+
+    .rc-flag{
+        margin-top:10px;
+        font-family:"Courier New", monospace;
+        font-size:10.5px;
+        letter-spacing:1px;
+        text-transform:uppercase;
+        color:var(--dim);
+        min-height:1.4em;
+    }
+
+    .rc-flag.bad{
+        color:var(--fg);
+        font-weight:700;
+    }
+
+    .budget-row{
+        margin-top:14px;
+        font-family:"Courier New", monospace;
+        font-size:12px;
+        letter-spacing:1.5px;
+        text-transform:uppercase;
+        color:var(--dim);
+        border:1px solid var(--line);
+        padding:12px 16px;
+    }
+
+    .budget-row strong{
+        color:var(--fg);
+    }
+
+    .budget-row.bad{
+        border-color:var(--fg);
+        color:var(--fg);
+    }
+
+    /* ===== CAPACITY ===== */
+
+    .capacity-grid{
+        display:grid;
+        grid-template-columns:repeat(4, 1fr);
+        gap:16px;
+        margin-top:16px;
+    }
+
+    .capacity-readout{
+        margin-top:14px;
+        font-family:"Courier New", monospace;
+        font-size:12px;
+        letter-spacing:1.5px;
+        text-transform:uppercase;
+        color:var(--dim);
+        border:1px solid var(--line);
+        padding:12px 16px;
+    }
+
+    .capacity-readout strong{
+        color:var(--fg);
+    }
+
+    .capacity-readout.overflow{
+        border-color:var(--fg);
+        color:var(--fg);
+    }
+
+    /* ===== PROCEDURES ===== */
+
+    table{
+        width:100%;
+        border-collapse:collapse;
+        margin:16px 0 0;
+        font-size:14px;
+    }
+
+    th, td{
+        border:1px solid var(--line);
+        padding:10px 10px;
+        vertical-align:middle;
+        text-align:left;
+    }
+
+    th{
+        font-family:"Courier New", monospace;
+        font-size:10.5px;
+        letter-spacing:1.5px;
+        text-transform:uppercase;
+        font-weight:700;
+        background:var(--fg);
+        color:var(--bg);
+        border-color:var(--bg);
+    }
+
+    td.proc-name{
+        font-family:"Times New Roman", serif;
+        font-size:15px;
+    }
+
+    .proc-tag{
+        display:block;
+        font-family:"Courier New", monospace;
+        font-size:9.5px;
+        letter-spacing:1px;
+        color:var(--dim);
+        margin-top:2px;
+        text-transform:uppercase;
+    }
+
+    td.proc-reading,
+    td.proc-result{
+        font-family:"Courier New", monospace;
+        font-size:12px;
+        letter-spacing:0.5px;
+        color:var(--dim);
+        white-space:nowrap;
+    }
+
+    .stamp-toggle{
+        background:var(--bg);
+        border:1px solid var(--line);
+        color:var(--dim);
+        font-family:"Courier New", monospace;
+        font-size:10.5px;
+        letter-spacing:1.5px;
+        text-transform:uppercase;
+        padding:7px 10px;
+        cursor:pointer;
+        white-space:nowrap;
+    }
+
+    .stamp-toggle.on{
+        background:var(--fg);
+        color:var(--bg);
+        border-color:var(--fg);
+        font-weight:700;
+    }
+
+    .roll-btn{
+        background:var(--bg);
+        border:1px solid var(--fg);
+        color:var(--fg);
+        font-family:"Courier New", monospace;
+        font-size:10.5px;
+        letter-spacing:1.5px;
+        text-transform:uppercase;
+        padding:7px 10px;
+        cursor:pointer;
+        white-space:nowrap;
+    }
+
+    .roll-btn:hover{
+        background:var(--fg);
+        color:var(--bg);
+    }
+
+    .remove-btn{
+        background:none;
+        border:none;
+        color:var(--dim);
+        font-family:"Courier New", monospace;
+        font-size:13px;
+        cursor:pointer;
+    }
+
+    .remove-btn:hover{
+        color:var(--fg);
+    }
+
+    /* ===== ADD PROCEDURE ===== */
+
+    .add-row{
+        display:grid;
+        grid-template-columns:2fr 1fr 1fr auto;
+        gap:10px;
+        margin-top:16px;
+        align-items:end;
+    }
+
+    button.btn{
+        background:var(--bg);
+        color:var(--fg);
+        border:1px solid var(--fg);
+        font-family:"Courier New", monospace;
+        font-size:11.5px;
+        letter-spacing:2px;
+        text-transform:uppercase;
+        padding:10px 16px;
+        cursor:pointer;
+    }
+
+    button.btn:hover{
+        background:var(--fg);
+        color:var(--bg);
+    }
+
+    button.btn.ghost{
+        border-color:var(--line);
+        color:var(--dim);
+    }
+
+    button.btn.ghost:hover{
+        background:var(--fg);
+        color:var(--bg);
+        border-color:var(--fg);
+    }
+
+    .action-row{
+        display:flex;
+        flex-wrap:wrap;
+        gap:10px;
+        margin-top:20px;
+    }
+
+    .nav-link{
+        display:block;
+        margin-top:18px;
+        font-family:"Courier New", monospace;
+        font-size:13px;
+        letter-spacing:2px;
+        text-transform:uppercase;
+        border-bottom:1px solid var(--line);
+        color:var(--fg);
+        text-decoration:none;
+        width:max-content;
+    }
+
+    .nav-link:hover{
+        border-bottom-color:var(--fg);
+    }
+
+    @media (max-width: 900px){
+        .readings-grid{ grid-template-columns:1fr; }
+        .capacity-grid{ grid-template-columns:repeat(2, 1fr); }
+        .identity-grid{ grid-template-columns:1fr; }
+        .add-row{ grid-template-columns:1fr 1fr; }
+    }
+
+    @media (max-width: 600px){
+        h1{ font-size:38px; }
+        table, thead, tbody, th, td, tr{ display:block; }
+        thead{ display:none; }
+        tr{ border:1px solid var(--line); margin-bottom:10px; }
+        td{ border:none; border-bottom:1px solid var(--line); }
+        td:last-child{ border-bottom:none; }
+        td::before{
+            content:attr(data-label);
+            display:block;
+            font-family:"Courier New", monospace;
+            font-size:9px;
+            letter-spacing:1px;
+            color:var(--dim);
+            margin-bottom:4px;
+        }
+    }
+</style>
+</head>
+<body>
+<main>
+
+    <p class="eyebrow">NODE // 007</p>
+    <h1>OPERATOR REGISTRY</h1>
+    <div class="whitebox">ULTRABLACK OPERATOR</div>
+
+    <div class="terminal-note">
+        REGISTER READINGS TO AUTO-DERIVE PALE. ASSIGN 36 POINTS TOTAL, 8 TO 16 PER READING.<br>
+        STAMP A PROCEDURE TO ROLL 2D20 (BEST OF) INSTEAD OF 1D20. THIS SHEET SAVES LOCALLY IN YOUR BROWSER.
+    </div>
+
+    <hr>
+
+    <h2>Identity</h2>
+    <div class="identity-grid">
+        <div>
+            <label for="opName">Designation</label>
+            <input type="text" id="opName" placeholder="OPERATOR NAME">
+        </div>
+        <div>
+            <label for="opKind">Kind</label>
+            <select id="opKind">
+                <option value="">— UNSPECIFIED —</option>
+                <option value="ESPER">KIND-I — ESPER</option>
+                <option value="LINKWALKER">KIND-II — LINKWALKER</option>
+                <option value="FORERUNNER">KIND-III — FORERUNNER</option>
+            </select>
+        </div>
+    </div>
+
+    <hr>
+
+    <h2>Readings &amp; Pale</h2>
+    <p class="mono">Pale = ⌈Reading ÷ 2⌉ · absorbs damage before it reaches the Reading</p>
+
+    <div class="readings-grid">
+        <div class="reading-card">
+            <div class="rc-title">BRN</div>
+            <div class="rc-domain">Interpretation · Pattern Recognition · Anomaly Detection</div>
+            <div class="rc-row">
+                <div style="flex:1;">
+                    <label for="readingBRN">Reading</label>
+                    <input type="number" id="readingBRN" min="0" value="12">
+                </div>
+                <div class="rc-pale">
+                    <span class="rc-pale-label">PALE</span>
+                    <span id="paleBRN">6</span>
+                </div>
+            </div>
+            <div class="rc-flag" id="flagBRN"></div>
+        </div>
+
+        <div class="reading-card">
+            <div class="rc-title">FRM</div>
+            <div class="rc-domain">Physical Execution · Spatial Control · Material Systems</div>
+            <div class="rc-row">
+                <div style="flex:1;">
+                    <label for="readingFRM">Reading</label>
+                    <input type="number" id="readingFRM" min="0" value="12">
+                </div>
+                <div class="rc-pale">
+                    <span class="rc-pale-label">PALE</span>
+                    <span id="paleFRM">6</span>
+                </div>
+            </div>
+            <div class="rc-flag" id="flagFRM"></div>
+        </div>
+
+        <div class="reading-card">
+            <div class="rc-title">NRV</div>
+            <div class="rc-domain">Stress Tolerance · Internal Regulation · Resistance to Distortion</div>
+            <div class="rc-row">
+                <div style="flex:1;">
+                    <label for="readingNRV">Reading</label>
+                    <input type="number" id="readingNRV" min="0" value="12">
+                </div>
+                <div class="rc-pale">
+                    <span class="rc-pale-label">PALE</span>
+                    <span id="paleNRV">6</span>
+                </div>
+            </div>
+            <div class="rc-flag" id="flagNRV"></div>
+        </div>
+    </div>
+
+    <div class="budget-row" id="budgetRow">ALLOCATED: <strong id="budgetUsed">36</strong> / 36 · REMAINING: <strong id="budgetRemaining">0</strong></div>
+
+    <hr>
+
+    <h2>Inventory Capacity</h2>
+    <div class="capacity-grid">
+        <div>
+            <label for="capBaseline">Baseline Capacity</label>
+            <input type="number" id="capBaseline" min="0" value="6">
+        </div>
+        <div>
+            <label for="capExpanded">Expanded Capacity</label>
+            <input type="number" id="capExpanded" min="0" value="0">
+        </div>
+        <div>
+            <label for="capUsed">Slots Used</label>
+            <input type="number" id="capUsed" min="0" value="0">
+        </div>
+        <div>
+            <label>&nbsp;</label>
+            <div class="rc-pale" style="width:100%;">
+                <span class="rc-pale-label">TOTAL</span>
+                <span id="capTotal">6</span>
+            </div>
+        </div>
+    </div>
+    <div class="capacity-readout" id="capacityReadout">REMAINING: <strong id="capRemaining">6</strong></div>
+
+    <hr>
+
+    <h2>Procedure Index</h2>
+    <p class="mono">Unstamped → 1d20 + Reading &nbsp;·&nbsp; Stamped → 2d20 (best) + Reading</p>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Procedure</th>
+                <th>Reading</th>
+                <th>Stamp</th>
+                <th>Roll</th>
+                <th>Result</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody id="procBody"></tbody>
+    </table>
+
+    <div class="add-row">
+        <div>
+            <label for="newProcName">New Procedure</label>
+            <input type="text" id="newProcName" placeholder="PROCEDURE NAME">
+        </div>
+        <div>
+            <label for="newProcReading">Reading</label>
+            <select id="newProcReading">
+                <option value="BRN">BRN</option>
+                <option value="FRM">FRM</option>
+                <option value="NRV">NRV</option>
+            </select>
+        </div>
+        <div>
+            <label for="newProcType">Type</label>
+            <select id="newProcType">
+                <option value="standard">STANDARD</option>
+                <option value="nonstandard">NON-STANDARD</option>
+            </select>
+        </div>
+        <div>
+            <button class="btn" id="addProcBtn" type="button">+ ADD</button>
+        </div>
+    </div>
+
+    <div class="action-row">
+        <button class="btn ghost" id="resetBtn" type="button">RESET SHEET</button>
+    </div>
+
+    <hr>
+    <a class="nav-link" href="../">← Kernel</a>
+
+</main>
+<script src="operatorregistry.js"></script>
+</body>
+</html>
