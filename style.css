@@ -41,17 +41,17 @@ main.wide{
 
 h1{
     font-family:"Times New Roman", serif;
-    font-size:60px;
+    font-size:66px;
     margin:0 0 20px 0;
     font-weight:550;
     letter-spacing:1px;
 
-    transform:scaleY(1.5);
+    transform:scaleY(2.0);
     transform-origin:center;
 }
 
 h2{
-    font-size:20px;
+    font-size:22px;
     margin-top:60px;
     font-weight:400;
     font-style:italic;
