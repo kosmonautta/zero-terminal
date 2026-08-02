@@ -131,6 +131,17 @@
         margin:0 0 10px 0;
     }
 
+    /* Article headers rendered as whitebox badges. Two-class selector keeps
+       this ahead of both .article-label and .whitebox regardless of source order. */
+    .article-label.whitebox{
+        background:var(--fg);
+        color:var(--bg);
+        display:inline-block;
+        padding:5px 10px;
+        font-weight:700;
+        margin:0 0 12px 0;
+    }
+
     p{
         margin:0 0 14px 0;
         text-align:justify;
@@ -193,6 +204,7 @@
         margin:14px 0 18px;
         font-size:14px;
         line-height:1.5;
+        table-layout:fixed;
     }
 
     th, td{
@@ -200,6 +212,7 @@
         padding:10px 10px;
         vertical-align:top;
         text-align:left;
+        overflow-wrap:break-word;
     }
 
     th{
@@ -207,8 +220,10 @@
         font-size:11px;
         letter-spacing:1.5px;
         text-transform:uppercase;
-        color:var(--dim);
-        font-weight:400;
+        font-weight:700;
+        background:var(--fg);
+        color:var(--bg);
+        border-color:var(--bg);
     }
 
     .small-table{
@@ -220,11 +235,25 @@
         padding:8px 8px;
     }
 
-    .grid-2{
-        display:grid;
-        grid-template-columns:1fr 1fr;
-        gap:22px;
-        margin-top:10px;
+    /* Lets wide tables scroll horizontally instead of breaking the page on narrow screens */
+    .table-scroll{
+        width:100%;
+        overflow-x:auto;
+        margin:14px 0 18px;
+    }
+
+    .table-scroll table{
+        margin:0;
+        min-width:640px;
+    }
+
+    .param-table{
+        font-size:13px;
+        line-height:1.5;
+    }
+
+    .param-table td strong{
+        display:inline;
     }
 
     .card{
@@ -276,7 +305,9 @@
         main{ width:min(92vw, 720px); margin:80px auto 60px; }
         .columns{ column-count:1; }
         h1{ font-size:42px; }
-        .grid-2{ grid-template-columns:1fr; }
+        table{ font-size:12px; }
+        .param-table{ font-size:11.5px; }
+        .small-table{ font-size:12px; }
     }
 </style>
 </head>
@@ -299,7 +330,7 @@
     <div class="columns">
 
         <section>
-            <div class="article-label">ARTICLE I — DEFINITIONS</div>
+            <div class="article-label whitebox">ARTICLE I — DEFINITIONS</div>
             <p><strong>§1.1</strong> A Kind-I Operator (ESPer) is an individual in whom Extrasensory Phenomena (ESP) manifests as an innate condition, not derived from instrument, procedure, or external induction.</p>
             <p><strong>§1.2</strong> ESP is herein defined as: a measurable deviation in causal continuity, originating from the subject and not reducible to known physical law.</p>
             <p><strong>§1.3</strong> The Operant recognizes that this definition is incomplete, with foundational gaps recorded under <span class="mono">[REDACTED]</span>.</p>
@@ -307,7 +338,7 @@
         </section>
 
         <section>
-            <div class="article-label">ARTICLE II — HEX GRAVE</div>
+            <div class="article-label whitebox">ARTICLE II — HEX GRAVE</div>
             <p><strong>§2.1</strong> All ESP activity observable under controlled conditions must be collapsed into Parameters and recorded as a Hex Grave.</p>
             <p><strong>§2.2</strong> A Hex Grave constitutes the only legible form of ESP admissible in Operant records.</p>
             <p><strong>§2.3</strong> The following Parameters are mandated:</p>
@@ -318,7 +349,7 @@
         </section>
 
         <section>
-            <div class="article-label">ARTICLE III — FOCAL PHASE COMPLIANCE</div>
+            <div class="article-label whitebox">ARTICLE III — FOCAL PHASE COMPLIANCE</div>
             <p><strong>§3.1</strong> All Kind-I Operators are required to operate within Focal Phase conditions during sanctioned activity.</p>
             <p><strong>§3.2</strong> Focal Phase is defined as: the state in which ESP conforms to measurable Parameters.</p>
             <p><strong>§3.3</strong> Focal Phase compliance ensures:</p>
@@ -327,7 +358,7 @@
         </section>
 
         <section>
-            <div class="article-label">ARTICLE IV — LIMINAL PHASE</div>
+            <div class="article-label whitebox">ARTICLE IV — LIMINAL PHASE</div>
             <p><strong>§4.1</strong> Liminal Phase is defined as: ESP expression not conforming to Parameter logic.</p>
             <p><strong>§4.2</strong> The Operant does not possess a complete model for Liminal Phase.</p>
             <p><strong>§4.3</strong> Liminal manifestations are to be:</p>
@@ -337,7 +368,7 @@
         </section>
 
         <section>
-            <div class="article-label">ARTICLE V — REGISTRATION AND BRIEF STRUCTURE</div>
+            <div class="article-label whitebox">ARTICLE V — REGISTRATION AND BRIEF STRUCTURE</div>
             <p><strong>§5.1</strong> Each Kind-I Operator shall maintain an Intake Brief containing:</p>
             <div class="callout">&gt;&gt; all recorded Hex Graves<br>&gt;&gt; associated Phenomenon descriptors<br>&gt;&gt; observed Liminal deviations</div>
             <p><strong>§5.2</strong> Hex Graves shall be treated as: operational capability disclosures.</p>
@@ -345,14 +376,14 @@
         </section>
 
         <section>
-            <div class="article-label">ARTICLE VI — CONTAINMENT PRINCIPLE</div>
+            <div class="article-label whitebox">ARTICLE VI — CONTAINMENT PRINCIPLE</div>
             <p><strong>§6.1</strong> The Operant assumes control over ESPer and ESP under government oversight.</p>
             <p><strong>§6.2</strong> The Operant establishes: frameworks within which ESP behaves as if under containment or custody.</p>
             <div class="terminal-note">IF YOU CAN READ THIS<br>FOLLOW SAGITTARIUS<br>TIME EATS<br>WE DEVOUR</div>
         </section>
 
         <section class="span-all break-block">
-            <div class="article-label">KIND-I DEPLOYMENT BRIEF</div>
+            <div class="article-label whitebox">KIND-I DEPLOYMENT BRIEF</div>
             <div class="mono">OPERATOR ACCESS // VIOLATION CODE: [REDACTED]</div>
             <hr>
         </section>
@@ -370,108 +401,118 @@
             <p><strong>REGRAVING</strong> Fixing a Hex does not remove it from inventory. It remains there until the operator decides to override it with a new one. The operator, before a new mission and after a new briefing, can Grave a new Hex to override an old one.</p>
         </section>
 
-        <section>
+        <section class="span-all">
             <h2>HEX GRAVE — FOCAL PHASE</h2>
             <p>Roll 1d6 for each of the six Parameters. The result is the Hex's Grav, its collapsed, measurable Focal Phase form. Interpret every result through the ESP's Phenomenon and Folk Root. Name the Hex. Record it on the intake form. There is no Hex Grave for Liminal Phase, it is unbound by scientific logic and cannot be filed.</p>
 
-            <table class="small-table">
-                <thead>
-                    <tr>
-                        <th>d6</th>
-                        <th>Shape</th>
-                        <th>Origin</th>
-                        <th>Behavior</th>
-                        <th>Duration</th>
-                        <th>Reach</th>
-                        <th>Impact</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr><td>1</td><td>Beam</td><td>Self</td><td>Seeking</td><td>Instant</td><td>Contact</td><td>Damage</td></tr>
-                    <tr><td>2</td><td>Cloud</td><td>Touch</td><td>Anchored</td><td>Brief</td><td>Close</td><td>Drain</td></tr>
-                    <tr><td>3</td><td>Pulse</td><td>Thrown</td><td>Spreading</td><td>Sustained</td><td>Near</td><td>Displace</td></tr>
-                    <tr><td>4</td><td>Shell</td><td>Planted</td><td>Retracting</td><td>Delayed</td><td>Far</td><td>Suppress</td></tr>
-                    <tr><td>5</td><td>Thread</td><td>Reflected</td><td>Oscillating</td><td>Residual</td><td>Remote</td><td>Read</td></tr>
-                    <tr><td>6</td><td>Shard</td><td>Ambient</td><td>Mirroring</td><td>Permanent</td><td>Boundless</td><td>Warp</td></tr>
-                </tbody>
-            </table>
+            <div class="table-scroll">
+                <table class="small-table">
+                    <thead>
+                        <tr>
+                            <th>d6</th>
+                            <th>Shape</th>
+                            <th>Origin</th>
+                            <th>Behavior</th>
+                            <th>Duration</th>
+                            <th>Reach</th>
+                            <th>Impact</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>1</td><td>Beam</td><td>Self</td><td>Seeking</td><td>Instant</td><td>Contact</td><td>Damage</td></tr>
+                        <tr><td>2</td><td>Cloud</td><td>Touch</td><td>Anchored</td><td>Brief</td><td>Close</td><td>Drain</td></tr>
+                        <tr><td>3</td><td>Pulse</td><td>Thrown</td><td>Spreading</td><td>Sustained</td><td>Near</td><td>Displace</td></tr>
+                        <tr><td>4</td><td>Shell</td><td>Planted</td><td>Retracting</td><td>Delayed</td><td>Far</td><td>Suppress</td></tr>
+                        <tr><td>5</td><td>Thread</td><td>Reflected</td><td>Oscillating</td><td>Residual</td><td>Remote</td><td>Read</td></tr>
+                        <tr><td>6</td><td>Shard</td><td>Ambient</td><td>Mirroring</td><td>Permanent</td><td>Boundless</td><td>Warp</td></tr>
+                    </tbody>
+                </table>
+            </div>
         </section>
 
-        <section>
+        <section class="span-all">
             <h2>FULL PARAMETER DESCRIPTIONS</h2>
-            <div class="grid-2">
-                <div class="card">
-                    <h3>SHAPE</h3>
-                    <p class="mono">The form the Hex takes in the world.</p>
-                    <ol>
-                        <li><strong>Beam</strong> — Narrow, linear, directional. Precise. Hits what it points at and nothing else.</li>
-                        <li><strong>Cloud</strong> — Diffuse volumetric mass. Fills a space rather than crossing it. Hard to avoid, hard to aim.</li>
-                        <li><strong>Pulse</strong> — Radial expansion from a single point. Hits everything within radius simultaneously.</li>
-                        <li><strong>Shell</strong> — Enclosing surface. Wraps around a target or area rather than striking from outside.</li>
-                        <li><strong>Thread</strong> — Thin filamental connection between two designated points. What travels along it depends on Impact.</li>
-                        <li><strong>Shard</strong> — Multiple discrete fragments deployed simultaneously. Each piece weaker, coverage wider.</li>
-                    </ol>
-                </div>
-                <div class="card">
-                    <h3>ORIGIN</h3>
-                    <p class="mono">Where the Hex begins.</p>
-                    <ol>
-                        <li><strong>Self</strong> — Emanates directly from the ESPer’s body. They are always inside it.</li>
-                        <li><strong>Touch</strong> — Initiates through physical contact between ESPer and target. Requires proximity.</li>
-                        <li><strong>Thrown</strong> — Launched from the ESPer toward a designated point. Travels through intervening space.</li>
-                        <li><strong>Planted</strong> — Placed at a location during Fixing. Activates when a condition the ESPer specifies is met.</li>
-                        <li><strong>Reflected</strong> — Originates from a surface the ESPer designates. ESPer need not be near it at activation.</li>
-                        <li><strong>Ambient</strong> — Draws from environmental conditions. No identifiable source point. Harder to trace back.</li>
-                    </ol>
-                </div>
-                <div class="card">
-                    <h3>BEHAVIOR</h3>
-                    <p class="mono">How the Hex moves or acts.</p>
-                    <ol>
-                        <li><strong>Seeking</strong> — Adjusts trajectory toward a designated target after deployment. Obstacles and distance still matter.</li>
-                        <li><strong>Anchored</strong> — Anchors in space after deployment. Does not move regardless of what moves around it.</li>
-                        <li><strong>Spreading</strong> — Expands gradually outward from origin or impact point. Coverage increases over time.</li>
-                        <li><strong>Retracting</strong> — Extends outward then pulls back toward the ESPer, dragging whatever it caught.</li>
-                        <li><strong>Oscillating</strong> — Pulses on and off at regular intervals set during Fixing. Effect is intermittent.</li>
-                        <li><strong>Mirroring</strong> — Copies and echoes the movement of a designated target. Follows without seeking.</li>
-                    </ol>
-                </div>
-                <div class="card">
-                    <h3>DURATION</h3>
-                    <p class="mono">How long the Hex persists.</p>
-                    <ol>
-                        <li><strong>Instant</strong> — Occurs and ends in a single moment. No maintenance required. No residue.</li>
-                        <li><strong>Brief</strong> — Persists until the end of the current round. Fades cleanly.</li>
-                        <li><strong>Sustained</strong> — Persists as long as the ESPer actively maintains the Fixing. Ends if the Fixing breaks.</li>
-                        <li><strong>Delayed</strong> — Set during Fixing but does not resolve until a condition the ESPer specifies is met.</li>
-                        <li><strong>Residual</strong> — Fades gradually over several rounds, weakening incrementally. Final moments unpredictable.</li>
-                        <li><strong>Permanent</strong> — Does not end without deliberate reversal. The IO flags permanent Hexes in Operator Files.</li>
-                    </ol>
-                </div>
-                <div class="card">
-                    <h3>REACH</h3>
-                    <p class="mono">How far the Hex extends from its origin point.</p>
-                    <ol>
-                        <li><strong>Contact</strong> — Origin and target must be physically touching at activation. No gap tolerated.</li>
-                        <li><strong>Close</strong> — Within arm’s reach of the origin point.</li>
-                        <li><strong>Near</strong> — Within the same room or immediate enclosed space.</li>
-                        <li><strong>Far</strong> — Across a significant distance within line of sight.</li>
-                        <li><strong>Remote</strong> — Beyond the line of sight. Requires a link, a belonging, a name or a prior Touch to function.</li>
-                        <li><strong>Boundless</strong> — No distance constraint. Only Taboo limits it.</li>
-                    </ol>
-                </div>
-                <div class="card">
-                    <h3>IMPACT</h3>
-                    <p class="mono">What the Hex does upon interface.</p>
-                    <ol>
-                        <li><strong>Damage</strong> — HAZE HIT to linked Reading through the Pale. The Pale absorbs first.</li>
-                        <li><strong>Drain</strong> — HAZE HIT directly to linked reading. Bypasses the Pale entirely.</li>
-                        <li><strong>Displace</strong> — Moves the target physically without dealing damage. Direction and force set during Fixing.</li>
-                        <li><strong>Suppress</strong> — Prevents a specific action, ESP use, or sense. ESPer specifies what is suppressed during Fixing.</li>
-                        <li><strong>Read</strong> — Extracts information from the target or environment. No physical effect.</li>
-                        <li><strong>Warp</strong> — Alters a persistent property of target or environment. ESPer specifies the property during Fixing.</li>
-                    </ol>
-                </div>
+            <p class="mono">Interpretive text for each Grav result, cross-referenced against the roll table above</p>
+
+            <div class="table-scroll">
+                <table class="param-table">
+                    <colgroup>
+                        <col style="width:5%">
+                        <col style="width:15.83%">
+                        <col style="width:15.83%">
+                        <col style="width:15.83%">
+                        <col style="width:15.83%">
+                        <col style="width:15.83%">
+                        <col style="width:15.83%">
+                    </colgroup>
+                    <thead>
+                        <tr>
+                            <th>d6</th>
+                            <th>Shape</th>
+                            <th>Origin</th>
+                            <th>Behavior</th>
+                            <th>Duration</th>
+                            <th>Reach</th>
+                            <th>Impact</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td><strong>Beam</strong> — Narrow, linear, directional. Precise. Hits what it points at and nothing else.</td>
+                            <td><strong>Self</strong> — Emanates directly from the ESPer’s body. They are always inside it.</td>
+                            <td><strong>Seeking</strong> — Adjusts trajectory toward a designated target after deployment. Obstacles and distance still matter.</td>
+                            <td><strong>Instant</strong> — Occurs and ends in a single moment. No maintenance required. No residue.</td>
+                            <td><strong>Contact</strong> — Origin and target must be physically touching at activation. No gap tolerated.</td>
+                            <td><strong>Damage</strong> — HAZE HIT to linked Reading through the Pale. The Pale absorbs first.</td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td><strong>Cloud</strong> — Diffuse volumetric mass. Fills a space rather than crossing it. Hard to avoid, hard to aim.</td>
+                            <td><strong>Touch</strong> — Initiates through physical contact between ESPer and target. Requires proximity.</td>
+                            <td><strong>Anchored</strong> — Anchors in space after deployment. Does not move regardless of what moves around it.</td>
+                            <td><strong>Brief</strong> — Persists until the end of the current round. Fades cleanly.</td>
+                            <td><strong>Close</strong> — Within arm’s reach of the origin point.</td>
+                            <td><strong>Drain</strong> — HAZE HIT directly to linked reading. Bypasses the Pale entirely.</td>
+                        </tr>
+                        <tr>
+                            <td>3</td>
+                            <td><strong>Pulse</strong> — Radial expansion from a single point. Hits everything within radius simultaneously.</td>
+                            <td><strong>Thrown</strong> — Launched from the ESPer toward a designated point. Travels through intervening space.</td>
+                            <td><strong>Spreading</strong> — Expands gradually outward from origin or impact point. Coverage increases over time.</td>
+                            <td><strong>Sustained</strong> — Persists as long as the ESPer actively maintains the Fixing. Ends if the Fixing breaks.</td>
+                            <td><strong>Near</strong> — Within the same room or immediate enclosed space.</td>
+                            <td><strong>Displace</strong> — Moves the target physically without dealing damage. Direction and force set during Fixing.</td>
+                        </tr>
+                        <tr>
+                            <td>4</td>
+                            <td><strong>Shell</strong> — Enclosing surface. Wraps around a target or area rather than striking from outside.</td>
+                            <td><strong>Planted</strong> — Placed at a location during Fixing. Activates when a condition the ESPer specifies is met.</td>
+                            <td><strong>Retracting</strong> — Extends outward then pulls back toward the ESPer, dragging whatever it caught.</td>
+                            <td><strong>Delayed</strong> — Set during Fixing but does not resolve until a condition the ESPer specifies is met.</td>
+                            <td><strong>Far</strong> — Across a significant distance within line of sight.</td>
+                            <td><strong>Suppress</strong> — Prevents a specific action, ESP use, or sense. ESPer specifies what is suppressed during Fixing.</td>
+                        </tr>
+                        <tr>
+                            <td>5</td>
+                            <td><strong>Thread</strong> — Thin filamental connection between two designated points. What travels along it depends on Impact.</td>
+                            <td><strong>Reflected</strong> — Originates from a surface the ESPer designates. ESPer need not be near it at activation.</td>
+                            <td><strong>Oscillating</strong> — Pulses on and off at regular intervals set during Fixing. Effect is intermittent.</td>
+                            <td><strong>Residual</strong> — Fades gradually over several rounds, weakening incrementally. Final moments unpredictable.</td>
+                            <td><strong>Remote</strong> — Beyond the line of sight. Requires a link, a belonging, a name or a prior Touch to function.</td>
+                            <td><strong>Read</strong> — Extracts information from the target or environment. No physical effect.</td>
+                        </tr>
+                        <tr>
+                            <td>6</td>
+                            <td><strong>Shard</strong> — Multiple discrete fragments deployed simultaneously. Each piece weaker, coverage wider.</td>
+                            <td><strong>Ambient</strong> — Draws from environmental conditions. No identifiable source point. Harder to trace back.</td>
+                            <td><strong>Mirroring</strong> — Copies and echoes the movement of a designated target. Follows without seeking.</td>
+                            <td><strong>Permanent</strong> — Does not end without deliberate reversal. The IO flags permanent Hexes in Operator Files.</td>
+                            <td><strong>Boundless</strong> — No distance constraint. Only Taboo limits it.</td>
+                            <td><strong>Warp</strong> — Alters a persistent property of target or environment. ESPer specifies the property during Fixing.</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </section>
 
@@ -480,26 +521,28 @@
             <p>The Liminal Phase is not an extension of the Focal Phase. It is its inversion. The same force, accessed through old folkloric ritualistic practices. Unclassified. There is no Hex Grave for Liminal Phase, it is unbound by the scientific logic that governs Focal Phase operation. Much more powerful, and less predictable, requires rites, incantations, offering and sustained effort from the ESPer. If the Focal Phase is optimized for reduced damage to the ESPer, the Liminal Phase is severely taxing.</p>
         </section>
 
-        <section>
+        <section class="span-all">
             <h2>NOISE</h2>
             <p>Each round a Liminal Phase Hex is maintained, either through a Rite Action or an Observation Action, it increases Noise one step. In Rite Actions, only when the Hex resolves and new output at every turn an Observation Action is sustained.</p>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Noise</th>
-                        <th>Output</th>
-                        <th>Echo</th>
-                        <th>Echo Variant</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr><td>1</td><td>Base Liminal effect.</td><td>HAZE HIT to linked Reading.</td><td>Temporary sensory disabling.</td></tr>
-                    <tr><td>2</td><td>Impact one tier higher.</td><td>HARD HIT to linked Reading.</td><td>Physical mark.</td></tr>
-                    <tr><td>3</td><td>Reach doubled.</td><td>HARD HIT to linked Reading; halved movement.</td><td>Debt or Displacement.</td></tr>
-                    <tr><td>4</td><td>Impact one tier higher.</td><td>HYPER HIT to linked Reading.</td><td>Permanent reduction of Reading by 1.</td></tr>
-                    <tr><td>5+</td><td>Director’s orders.</td><td>Major cognitive and physical risk. Flatline risk.</td><td>Severance.</td></tr>
-                </tbody>
-            </table>
+            <div class="table-scroll">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Noise</th>
+                            <th>Output</th>
+                            <th>Echo</th>
+                            <th>Echo Variant</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>1</td><td>Base Liminal effect.</td><td>HAZE HIT to linked Reading.</td><td>Temporary sensory disabling.</td></tr>
+                        <tr><td>2</td><td>Impact one tier higher.</td><td>HARD HIT to linked Reading.</td><td>Physical mark.</td></tr>
+                        <tr><td>3</td><td>Reach doubled.</td><td>HARD HIT to linked Reading; halved movement.</td><td>Debt or Displacement.</td></tr>
+                        <tr><td>4</td><td>Impact one tier higher.</td><td>HYPER HIT to linked Reading.</td><td>Permanent reduction of Reading by 1.</td></tr>
+                        <tr><td>5+</td><td>Director’s orders.</td><td>Major cognitive and physical risk. Flatline risk.</td><td>Severance.</td></tr>
+                    </tbody>
+                </table>
+            </div>
         </section>
 
         <section>
@@ -514,7 +557,8 @@
                     <li><strong>Severance</strong> — cognitive and/or physical loss, usually as offering to fuel the Hex. Flatline.</li>
                 </ul>
             </div>
-            <a class="nav-link" href="../">← ZERO</a>
+            <a class="nav-link" href="../">→ SPIRITBOX</a>
+            <a class="nav-link" href="../">→ KERNEL</a>
         </section>
 
     </div>
