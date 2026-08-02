@@ -6,8 +6,9 @@ const ACCESS = {
 
     "FORERUNNER": "forerunner/",
 
-    "SPIRITBOX": "spiritbox/"
+    "SPIRITBOX": "spiritbox/",
 
+    "ROUTINE": "routine/"
 };
 
 function targetURL(relPath){
