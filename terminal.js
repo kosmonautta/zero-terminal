@@ -20,7 +20,13 @@ const ACCESS = {
 
     "GRAVE": "hex-grave/",
 
-    "HEX GRAVE": "hex-grave/"
+    "HEX GRAVE": "hex-grave/",
+
+    "OPERATOR": "operator-registry/",
+
+    "REGISTRY": "operator-registry/",
+
+    "OPERATOR REGISTRY": "operator-registry/"
 };
 
 function targetURL(relPath){
