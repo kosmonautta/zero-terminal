@@ -30,61 +30,56 @@
         white-space:nowrap;
         user-select:none;
     }
-    .static-band{
-        margin-top:30px;
-        height:24px;
-        overflow:hidden;
+
+    .watch-mark{
+        position:fixed;
+        top:0;
+        left:0;
+        width:14px;
+        height:14px;
+        border:1px solid rgba(255,255,255,0.3);
+        pointer-events:none;
+        z-index:9999;
+        opacity:0;
+        transition:opacity 0.5s;
+        will-change:transform;
+    }
+
+    .watch-mark::before,
+    .watch-mark::after{
+        content:"";
+        position:absolute;
+        background:rgba(255,255,255,0.3);
+    }
+
+    .watch-mark::before{
+        left:6px;
+        top:-7px;
+        width:1px;
+        height:6px;
+    }
+
+    .watch-mark::after{
+        left:6px;
+        top:15px;
+        width:1px;
+        height:6px;
+    }
+
+    .watch-label{
+        position:fixed;
+        top:0;
+        left:0;
         font-family:"Courier New", monospace;
-        font-size:14px;
-        line-height:24px;
-        letter-spacing:3px;
-        color:rgba(255,255,255,0.16);
+        font-size:10px;
+        letter-spacing:1.5px;
+        color:rgba(255,255,255,0.3);
+        pointer-events:none;
+        z-index:9999;
+        opacity:0;
+        transition:opacity 0.5s;
         white-space:nowrap;
-        user-select:none;
-    }.static-band{
-        margin-top:30px;
-        height:24px;
-        overflow:hidden;
-        font-family:"Courier New", monospace;
-        font-size:14px;
-        line-height:24px;
-        letter-spacing:3px;
-        color:rgba(255,255,255,0.16);
-        white-space:nowrap;
-        user-select:none;
-    }.static-band{
-        margin-top:30px;
-        height:24px;
-        overflow:hidden;
-        font-family:"Courier New", monospace;
-        font-size:14px;
-        line-height:24px;
-        letter-spacing:3px;
-        color:rgba(255,255,255,0.16);
-        white-space:nowrap;
-        user-select:none;
-    }.static-band{
-        margin-top:30px;
-        height:24px;
-        overflow:hidden;
-        font-family:"Courier New", monospace;
-        font-size:14px;
-        line-height:24px;
-        letter-spacing:3px;
-        color:rgba(255,255,255,0.16);
-        white-space:nowrap;
-        user-select:none;
-    }.static-band{
-        margin-top:30px;
-        height:24px;
-        overflow:hidden;
-        font-family:"Courier New", monospace;
-        font-size:14px;
-        line-height:24px;
-        letter-spacing:3px;
-        color:rgba(255,255,255,0.16);
-        white-space:nowrap;
-        user-select:none;
+        will-change:transform;
     }
 </style>
 </head>
