@@ -34,10 +34,6 @@
     }
 
     .page-head{
-        display:grid;
-        grid-template-columns:minmax(320px, 560px) 1fr;
-        gap:40px;
-        align-items:start;
         margin-bottom:34px;
     }
 
@@ -79,15 +75,8 @@
         font-weight:700;
     }
 
-    .head-right{
-        padding-top:12px;
-        border-top:1px solid var(--line);
-        color:var(--dim);
-        font-family:"Courier New", monospace;
-        font-size:12px;
-        letter-spacing:2px;
-        text-transform:uppercase;
-        line-height:1.9;
+    .hero-tag{
+        margin-top:18px;
     }
 
     .columns{
@@ -120,6 +109,31 @@
         font-style:italic;
         color:var(--fg);
         break-after:avoid;
+    }
+
+    .part-title{
+        font-family:"Times New Roman", serif;
+        font-size:44px;
+        line-height:0.95;
+        margin:0 0 10px 0;
+        font-weight:550;
+        font-style:normal;
+        letter-spacing:1px;
+        color:var(--fg);
+    }
+
+    .field-subtitle{
+        font-family:"Courier New", monospace;
+        font-size:13px;
+        letter-spacing:2px;
+        text-transform:uppercase;
+        font-weight:700;
+        color:var(--fg);
+        margin:16px 0 6px 0;
+    }
+
+    .field-subtitle:first-of-type{
+        margin-top:4px;
     }
 
     .article-label{
@@ -278,6 +292,16 @@
         margin:0 0 6px 0;
     }
 
+    .echo-register ul{
+        column-count:3;
+        column-gap:28px;
+    }
+
+    .echo-register li{
+        break-inside:avoid;
+        -webkit-column-break-inside:avoid;
+    }
+
     .nav-link{
         display:block;
         margin-top:18px;
@@ -297,17 +321,20 @@
 
     @media (max-width: 1100px){
         .columns{ column-count:2; }
-        .page-head{ grid-template-columns:1fr; }
         h1{ font-size:52px; }
+        .part-title{ font-size:38px; }
+        .echo-register ul{ column-count:2; }
     }
 
     @media (max-width: 780px){
         main{ width:min(92vw, 720px); margin:80px auto 60px; }
         .columns{ column-count:1; }
         h1{ font-size:42px; }
+        .part-title{ font-size:32px; }
         table{ font-size:12px; }
         .param-table{ font-size:11.5px; }
         .small-table{ font-size:12px; }
+        .echo-register ul{ column-count:1; }
     }
 </style>
 </head>
@@ -318,12 +345,7 @@
         <div class="head-left">
             <p class="eyebrow">NODE // 001</p>
             <h1>KIND-I OPERATOR ESPer</h1>
-            <div class="whitebox">ULTRABLACK</div>
-        </div>
-        <div class="head-right">
-            <div>OSNOVA DIRECTIVE 01-A</div>
-            <div>ON THE UTILIZATION OF KIND-I OPERATORS (ESPer)</div>
-            <div>OPERATOR ACCESS // VIOLATION CODE: [REDACTED]</div>
+            <div class="whitebox hero-tag">ULTRABLACK</div>
         </div>
     </div>
 
@@ -379,7 +401,7 @@
             <div class="article-label whitebox">ARTICLE VI — CONTAINMENT PRINCIPLE</div>
             <p><strong>§6.1</strong> The Operant assumes control over ESPer and ESP under government oversight.</p>
             <p><strong>§6.2</strong> The Operant establishes: frameworks within which ESP behaves as if under containment or custody.</p>
-            <div class="terminal-note">IF YOU CAN READ THIS<br>FOLLOW SAGITTARIUS<br>TIME EATS<br>WE DEVOUR</div>
+            <div class="terminal-note">IF YOU CAN READ THIS<br>FOLLOW SAGITTARIUS<br>TIME EATS</div>
         </section>
 
         <section class="span-all break-block">
@@ -389,16 +411,21 @@
         </section>
 
         <section class="span-all">
-            <h2>ESPer FIELD PROCEDURE</h2>
+            <h2 class="part-title">ESPer FIELD PROCEDURE</h2>
             <p class="mono">On Hex graving, Focal and Liminal Phases</p>
             <hr>
         </section>
 
-        <section>
+        <section class="span-all">
             <h2>HEX PROCEDURE DIRECTIVES</h2>
-            <p><strong>GRAVING</strong> Hexes are Graved before mission start, after briefing. Roll on each Parameter table. Result is how the ESP manifests in the material world through the Hex. One Hex occupies one inventory slot. Hexes cannot be Graved during a mission as they require extensive study, practice and preparation.</p>
-            <p><strong>FIXING</strong> At any point, during the operator’s turn, they can choose to Fix a Focal Phase Hex with a Half-Action. By doing that, the Hex enters a cooldown period and can only be used again in the next scene. The operator can, instead, attempt Phase Reversal and use a Full Action to Fix a Liminal Phase Hex. This action can be a Rite Action (multiple turns of uninterrupted rituals, incantations, offering, conjuration, evocation, utterance, litany or markings) to complete the Fixing, or an Observation Action (resolves every round, but requires the operator to concentrate on the rites, taking damage can interrupt it).</p>
-            <p><strong>REGRAVING</strong> Fixing a Hex does not remove it from inventory. It remains there until the operator decides to override it with a new one. The operator, before a new mission and after a new briefing, can Grave a new Hex to override an old one.</p>
+            <h3 class="field-subtitle">Graving</h3>
+            <p>Hexes are Graved before mission start, after briefing. Roll on each Parameter table. Result is how the ESP manifests in the material world through the Hex. One Hex occupies one inventory slot. Hexes cannot be Graved during a mission as they require extensive study, practice and preparation.</p>
+            <br>
+            <h3 class="field-subtitle">Fixing</h3>
+            <p>At any point, during the operator’s turn, they can choose to Fix a Focal Phase Hex with a Half-Action. By doing that, the Hex enters a cooldown period and can only be used again in the next scene. The operator can, instead, attempt Phase Reversal and use a Full Action to Fix a Liminal Phase Hex. This action can be a Rite Action (multiple turns of uninterrupted rituals, incantations, offering, conjuration, evocation, utterance, litany or markings) to complete the Fixing, or an Observation Action (resolves every round, but requires the operator to concentrate on the rites, taking damage can interrupt it).</p>
+            <br>
+            <h3 class="field-subtitle">Regraving</h3>
+            <p>Fixing a Hex does not remove it from inventory. It remains there until the operator decides to override it with a new one. The operator, before a new mission and after a new briefing, can Grave a new Hex to override an old one.</p>
         </section>
 
         <section class="span-all">
@@ -545,9 +572,9 @@
             </div>
         </section>
 
-        <section>
+        <section class="span-all">
             <h2>ECHO VARIANT REGISTER</h2>
-            <div class="card">
+            <div class="card echo-register">
                 <ul>
                     <li><strong>Sensory disabling</strong> — temporary at low Noise, permanent at high Noise.</li>
                     <li><strong>Physical Mark</strong> — scarring, spotting or other physical marks left by the ESP on the body.</li>
