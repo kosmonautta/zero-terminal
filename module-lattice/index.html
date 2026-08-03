@@ -11,7 +11,6 @@
         --fg:#fff;
         --dim:rgba(255,255,255,0.55);
         --line:rgba(255,255,255,0.22);
-        --card-bg:rgba(255,255,255,0.03);
     }
 
     *{ box-sizing:border-box; }
@@ -128,65 +127,67 @@
 
     .module-grid{
         display:grid;
-        grid-template-columns:repeat(auto-fill, minmax(340px, 1fr));
-        gap:16px;
+        grid-template-columns:repeat(3, 1fr);
+        gap:14px;
         margin-bottom:8px;
     }
 
+    /* card container — matches routine's plain border + full invert-on-state look,
+       no tinted idle fill, no badge overlay */
     .module-card{
         border:1px solid var(--line);
-        padding:16px 18px;
-        background:var(--card-bg);
-        transition:border-color 0.2s, background 0.2s;
-        position:relative;
+        padding:14px 14px 12px;
         cursor:pointer;
+        background:var(--bg);
+        transition:background 0.15s, color 0.15s;
+        position:relative;
     }
 
-    .module-card:hover{
-        border-color:var(--fg);
-        background:rgba(255,255,255,0.06);
-    }
-
+    .module-card:hover,
     .module-card.selected{
-        border-color:var(--fg);
-        background:rgba(255,255,255,0.08);
+        background:var(--fg);
+        color:var(--bg);
     }
 
-    .module-card.selected::after{
-        content:"✓ SELECTED";
-        position:absolute;
-        top:8px;
-        right:12px;
-        font-family:"Courier New", monospace;
-        font-size:9px;
-        letter-spacing:1.5px;
-        color:var(--fg);
-        border:1px solid var(--fg);
-        padding:2px 8px;
+    /* dim text rides along with the invert instead of staying var(--dim) on a white card */
+    .module-card:hover .module-callsign,
+    .module-card:hover .module-meta,
+    .module-card:hover .module-appearance,
+    .module-card:hover .module-use,
+    .module-card:hover .module-limit,
+    .module-card.selected .module-callsign,
+    .module-card.selected .module-meta,
+    .module-card.selected .module-appearance,
+    .module-card.selected .module-use,
+    .module-card.selected .module-limit{
+        color:rgba(0,0,0,0.55);
     }
 
     .module-code{
         font-family:"Courier New", monospace;
-        font-size:13px;
+        font-size:11px;
         letter-spacing:1.5px;
         font-weight:700;
-        color:var(--fg);
-        margin-bottom:2px;
+        text-transform:uppercase;
+        margin:0 0 4px 0;
+        color:inherit;
     }
 
     .module-name{
         font-family:"Times New Roman", serif;
-        font-size:18px;
-        font-weight:500;
-        margin-bottom:2px;
+        font-size:15px;
+        font-weight:600;
+        letter-spacing:0.3px;
+        margin:0 0 8px 0;
+        color:inherit;
     }
 
     .module-callsign{
         font-family:"Courier New", monospace;
         font-size:11px;
         letter-spacing:1px;
-        color:var(--dim);
         text-transform:uppercase;
+        color:var(--dim);
         margin-bottom:8px;
     }
 
@@ -202,7 +203,7 @@
     }
 
     .module-meta .tag{
-        border:1px solid var(--line);
+        border:1px solid currentColor;
         padding:1px 8px;
         font-size:9px;
         text-transform:uppercase;
@@ -217,12 +218,11 @@
 
     .module-function{
         font-size:13px;
-        color:var(--fg);
+        color:inherit;
         margin-bottom:4px;
     }
 
     .module-function strong{
-        color:var(--dim);
         font-weight:400;
     }
 
@@ -230,41 +230,34 @@
         font-size:12px;
         color:var(--dim);
         margin-bottom:4px;
-        padding-left:12px;
-        border-left:1px solid var(--line);
     }
 
     .module-limit{
         font-size:12px;
         color:var(--dim);
-        padding-left:12px;
-        border-left:1px solid var(--line);
         font-style:italic;
     }
 
+    /* minimal select control — quiet by default, only takes on weight once selected */
     .module-select-btn{
         margin-top:10px;
-        background:var(--bg);
-        color:var(--fg);
-        border:1px solid var(--fg);
+        background:none;
+        color:inherit;
+        border:1px solid currentColor;
+        opacity:0.55;
         font-family:"Courier New", monospace;
         font-size:10px;
         letter-spacing:1.5px;
         text-transform:uppercase;
         padding:6px 14px;
         cursor:pointer;
-        transition:background 0.15s, color 0.15s;
+        transition:opacity 0.15s;
         width:100%;
     }
 
-    .module-select-btn:hover{
-        background:var(--fg);
-        color:var(--bg);
-    }
-
+    .module-select-btn:hover,
     .module-select-btn.selected{
-        background:var(--fg);
-        color:var(--bg);
+        opacity:1;
     }
 
     /* ===== ACTION ROW ===== */
@@ -432,4 +425,3 @@
 <script src="module-lattice.js"></script>
 </body>
 </html>
-
