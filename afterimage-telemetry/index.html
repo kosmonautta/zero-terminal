@@ -412,30 +412,34 @@
 
     .contact-status.locked{ color:var(--fg); }
 
-    /* replaces scrambled/randomized placeholder text with the same blip-and-bracket
-       motif as the header scope — a small dot hopping tic-tac style, with a bracket
-       outline tracing the same path a beat behind. Both share one keyframe path
-       (only animation-delay differs) and animate transform/opacity only, since this
-       repeats twice per unresolved card across the whole grid. */
+    /* replaces scrambled/randomized placeholder text with a small quartered scope —
+       same shape as the header's acq-scope (crosshair dividing it into four squares)
+       instead of a horizontal strip. The blip hops between five points spread across
+       all four quadrants; the bracket traces the identical path a beat behind (only
+       animation-delay differs). Crosshair is a background gradient so both pseudo-
+       elements stay free for the moving parts. transform/opacity only, since this
+       repeats per unresolved card across the whole grid. */
     .noise-line{
         position:relative;
-        height:1.4em;
-        min-height:1.4em;
+        width:56px;
+        height:56px;
         margin-bottom:6px;
         overflow:hidden;
         border:1px solid var(--line);
-        background:rgba(255,255,255,0.02);
         color:transparent;
+        background:
+            linear-gradient(to right, transparent calc(50% - 0.5px), var(--line) calc(50% - 0.5px), var(--line) calc(50% + 0.5px), transparent calc(50% + 0.5px)),
+            linear-gradient(to bottom, transparent calc(50% - 0.5px), var(--line) calc(50% - 0.5px), var(--line) calc(50% + 0.5px), transparent calc(50% + 0.5px)),
+            rgba(255,255,255,0.02);
     }
 
     .noise-line::before{
         content:"";
         position:absolute;
-        top:50%;
+        top:6px;
         left:6px;
         width:5px;
         height:5px;
-        margin-top:-2.5px;
         background:var(--fg);
         opacity:0.75;
         animation:noiseHop 4.6s cubic-bezier(.4,0,.2,1) infinite;
@@ -444,33 +448,32 @@
     .noise-line::after{
         content:"";
         position:absolute;
-        top:50%;
+        top:6px;
         left:6px;
         width:10px;
         height:10px;
-        margin-top:-5px;
         border:1px solid var(--fg);
         opacity:0.4;
         animation:noiseHop 4.6s cubic-bezier(.4,0,.2,1) infinite;
         animation-delay:0.4s;
     }
 
-    /* five irregular waypoints with pauses, same tic-tac logic as the header scope's
-       blip — sharp non-uniform hops, not a smooth sweep. blip and bracket trace this
+    /* five irregular points spread across all four quadrants, with pauses between —
+       sharp non-uniform hops, not a smooth sweep. blip and bracket trace this
        identical path; only the bracket's animation-delay differs, so it's always a
        beat behind and the lock never quite closes. */
     @keyframes noiseHop{
-        0%{   transform:translate(2px,0px); }
-        7%{   transform:translate(2px,0px); }
-        11%{  transform:translate(78px,-3px); }
-        26%{  transform:translate(78px,-3px); }
-        30%{  transform:translate(16px,3px); }
-        45%{  transform:translate(16px,3px); }
-        49%{  transform:translate(96px,-2px); }
-        64%{  transform:translate(96px,-2px); }
-        68%{  transform:translate(42px,2px); }
-        83%{  transform:translate(42px,2px); }
-        100%{ transform:translate(42px,2px); }
+        0%{   transform:translate(0px,0px);   }
+        7%{   transform:translate(0px,0px);   }
+        11%{  transform:translate(30px,34px); }
+        26%{  transform:translate(30px,34px); }
+        30%{  transform:translate(-2px,28px); }
+        45%{  transform:translate(-2px,28px); }
+        49%{  transform:translate(24px,4px);  }
+        64%{  transform:translate(24px,4px);  }
+        68%{  transform:translate(8px,16px);  }
+        83%{  transform:translate(8px,16px);  }
+        100%{ transform:translate(8px,16px);  }
     }
 
     .contact-card:not(.acquired) .contact-revealed{ display:none; }
