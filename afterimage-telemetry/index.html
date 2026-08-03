@@ -347,18 +347,6 @@
         z-index:2;
     }
 
-    /* lens vignette + soft bloom, like an IR sensor blooming around a hot pixel */
-    .contact-card::after{
-        content:"";
-        position:absolute;
-        inset:0;
-        pointer-events:none;
-        background:
-            radial-gradient(ellipse at center, transparent 30%, rgba(0,0,0,0.65) 100%),
-            radial-gradient(circle at 50% 40%, rgba(255,255,255,0.05), transparent 60%);
-        z-index:2;
-    }
-
     .reticle{
         position:absolute;
         width:14px;
@@ -375,23 +363,22 @@
     .reticle.bl{ bottom:8px; left:8px; border-bottom-width:1px; border-left-width:1px; }
     .reticle.br{ bottom:8px; right:8px; border-bottom-width:1px; border-right-width:1px; }
 
-    /* unresolved contacts still evade — the targeting brackets hunt for lock instead of sitting still,
-       echoing a jet's targeting pod trying to acquire something that keeps darting off-axis */
+    /* unresolved contacts still evade — the targeting brackets drift gently, hunting for
+       lock rather than sitting perfectly still, but nowhere near as sharp as before */
     .contact-card:not(.acquired) .reticle{
-        animation:reticleHunt 2.8s ease-in-out infinite;
+        animation:reticleHunt 4.4s ease-in-out infinite;
     }
     .contact-card:not(.acquired) .reticle.tl{ animation-delay:0s; }
-    .contact-card:not(.acquired) .reticle.tr{ animation-delay:0.15s; }
-    .contact-card:not(.acquired) .reticle.bl{ animation-delay:0.3s; }
-    .contact-card:not(.acquired) .reticle.br{ animation-delay:0.45s; }
+    .contact-card:not(.acquired) .reticle.tr{ animation-delay:0.25s; }
+    .contact-card:not(.acquired) .reticle.bl{ animation-delay:0.5s; }
+    .contact-card:not(.acquired) .reticle.br{ animation-delay:0.75s; }
 
     @keyframes reticleHunt{
-        0%{   transform:translate(0,0); opacity:0.5; }
-        18%{  transform:translate(2px,-1px); opacity:0.9; }
-        35%{  transform:translate(-1px,2px); opacity:0.4; }
-        52%{  transform:translate(1px,1px); opacity:0.85; }
-        70%{  transform:translate(-2px,-1px); opacity:0.45; }
-        100%{ transform:translate(0,0); opacity:0.5; }
+        0%{   transform:translate(0,0); opacity:0.55; }
+        25%{  transform:translate(0.75px,-0.5px); opacity:0.7; }
+        50%{  transform:translate(-0.5px,0.75px); opacity:0.5; }
+        75%{  transform:translate(0.5px,0.5px); opacity:0.65; }
+        100%{ transform:translate(0,0); opacity:0.55; }
     }
 
     .contact-card.acquired .reticle{ border-color:var(--fg); animation:none; }
@@ -446,13 +433,42 @@
 
     .contact-status.locked{ color:var(--fg); }
 
+    /* replaces scrambled/randomized placeholder text with a single small dart of noise —
+       one hot pixel hopping across the strip, the same motif as the header scope but
+       calmer and purely visual, no text content needed underneath */
     .noise-line{
-        font-family:"Courier New", monospace;
-        font-size:12px;
-        letter-spacing:1px;
-        color:rgba(255,255,255,0.5);
-        margin-bottom:6px;
+        position:relative;
+        height:1.4em;
         min-height:1.4em;
+        margin-bottom:6px;
+        overflow:hidden;
+        border:1px solid var(--line);
+        background:rgba(255,255,255,0.02);
+        color:transparent;
+    }
+
+    .noise-line::before{
+        content:"";
+        position:absolute;
+        top:50%;
+        left:4%;
+        width:7px;
+        height:7px;
+        margin-top:-3.5px;
+        border-radius:50%;
+        background:var(--fg);
+        filter:blur(0.5px);
+        box-shadow:0 0 5px 1px rgba(255,255,255,0.5);
+        animation:noiseDart 3.8s ease-in-out infinite;
+    }
+
+    @keyframes noiseDart{
+        0%{   left:4%;  opacity:0.5; }
+        22%{  left:68%; opacity:0.85; }
+        40%{  left:22%; opacity:0.35; }
+        58%{  left:82%; opacity:0.75; }
+        76%{  left:40%; opacity:0.45; }
+        100%{ left:4%;  opacity:0.5; }
     }
 
     .contact-card:not(.acquired) .contact-revealed{ display:none; }
@@ -581,6 +597,7 @@
     @media (prefers-reduced-motion: reduce){
         body::after,
         .acq-blip, .acq-bracket, .acq-readout strong,
+        .noise-line::before,
         .contact-card:not(.acquired) .reticle{
             animation:none !important;
         }
