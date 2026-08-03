@@ -2,20 +2,20 @@
 
 KERNEL — AMBIENT FX
 
-Three independent, purely decorative effects for the gate page.
-None of them touch verify() or ACCESS from terminal.js, and none
-of them link anywhere — the Kernel is a threshold, not a menu.
+Two independent, purely decorative effects for the gate page, plus
+a fake boot log. None of them touch verify() or ACCESS from
+terminal.js, and none of them link anywhere — the Kernel is a
+threshold, not a menu.
 
   1. Ticker      — cycles through system callouts already seen
                     across the other nodes, tying the gate to the
                     same voice as everything behind it.
-  2. Static band  — a strip of braille glyphs that flickers a
-                    fraction of its characters on an interval,
+  2. Static block — several rows of braille glyphs, each flickering
+                    a fraction of its characters on an interval,
                     standing in for "the Static" from the lore.
-  3. Watch-mark   — a small bracket that eases toward the cursor
-                    with lag, plus a coordinate label. Reinforces
-                    "observation is a form of entry" concretely —
-                    it really is tracking your pointer.
+  3. Boot box     — a simulated kernel boot log that prints a few
+                    lines, sits with a blinking cursor, then clears
+                    and runs again after a pause.
 
 */
 
@@ -75,88 +75,142 @@ function runTicker(){
 
 }
 
-// ---------- static band (braille noise) ----------
+// ---------- static block (multi-row braille noise) ----------
 
-function runStaticBand(){
+function runStaticBlock(){
 
-    const el = document.getElementById("staticBand");
-    if(!el) return;
+    const root = document.getElementById("staticBlock");
+    if(!root) return;
 
-    const COUNT = 140;
-    const chars = [];
+    const ROWS = 5;
+    const COLS = 100;
 
     function randomBraille(){
         return String.fromCharCode(0x2800 + Math.floor(Math.random() * 256));
     }
 
-    for(let i = 0; i < COUNT; i++){
-        chars.push(randomBraille());
+    const rows = [];
+
+    for(let r = 0; r < ROWS; r++){
+
+        const rowEl = document.createElement("div");
+        rowEl.className = "static-row";
+        root.appendChild(rowEl);
+
+        const chars = [];
+        for(let i = 0; i < COLS; i++){
+            chars.push(randomBraille());
+        }
+
+        rows.push({ el: rowEl, chars: chars, flicker: 0.05 + Math.random() * 0.06 });
+
     }
 
-    function render(){
-        el.textContent = chars.join("");
+    function render(row){
+        row.el.textContent = row.chars.join("");
     }
 
-    render();
+    rows.forEach(render);
 
     setInterval(() => {
 
-        for(let i = 0; i < chars.length; i++){
-            if(Math.random() < 0.08){
-                chars[i] = randomBraille();
-            }
-        }
+        rows.forEach(row => {
 
-        render();
+            for(let i = 0; i < row.chars.length; i++){
+                if(Math.random() < row.flicker){
+                    row.chars[i] = randomBraille();
+                }
+            }
+
+            render(row);
+
+        });
 
     }, 180);
 
 }
 
-// ---------- watch-mark (cursor tracking) ----------
+// ---------- boot box (simulated kernel boot) ----------
 
-function runWatchMark(){
+const BOOT_LINES = [
+    { tag: "OK",   text: "Initializing containment kernel..." },
+    { tag: "OK",   text: "Mounting Static interface..." },
+    { tag: "OK",   text: "Calibrating Pale threshold..." },
+    { tag: "OK",   text: "Loading Operant directory..." },
+    { tag: "WARN", text: "Reading drift detected (BRN)" },
+    { tag: "OK",   text: "Verifying Kete-Class registry..." },
+    { tag: "OK",   text: "Establishing Link handshake..." },
+    { tag: "FAIL", text: "Source resolution — unresolved" },
+    { tag: "OK",   text: "Containment holding." },
+    { tag: "OK",   text: "Awaiting authorization..." }
+];
 
-    const mark = document.getElementById("watchMark");
-    const label = document.getElementById("watchLabel");
-    if(!mark || !label) return;
+function runBootSequence(){
 
-    let targetX = window.innerWidth / 2;
-    let targetY = window.innerHeight / 2;
-    let curX = targetX;
-    let curY = targetY;
-    let active = false;
+    const box = document.getElementById("bootBox");
+    if(!box) return;
 
-    document.addEventListener("mousemove", (e) => {
+    function typeLine(line, onDone){
 
-        targetX = e.clientX;
-        targetY = e.clientY;
+        const p = document.createElement("div");
+        const tag = document.createElement("span");
 
-        if(!active){
-            active = true;
-            mark.style.opacity = "1";
-            label.style.opacity = "1";
+        tag.className = "boot-tag";
+        tag.textContent = "[ " + line.tag + " ]";
+        p.appendChild(tag);
+
+        const textNode = document.createElement("span");
+        p.appendChild(textNode);
+        box.appendChild(p);
+
+        let i = 0;
+
+        function step(){
+
+            if(i <= line.text.length){
+                textNode.textContent = line.text.slice(0, i);
+                i++;
+                setTimeout(step, 14 + Math.random() * 22);
+            } else {
+                onDone();
+            }
+
         }
 
-        label.textContent = "OBS // " + e.clientX + "," + e.clientY;
+        step();
 
-    });
+    }
 
-    document.addEventListener("mouseleave", () => {
-        mark.style.opacity = "0";
-        label.style.opacity = "0";
-    });
+    function runOnce(onFinished){
+
+        box.innerHTML = "";
+        let idx = 0;
+
+        function next(){
+
+            if(idx >= BOOT_LINES.length){
+                const cursor = document.createElement("span");
+                cursor.className = "boot-cursor";
+                box.appendChild(cursor);
+                onFinished();
+                return;
+            }
+
+            typeLine(BOOT_LINES[idx], () => {
+                idx++;
+                setTimeout(next, 90 + Math.random() * 160);
+            });
+
+        }
+
+        next();
+
+    }
 
     function loop(){
-
-        curX += (targetX - curX) * 0.12;
-        curY += (targetY - curY) * 0.12;
-
-        mark.style.transform = "translate(" + (curX - 7) + "px, " + (curY - 7) + "px)";
-        label.style.transform = "translate(" + (curX + 14) + "px, " + (curY + 6) + "px)";
-
-        requestAnimationFrame(loop);
-
+        runOnce(() => {
+            setTimeout(loop, 6000);
+        });
     }
 
     loop();
@@ -165,6 +219,6 @@ function runWatchMark(){
 
 document.addEventListener("DOMContentLoaded", () => {
     runTicker();
-    runStaticBand();
-    runWatchMark();
+    runStaticBlock();
+    runBootSequence();
 });
