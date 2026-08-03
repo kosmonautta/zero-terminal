@@ -1,8 +1,8 @@
 /*
 
 OPERATOR REGISTRY — CHARACTER SHEET LOGIC
-BUILD: 2026-08-04-d
-Now with inventory card management (hex, knot, routine)
+BUILD: 2026-08-05
+Fixed: Reading allocation, Pale calculation, Procedure table display
 
 */
 
@@ -15,15 +15,15 @@ const READING_MAX = 16;
 const READING_BUDGET = 36;
 
 const DEFAULT_PROCEDURES = [
-    { id: "archive-reading", name: "Archive Reading", desc: "Analysis, decoding.", reading: "BRN", stamped: false },
-    { id: "signal-trace", name: "Signal Trace", desc: "Tracking, reconstruction.", reading: "BRN", stamped: false },
-    { id: "anomaly-sense", name: "Anomaly Sense", desc: "Detection of irregularity.", reading: "BRN", stamped: false },
-    { id: "field-movement", name: "Field Movement", desc: "Traversal, positioning.", reading: "FRM", stamped: false },
-    { id: "manual-action", name: "Manual Action", desc: "Operation, manipulation.", reading: "FRM", stamped: false },
-    { id: "static-step", name: "Static Step", desc: "Movement through material-static discontinuities.", reading: "FRM", stamped: false },
-    { id: "stress-hold", name: "Stress Hold", desc: "Resistance to panic.", reading: "NRV", stamped: false },
-    { id: "pain-gate", name: "Pain Gate", desc: "Endurance under damage.", reading: "NRV", stamped: false },
-    { id: "pale-sense", name: "Pale Sense", desc: "Nervous perception of Pale interaction with Static.", reading: "NRV", stamped: false }
+    { id: "archive-reading", name: "Archive Reading", desc: "Analysis, decoding.", reading: "BRN", stamped: false, lastResult: "" },
+    { id: "signal-trace", name: "Signal Trace", desc: "Tracking, reconstruction.", reading: "BRN", stamped: false, lastResult: "" },
+    { id: "anomaly-sense", name: "Anomaly Sense", desc: "Detection of irregularity.", reading: "BRN", stamped: false, lastResult: "" },
+    { id: "field-movement", name: "Field Movement", desc: "Traversal, positioning.", reading: "FRM", stamped: false, lastResult: "" },
+    { id: "manual-action", name: "Manual Action", desc: "Operation, manipulation.", reading: "FRM", stamped: false, lastResult: "" },
+    { id: "static-step", name: "Static Step", desc: "Movement through material-static discontinuities.", reading: "FRM", stamped: false, lastResult: "" },
+    { id: "stress-hold", name: "Stress Hold", desc: "Resistance to panic.", reading: "NRV", stamped: false, lastResult: "" },
+    { id: "pain-gate", name: "Pain Gate", desc: "Endurance under damage.", reading: "NRV", stamped: false, lastResult: "" },
+    { id: "pale-sense", name: "Pale Sense", desc: "Nervous perception of Pale interaction with Static.", reading: "NRV", stamped: false, lastResult: "" }
 ];
 
 function defaultState(){
@@ -32,7 +32,7 @@ function defaultState(){
         kind: "",
         readings: { BRN: 12, FRM: 12, NRV: 12 },
         capacity: { baseline: 6, expanded: 0, used: 0 },
-        procedures: DEFAULT_PROCEDURES.map(p => ({ ...p, lastResult: "" }))
+        procedures: DEFAULT_PROCEDURES.map(p => ({ ...p }))
     };
 }
 
@@ -78,11 +78,6 @@ function saveState(){
 function loadCards(key){
     try{
         const raw = window.localStorage.getItem(key);
-        if(raw){
-            console.log(`✅ Loaded ${key}:`, JSON.parse(raw));
-        } else {
-            console.log(`⚠️ No data found for ${key}`);
-        }
         return raw ? JSON.parse(raw) : [];
     } catch(err){
         console.error(`Failed to load cards from ${key}`, err);
@@ -103,17 +98,6 @@ function deleteCard(key, cardId){
     const filtered = cards.filter(c => c.id !== cardId);
     saveCards(key, filtered);
     return filtered;
-}
-
-// Debug function to check all localStorage keys
-function debugLocalStorage(){
-    console.log("=== LOCALSTORAGE DEBUG ===");
-    console.log("All keys:", Object.keys(localStorage));
-    console.log(`Hex Key (${HEX_KEY}):`, localStorage.getItem(HEX_KEY));
-    console.log(`Knot Key (${KNOT_KEY}):`, localStorage.getItem(KNOT_KEY));
-    console.log(`Routine Key (${ROUTINE_KEY}):`, localStorage.getItem(ROUTINE_KEY));
-    console.log(`Registry Key (${REGISTRY_KEY}):`, localStorage.getItem(REGISTRY_KEY));
-    console.log("=== END DEBUG ===");
 }
 
 let state = loadState();
@@ -147,36 +131,61 @@ function on(id, evt, handler){
 
 function renderReadings(){
     try{
+        let totalUsed = 0;
         ["BRN","FRM","NRV"].forEach(key => {
-            const val = state.readings[key];
+            const val = state.readings[key] || 0;
             const inputEl = byId("reading" + key);
             const paleEl = byId("pale" + key);
             const flagEl = byId("flag" + key);
-            if(!inputEl || !paleEl || !flagEl) return;
-            if(document.activeElement !== inputEl){
-                inputEl.value = val;
+            
+            if(inputEl) {
+                if(document.activeElement !== inputEl){
+                    inputEl.value = val;
+                }
             }
-            const paleVal = pale(val);
-            paleEl.textContent = paleVal;
-            if(val < READING_MIN){
-                flagEl.textContent = "BELOW MINIMUM (" + READING_MIN + ")";
-                flagEl.classList.add("bad");
-            } else if(val > READING_MAX){
-                flagEl.textContent = "ABOVE MAXIMUM (" + READING_MAX + ")";
-                flagEl.classList.add("bad");
-            } else {
-                flagEl.textContent = "";
-                flagEl.classList.remove("bad");
+            
+            // Update Pale
+            if(paleEl) {
+                const paleVal = pale(val);
+                paleEl.textContent = paleVal;
             }
+            
+            // Update flags
+            if(flagEl) {
+                if(val < READING_MIN){
+                    flagEl.textContent = "BELOW MINIMUM (" + READING_MIN + ")";
+                    flagEl.classList.add("bad");
+                } else if(val > READING_MAX){
+                    flagEl.textContent = "ABOVE MAXIMUM (" + READING_MAX + ")";
+                    flagEl.classList.add("bad");
+                } else {
+                    flagEl.textContent = "";
+                    flagEl.classList.remove("bad");
+                }
+            }
+            
+            totalUsed += val;
         });
-        const used = Number(state.readings.BRN || 0) + Number(state.readings.FRM || 0) + Number(state.readings.NRV || 0);
-        const remaining = READING_BUDGET - used;
+        
+        const remaining = READING_BUDGET - totalUsed;
         const usedEl = byId("budgetUsed");
         const remainingEl = byId("budgetRemaining");
         const budgetRow = byId("budgetRow");
-        if(usedEl) usedEl.textContent = used;
+        
+        if(usedEl) usedEl.textContent = totalUsed;
         if(remainingEl) remainingEl.textContent = remaining;
-        if(budgetRow) budgetRow.classList.toggle("bad", remaining !== 0);
+        if(budgetRow) {
+            budgetRow.classList.toggle("bad", remaining !== 0);
+            // Also add a warning if total is over budget
+            if(totalUsed > READING_BUDGET) {
+                budgetRow.style.borderColor = "var(--fg)";
+                budgetRow.style.color = "var(--fg)";
+            } else {
+                budgetRow.style.borderColor = "";
+                budgetRow.style.color = "";
+            }
+        }
+        
     } catch(err){
         console.error("OPERATOR REGISTRY — renderReadings failed", err);
     }
@@ -189,11 +198,21 @@ function renderCapacity(){
         const usedEl = byId("capUsed");
         const totalEl = byId("capTotal");
         const readout = byId("capacityReadout");
+        
+        // Load cards to calculate used slots
+        const hexCards = loadCards(HEX_KEY);
+        const knotCards = loadCards(KNOT_KEY);
+        const routineCards = loadCards(ROUTINE_KEY);
+        const totalSlots = hexCards.length + knotCards.length + routineCards.length;
+        state.capacity.used = totalSlots;
+        
         if(baseEl) baseEl.value = state.capacity.baseline;
         if(expEl) expEl.value = state.capacity.expanded;
         if(usedEl) usedEl.value = state.capacity.used;
+        
         const total = state.capacity.baseline + state.capacity.expanded;
         const remaining = total - state.capacity.used;
+        
         if(totalEl) totalEl.textContent = total;
         if(readout){
             if(remaining < 0){
@@ -213,23 +232,9 @@ function renderInventory(){
     const container = byId("inventoryContainer");
     if(!container) return;
     
-    // Debug: Check what's in localStorage
-    debugLocalStorage();
-    
-    // Load cards from all three sources
     const hexCards = loadCards(HEX_KEY);
     const knotCards = loadCards(KNOT_KEY);
     const routineCards = loadCards(ROUTINE_KEY);
-    
-    console.log(`📦 Hex cards: ${hexCards.length}, Knot cards: ${knotCards.length}, Routine cards: ${routineCards.length}`);
-    
-    // Calculate total used slots
-    const totalSlots = hexCards.length + knotCards.length + routineCards.length;
-    state.capacity.used = totalSlots;
-    const capUsedEl = byId("capUsed");
-    if(capUsedEl) capUsedEl.value = totalSlots;
-    renderCapacity();
-    saveState();
     
     let html = '';
     
@@ -305,7 +310,6 @@ function renderInventory(){
     
     container.innerHTML = html;
     
-    // Add event listeners to remove buttons
     container.querySelectorAll('.remove-card-btn').forEach(btn => {
         btn.addEventListener('click', function(e) {
             e.stopPropagation();
@@ -332,38 +336,104 @@ function renderProcedures(){
         const body = byId("procBody");
         if(!body) return;
         body.innerHTML = "";
-        ["BRN","FRM","NRV"].forEach(readingKey => {
-            const groupProcs = state.procedures.filter(p => p.reading === readingKey);
-            if(groupProcs.length === 0) return;
-            const head = document.createElement("div");
-            head.className = "reading-group-head";
-            head.innerHTML = readingKey + ' <span class="rgh-val">READING ' + state.readings[readingKey] + '</span>';
-            body.appendChild(head);
-            groupProcs.forEach((proc) => {
-                const row = document.createElement("div");
-                row.className = "procedure-row";
+        
+        // Create a table for procedures
+        const table = document.createElement("table");
+        table.className = "procedure-table";
+        table.innerHTML = `
+            <thead>
+                <tr>
+                    <th>Procedure</th>
+                    <th>Description</th>
+                    <th>Reading</th>
+                    <th>Stamped</th>
+                    <th>Result</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="procTableBody"></tbody>
+        `;
+        body.appendChild(table);
+        
+        const tbody = table.querySelector("#procTableBody");
+        
+        // Group procedures by reading
+        const groups = {
+            BRN: { label: "BRN", procs: [] },
+            FRM: { label: "FRM", procs: [] },
+            NRV: { label: "NRV", procs: [] }
+        };
+        
+        state.procedures.forEach(proc => {
+            if(groups[proc.reading]) {
+                groups[proc.reading].procs.push(proc);
+            }
+        });
+        
+        // Render each group with a header
+        ["BRN", "FRM", "NRV"].forEach(readingKey => {
+            const group = groups[readingKey];
+            if(group.procs.length === 0) return;
+            
+            // Add group header row
+            const headerRow = document.createElement("tr");
+            headerRow.className = "proc-group-header";
+            headerRow.innerHTML = `
+                <td colspan="6">
+                    <span class="group-label">${readingKey}</span>
+                    <span class="group-reading">Reading: ${state.readings[readingKey] || 0}</span>
+                </td>
+            `;
+            tbody.appendChild(headerRow);
+            
+            group.procs.forEach((proc, index) => {
+                const row = document.createElement("tr");
+                row.className = "proc-row";
+                if(index % 2 === 0) row.classList.add("even");
+                
+                const readingValue = state.readings[proc.reading] || 0;
+                
                 row.innerHTML = `
-                    <button type="button" class="stamp-dot ${proc.stamped ? "on" : ""}" data-act="stamp" title="Toggle Stamped"></button>
-                    <div class="proc-info">
-                        <div class="proc-name-line">${proc.name}</div>
-                        ${proc.desc ? '<span class="proc-desc">' + proc.desc + '</span>' : ""}
-                    </div>
-                    <div class="proc-actions">
-                        <div class="proc-result">${proc.lastResult || "—"}</div>
-                        <button type="button" class="roll-btn" data-act="roll">RUN</button>
-                    </div>
+                    <td class="proc-name-cell">${proc.name}</td>
+                    <td class="proc-desc-cell">${proc.desc || ""}</td>
+                    <td class="proc-reading-cell">${proc.reading} (${readingValue})</td>
+                    <td class="proc-stamp-cell">
+                        <button type="button" class="stamp-dot ${proc.stamped ? "on" : ""}" data-proc-id="${proc.id}"></button>
+                    </td>
+                    <td class="proc-result-cell">${proc.lastResult || "—"}</td>
+                    <td class="proc-action-cell">
+                        <button type="button" class="roll-btn" data-proc-id="${proc.id}">ROLL</button>
+                    </td>
                 `;
-                row.querySelector('[data-act="stamp"]').addEventListener("click", () => {
-                    proc.stamped = !proc.stamped;
-                    renderProcedures();
-                    saveState();
-                });
-                row.querySelector('[data-act="roll"]').addEventListener("click", () => {
-                    runProcedure(proc);
-                });
-                body.appendChild(row);
+                
+                tbody.appendChild(row);
             });
         });
+        
+        // Add event listeners for stamp buttons
+        tbody.querySelectorAll('.stamp-dot').forEach(btn => {
+            btn.addEventListener("click", function() {
+                const procId = this.dataset.procId;
+                const proc = state.procedures.find(p => p.id === procId);
+                if(proc) {
+                    proc.stamped = !proc.stamped;
+                    saveState();
+                    renderProcedures();
+                }
+            });
+        });
+        
+        // Add event listeners for roll buttons
+        tbody.querySelectorAll('.roll-btn').forEach(btn => {
+            btn.addEventListener("click", function() {
+                const procId = this.dataset.procId;
+                const proc = state.procedures.find(p => p.id === procId);
+                if(proc) {
+                    runProcedure(proc);
+                }
+            });
+        });
+        
     } catch(err){
         console.error("OPERATOR REGISTRY — renderProcedures failed", err);
     }
@@ -399,14 +469,36 @@ function bindReadingInputs(){
     ["BRN","FRM","NRV"].forEach(key => {
         const el = byId("reading" + key);
         if(!el) return;
+        
         const handler = (e) => {
-            state.readings[key] = Number(e.target.value) || 0;
+            let val = Number(e.target.value) || 0;
+            // Enforce 8-16 range
+            if(val < READING_MIN) val = READING_MIN;
+            if(val > READING_MAX) val = READING_MAX;
+            
+            state.readings[key] = val;
             renderReadings();
             renderProcedures();
             saveState();
         };
+        
         el.addEventListener("input", handler);
         el.addEventListener("change", handler);
+        
+        // Also add blur handler to enforce range
+        el.addEventListener("blur", () => {
+            let val = Number(el.value) || 0;
+            if(val < READING_MIN) {
+                el.value = READING_MIN;
+                state.readings[key] = READING_MIN;
+            } else if(val > READING_MAX) {
+                el.value = READING_MAX;
+                state.readings[key] = READING_MAX;
+            }
+            renderReadings();
+            renderProcedures();
+            saveState();
+        });
     });
 }
 
@@ -428,7 +520,7 @@ function bindCapacityInputs(){
 // ===== INIT =====
 
 document.addEventListener("DOMContentLoaded", () => {
-    console.log("OPERATOR REGISTRY ONLINE — BUILD 2026-08-04-d");
+    console.log("OPERATOR REGISTRY ONLINE — BUILD 2026-08-05");
     
     try{
         const nameEl = byId("opName");
@@ -485,5 +577,5 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 });
 
-console.log("OPERATOR REGISTRY LOADED — Inventory management active");
+console.log("OPERATOR REGISTRY LOADED — BUILD 2026-08-05");
 console.log("READINGS HOLD. PALE ABSORBS. THE FIELD DOES NOT.");
