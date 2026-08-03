@@ -11,6 +11,7 @@
         --fg:#fff;
         --dim:rgba(255,255,255,0.55);
         --line:rgba(255,255,255,0.22);
+        --lock:#e8ffe0; /* cold phosphor white-hot, kept near-white so it still reads as mono FLIR */
     }
 
     *{ box-sizing:border-box; }
@@ -26,11 +27,38 @@
         -webkit-font-smoothing:antialiased;
     }
 
-    body{ padding-bottom:80px; }
+    body{
+        padding-bottom:80px;
+        position:relative;
+        overflow-x:hidden;
+    }
+
+    /* ===== FLIR SENSOR OVERLAY (full page) ===== */
+    /* fine grain, mono thermal noise — background stays flat black, no raster band */
+    body::after{
+        content:"";
+        position:fixed;
+        inset:0;
+        pointer-events:none;
+        z-index:49;
+        opacity:0.05;
+        background-image:
+            repeating-linear-gradient(0deg, rgba(255,255,255,0.6) 0px, transparent 1px, transparent 2px),
+            repeating-linear-gradient(90deg, rgba(255,255,255,0.3) 0px, transparent 1px, transparent 3px);
+        animation:flirGrain 0.4s steps(2) infinite;
+    }
+
+    @keyframes flirGrain{
+        0%{ transform:translate(0,0); }
+        50%{ transform:translate(-1px,1px); }
+        100%{ transform:translate(1px,-1px); }
+    }
 
     main{
         width:min(1080px, 92vw);
         margin:110px auto 80px;
+        position:relative;
+        z-index:1;
     }
 
     .eyebrow{
@@ -119,35 +147,127 @@
     button.btn.ghost{ border-color:var(--line); color:var(--dim); }
     button.btn.ghost:hover{ background:var(--fg); color:var(--bg); border-color:var(--fg); }
 
-    /* ===== REC / STATS ===== */
+    /* ===== TARGET ACQUISITION READOUT (replaces REC / timestamp) ===== */
+    /* A fighter-radar style bracket chasing an evasive blip — this is the page's
+       one signature motion, standing in for the old passive rec-dot/clock. */
 
-    .rec-indicator{
+    .acquisition-rig{
+        margin-top:18px;
         display:flex;
         align-items:center;
-        gap:8px;
-        margin-top:14px;
+        gap:16px;
+    }
+
+    .acq-scope{
+        position:relative;
+        width:54px;
+        height:54px;
+        border:1px solid var(--line);
+        flex-shrink:0;
+        overflow:hidden;
+    }
+
+    .acq-scope::before{
+        /* crosshair */
+        content:"";
+        position:absolute;
+        inset:0;
+        background:
+            linear-gradient(to right, transparent calc(50% - 0.5px), var(--dim) calc(50% - 0.5px), var(--dim) calc(50% + 0.5px), transparent calc(50% + 0.5px)),
+            linear-gradient(to bottom, transparent calc(50% - 0.5px), var(--dim) calc(50% - 0.5px), var(--dim) calc(50% + 0.5px), transparent calc(50% + 0.5px));
+        opacity:0.5;
+    }
+
+    .acq-blip{
+        position:absolute;
+        width:5px;
+        height:5px;
+        background:var(--fg);
+        border-radius:50%;
+        box-shadow:0 0 6px 2px rgba(255,255,255,0.7);
+        animation:blipDart 4.2s cubic-bezier(.35,0,.2,1) infinite;
+    }
+
+    .acq-bracket{
+        position:absolute;
+        width:16px;
+        height:16px;
+        animation:bracketChase 4.2s cubic-bezier(.5,0,.15,1) infinite;
+    }
+
+    .acq-bracket span{
+        position:absolute;
+        width:6px;
+        height:6px;
+        border-color:var(--fg);
+        border-style:solid;
+        border-width:0;
+    }
+    .acq-bracket span:nth-child(1){ top:0; left:0; border-top-width:1.5px; border-left-width:1.5px; }
+    .acq-bracket span:nth-child(2){ top:0; right:0; border-top-width:1.5px; border-right-width:1.5px; }
+    .acq-bracket span:nth-child(3){ bottom:0; left:0; border-bottom-width:1.5px; border-left-width:1.5px; }
+    .acq-bracket span:nth-child(4){ bottom:0; right:0; border-bottom-width:1.5px; border-right-width:1.5px; }
+
+    /* the blip darts like a tic-tac UAV: sharp non-uniform hops, brief pauses, no easing symmetry */
+    @keyframes blipDart{
+        0%{   top:8px;  left:6px;  }
+        6%{   top:8px;  left:6px;  }
+        9%{   top:34px; left:38px; }
+        22%{  top:34px; left:38px; }
+        26%{  top:6px;  left:33px; }
+        40%{  top:6px;  left:33px; }
+        44%{  top:30px; left:9px;  }
+        61%{  top:30px; left:9px;  }
+        66%{  top:14px; left:20px; }
+        80%{  top:14px; left:20px; }
+        85%{  top:22px; left:41px; }
+        100%{ top:22px; left:41px; }
+    }
+
+    /* the bracket always trails the blip, arriving a beat late — a lock that never quite closes */
+    @keyframes bracketChase{
+        0%{   top:2px;  left:0px;  }
+        9%{   top:2px;  left:0px;  }
+        16%{  top:28px; left:32px; }
+        29%{  top:28px; left:32px; }
+        33%{  top:0px;  left:27px; }
+        47%{  top:0px;  left:27px; }
+        51%{  top:24px; left:3px;  }
+        68%{  top:24px; left:3px;  }
+        73%{  top:8px;  left:14px; }
+        87%{  top:8px;  left:14px; }
+        92%{  top:16px; left:35px; }
+        100%{ top:16px; left:35px; }
+    }
+
+    .acq-readout{
         font-family:"Courier New", monospace;
         font-size:11px;
         letter-spacing:2px;
         text-transform:uppercase;
         color:var(--dim);
+        line-height:1.8;
     }
 
-    .rec-dot{
-        width:8px;
-        height:8px;
-        border-radius:50%;
-        background:var(--fg);
-        animation:recBlink 1s steps(1) infinite;
+    .acq-readout strong{
+        color:var(--fg);
+        animation:acqFlicker 2.6s steps(6) infinite;
     }
 
-    @keyframes recBlink{ 50%{ opacity:0.15; } }
+    @keyframes acqFlicker{
+        0%, 40%, 100%{ opacity:1; }
+        42%, 44%{ opacity:0.35; }
+        46%{ opacity:1; }
+        70%, 72%{ opacity:0.5; }
+    }
+
+    /* ===== STATS ===== */
 
     .stat-row{
         display:flex;
         flex-wrap:wrap;
         gap:24px;
-        margin:14px 0 0;
+        margin:18px 0 0;
         font-family:"Courier New", monospace;
         font-size:12px;
         letter-spacing:1.5px;
@@ -189,7 +309,7 @@
         gap:14px;
     }
 
-    /* ===== CONTACT CARD - FIXED HEIGHT VERSION ===== */
+    /* ===== CONTACT CARD — FLIR-LOCK VERSION ===== */
 
     .contact-card{
         position:relative;
@@ -197,17 +317,20 @@
         border:1px solid var(--line);
         background:#050505;
         padding:34px 16px 40px;
-        min-height:280px; /* Increased from 230px */
+        min-height:280px;
         cursor:pointer;
         transition:border-color 0.2s;
         display:flex;
         flex-direction:column;
+        /* baseline thermal contrast on the whole card, independent of the acquired state,
+           so unlocked contacts still read as "sensor image" rather than plain dark UI */
+        filter:contrast(1.12) brightness(0.97);
     }
 
     .contact-card:hover{ border-color:var(--dim); }
-    .contact-card.acquired{ border-color:var(--fg); cursor:default; }
+    .contact-card.acquired{ border-color:var(--fg); cursor:default; filter:contrast(1.05) brightness(1.02); }
 
-    /* scanline texture */
+    /* scanline texture — thermal sensor readout, not a decorative CRT effect */
     .contact-card::before{
         content:"";
         position:absolute;
@@ -215,22 +338,24 @@
         pointer-events:none;
         background:repeating-linear-gradient(
             to bottom,
-            rgba(255,255,255,0.05) 0px,
-            rgba(255,255,255,0.05) 1px,
+            rgba(255,255,255,0.06) 0px,
+            rgba(255,255,255,0.06) 1px,
             transparent 1px,
             transparent 3px
         );
-        opacity:0.5;
+        opacity:0.55;
         z-index:2;
     }
 
-    /* lens vignette */
+    /* lens vignette + soft bloom, like an IR sensor blooming around a hot pixel */
     .contact-card::after{
         content:"";
         position:absolute;
         inset:0;
         pointer-events:none;
-        background:radial-gradient(ellipse at center, transparent 35%, rgba(0,0,0,0.6) 100%);
+        background:
+            radial-gradient(ellipse at center, transparent 30%, rgba(0,0,0,0.65) 100%),
+            radial-gradient(circle at 50% 40%, rgba(255,255,255,0.05), transparent 60%);
         z-index:2;
     }
 
@@ -250,7 +375,26 @@
     .reticle.bl{ bottom:8px; left:8px; border-bottom-width:1px; border-left-width:1px; }
     .reticle.br{ bottom:8px; right:8px; border-bottom-width:1px; border-right-width:1px; }
 
-    .contact-card.acquired .reticle{ border-color:var(--fg); }
+    /* unresolved contacts still evade — the targeting brackets hunt for lock instead of sitting still,
+       echoing a jet's targeting pod trying to acquire something that keeps darting off-axis */
+    .contact-card:not(.acquired) .reticle{
+        animation:reticleHunt 2.8s ease-in-out infinite;
+    }
+    .contact-card:not(.acquired) .reticle.tl{ animation-delay:0s; }
+    .contact-card:not(.acquired) .reticle.tr{ animation-delay:0.15s; }
+    .contact-card:not(.acquired) .reticle.bl{ animation-delay:0.3s; }
+    .contact-card:not(.acquired) .reticle.br{ animation-delay:0.45s; }
+
+    @keyframes reticleHunt{
+        0%{   transform:translate(0,0); opacity:0.5; }
+        18%{  transform:translate(2px,-1px); opacity:0.9; }
+        35%{  transform:translate(-1px,2px); opacity:0.4; }
+        52%{  transform:translate(1px,1px); opacity:0.85; }
+        70%{  transform:translate(-2px,-1px); opacity:0.45; }
+        100%{ transform:translate(0,0); opacity:0.5; }
+    }
+
+    .contact-card.acquired .reticle{ border-color:var(--fg); animation:none; }
 
     .contact-meta{
         position:absolute;
@@ -289,6 +433,7 @@
         flex-direction:column;
     }
 
+    /* only the mystery/identity portion of an unresolved contact stays degraded */
     .contact-hidden{
         filter:blur(0.4px) contrast(1.15) brightness(0.85);
     }
@@ -333,12 +478,35 @@
         margin-bottom:3px;
     }
 
+    /* ===== REQUIREMENT FIELD — always legible, never encrypted ===== */
+    /* This is the one field that must read clearly in both locked and unlocked states:
+       it's the condition for acquiring lock, not the contact's decoded identity, so it
+       sits outside .contact-hidden entirely and skips every blur/degrade filter. */
+    .contact-requirement{
+        margin-bottom:10px;
+        min-height:1.5em;
+        filter:none !important;
+        color:var(--fg);
+    }
+
+    .contact-requirement .field-label{
+        color:var(--dim);
+    }
+
+    .contact-requirement-text{
+        font-family:"Courier New", monospace;
+        font-size:12.5px;
+        letter-spacing:0.5px;
+        line-height:1.6;
+        color:var(--fg);
+    }
+
     .contact-acquire-text, .contact-fix-text{
         margin:0;
         font-size:13.5px;
         line-height:1.55;
         color:var(--fg);
-        min-height:4.65em; /* 3 lines at 1.55 line-height */
+        min-height:4.65em;
         display:-webkit-box;
         -webkit-line-clamp:3;
         -webkit-box-orient:vertical;
@@ -410,9 +578,18 @@
 
     .nav-link:hover{ border-bottom-color:var(--fg); }
 
+    @media (prefers-reduced-motion: reduce){
+        body::after,
+        .acq-blip, .acq-bracket, .acq-readout strong,
+        .contact-card:not(.acquired) .reticle{
+            animation:none !important;
+        }
+    }
+
     @media (max-width: 720px){
         h1{ font-size:42px; }
         .contact-grid{ grid-template-columns:1fr; }
+        .acquisition-rig{ gap:12px; }
     }
 </style>
 </head>
@@ -423,12 +600,21 @@
     <h1>AFTERIMAGE TELEMETRY</h1>
     <div class="whitebox">ULTRABLACK OPERATOR — HORIZOGRAPH TERMINAL</div>
 
-    <div class="rec-indicator"><span class="rec-dot"></span> REC <span id="telemetryClock">00:00:00</span></div>
+    <div class="acquisition-rig">
+        <div class="acq-scope">
+            <div class="acq-blip"></div>
+            <div class="acq-bracket"><span></span><span></span><span></span><span></span></div>
+        </div>
+        <div class="acq-readout">
+            TARGETING POD // <strong>LOCK UNSTABLE</strong><br>
+            CONTACT EVASIVE — TRACK CONTINUES
+        </div>
+    </div>
 
     <div class="terminal-note">
         RAW SENSOR CONTACTS BELOW ARE UNRESOLVED — CLICK A CONTACT TO LOCK ON.<br>
         LOCKING DECODES THE CONTACT AND FILES IT TO THIS OPERATOR'S TELEMETRY LOG, PERMANENTLY.<br>
-        FIX EFFECTS STAY ENCRYPTED UNTIL LOCK IS CONFIRMED.<br>
+        REQUIREMENTS READ CLEAR ON SENSOR AT ALL TIMES. EVERYTHING ELSE STAYS ENCRYPTED UNTIL LOCK IS CONFIRMED.<br>
     </div>
 
     <div class="stat-row">
