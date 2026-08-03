@@ -78,6 +78,11 @@ function saveState(){
 function loadCards(key){
     try{
         const raw = window.localStorage.getItem(key);
+        if(raw){
+            console.log(`✅ Loaded ${key}:`, JSON.parse(raw));
+        } else {
+            console.log(`⚠️ No data found for ${key}`);
+        }
         return raw ? JSON.parse(raw) : [];
     } catch(err){
         console.error(`Failed to load cards from ${key}`, err);
@@ -98,6 +103,17 @@ function deleteCard(key, cardId){
     const filtered = cards.filter(c => c.id !== cardId);
     saveCards(key, filtered);
     return filtered;
+}
+
+// Debug function to check all localStorage keys
+function debugLocalStorage(){
+    console.log("=== LOCALSTORAGE DEBUG ===");
+    console.log("All keys:", Object.keys(localStorage));
+    console.log(`Hex Key (${HEX_KEY}):`, localStorage.getItem(HEX_KEY));
+    console.log(`Knot Key (${KNOT_KEY}):`, localStorage.getItem(KNOT_KEY));
+    console.log(`Routine Key (${ROUTINE_KEY}):`, localStorage.getItem(ROUTINE_KEY));
+    console.log(`Registry Key (${REGISTRY_KEY}):`, localStorage.getItem(REGISTRY_KEY));
+    console.log("=== END DEBUG ===");
 }
 
 let state = loadState();
@@ -197,10 +213,15 @@ function renderInventory(){
     const container = byId("inventoryContainer");
     if(!container) return;
     
+    // Debug: Check what's in localStorage
+    debugLocalStorage();
+    
     // Load cards from all three sources
     const hexCards = loadCards(HEX_KEY);
     const knotCards = loadCards(KNOT_KEY);
     const routineCards = loadCards(ROUTINE_KEY);
+    
+    console.log(`📦 Hex cards: ${hexCards.length}, Knot cards: ${knotCards.length}, Routine cards: ${routineCards.length}`);
     
     // Calculate total used slots
     const totalSlots = hexCards.length + knotCards.length + routineCards.length;
