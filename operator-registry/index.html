@@ -314,7 +314,7 @@
 
     .card-grid{
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
         gap: 12px;
     }
 
@@ -369,6 +369,11 @@
 
     .card-desc.noise{
         color: var(--fg);
+    }
+
+    .card-desc strong{
+        color: var(--fg);
+        font-weight: 600;
     }
 
     .card-tag{
@@ -595,7 +600,7 @@
 <body>
 <main>
 
-    <p class="eyebrow">NODE // 008</p>
+    <p class="eyebrow">NODE // 007</p>
     <h1>OPERATOR REGISTRY</h1>
     <div class="whitebox">ULTRABLACK OPERATOR</div>
 
@@ -706,10 +711,11 @@
     </div>
     <div class="capacity-readout" id="capacityReadout">REMAINING: <strong id="capRemaining">6</strong></div>
 
+    <!-- ===== INVENTORY SECTION ===== -->
     <hr>
 
     <h2>Inventory</h2>
-    <p class="mono">Cards from Hex-Grave, Link-and-Knot, and Routine pages appear here.</p>
+    <p class="mono">Cards from Hex-Grave, Link-and-Knot, Routine, and Afterimage Telemetry pages appear here.</p>
     <div id="inventoryContainer" class="inventory-container"></div>
 
     <hr>
