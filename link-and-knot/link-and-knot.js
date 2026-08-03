@@ -20,6 +20,8 @@ inventory of held (Hewed, not yet Fixed) knots and a session log.
 
 */
 
+const KNOT_KEY = "linkKnotCards";
+
 const CORE_KNOTS = [
     { d: 1,  name: "Replay",     output: "Repeat the hit on the same target at one tier lower.", shift: 1 },
     { d: 2,  name: "Delay",      output: "Resolve next turn at one tier higher.", shift: 1 },
@@ -51,13 +53,33 @@ const BROKEN_KNOTS = [
 ];
 
 let linkValue = 0;
-let inventory = [];      // held knots: { uid, type, d, name, output, noise, shift }
+let inventory = [];
 let hewedCount = 0;
 let fixedCount = 0;
-let logEntries = [];     // { text, cls }
+let logEntries = [];
 let uidCounter = 0;
 
 const glitchAlphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ-—";
+
+// ===== CARD SAVING =====
+
+function loadKnotCards(){
+    try{
+        const raw = window.localStorage.getItem(KNOT_KEY);
+        return raw ? JSON.parse(raw) : [];
+    } catch(err){
+        console.error("Failed to load knot cards", err);
+        return [];
+    }
+}
+
+function saveKnotCards(cards){
+    try{
+        window.localStorage.setItem(KNOT_KEY, JSON.stringify(cards));
+    } catch(err){
+        console.error("Failed to save knot cards", err);
+    }
+}
 
 function scramble(text){
     return text
@@ -121,13 +143,10 @@ function renderBandReadout(){
     const statusEl = document.getElementById("brStatus");
     const nameEl = document.getElementById("brName");
     const subEl = document.getElementById("brSub");
-
     const band = bandLabel(linkValue);
-
     wrap.classList.remove("flag-lock", "flag-rupture");
     if(band.cls === "lock") wrap.classList.add("flag-lock");
     if(band.cls === "rupture") wrap.classList.add("flag-rupture");
-
     statusEl.textContent = "STATUS: LINK AT " + (linkValue > 0 ? "+" + linkValue : linkValue);
     revealText(nameEl, band.name);
     subEl.textContent = band.sub;
@@ -143,14 +162,11 @@ function renderStats(){
 function renderInventory(){
     const grid = document.getElementById("invGrid");
     grid.innerHTML = "";
-
     if(inventory.length === 0){
         grid.innerHTML = '<div class="inv-empty">NO KNOTS HELD</div>';
         return;
     }
-
     const locked = (linkValue === 3);
-
     inventory.forEach(k => {
         const willSuppress = locked && k.type === "broken";
         const shiftStr = k.shift > 0 ? "+" + k.shift : String(k.shift);
@@ -172,13 +188,10 @@ function renderInventory(){
 function renderLog(){
     const panel = document.getElementById("logPanel");
     panel.innerHTML = "";
-
     if(logEntries.length === 0){
         panel.innerHTML = '<div class="log-empty">NO ACTIVITY LOGGED</div>';
         return;
     }
-
-    // most recent first
     for(let i = logEntries.length - 1; i >= 0; i--){
         const entry = logEntries[i];
         const row = document.createElement("div");
@@ -197,7 +210,6 @@ function renderReferenceTables(){
     coreBody.innerHTML = CORE_KNOTS.map(k => `
         <tr><td>${k.d}</td><td>${k.name}</td><td>${k.output}</td><td>${k.shift > 0 ? "+" + k.shift : k.shift} (KEEN)</td></tr>
     `).join("");
-
     const brokenBody = document.getElementById("brokenRefBody");
     brokenBody.innerHTML = BROKEN_KNOTS.map(k => `
         <tr><td>${k.d}</td><td>${k.name}</td><td>${k.output}</td><td>${k.noise}</td><td>${k.shift} (BREAK)</td></tr>
@@ -231,47 +243,61 @@ function showResult(statusText, nameText, bodyHtml, subText){
 // ---------- actions ----------
 
 function hewKnot(type){
-
     const table = type === "core" ? CORE_KNOTS : BROKEN_KNOTS;
     const roll = Math.floor(Math.random() * 12) + 1;
     const knot = table.find(k => k.d === roll);
-
     hewedCount++;
-
     const uid = "k" + (++uidCounter);
-    inventory.push({ uid, type, d: roll, name: knot.name, output: knot.output, noise: knot.noise, shift: knot.shift });
-
+    const newKnot = { 
+        uid, 
+        type, 
+        d: roll, 
+        name: knot.name, 
+        output: knot.output, 
+        noise: knot.noise, 
+        shift: knot.shift 
+    };
+    inventory.push(newKnot);
+    
+    const allKnots = loadKnotCards();
+    allKnots.push({
+        id: uid,
+        type: type,
+        d: roll,
+        name: knot.name,
+        output: knot.output,
+        noise: knot.noise,
+        shift: knot.shift
+    });
+    saveKnotCards(allKnots);
+    
     const shiftStr = knot.shift > 0 ? "+" + knot.shift : String(knot.shift);
     addLog(
         `HEWED ${type === "core" ? "CORE" : "BROKEN"} — D12:${roll} ${knot.name.toUpperCase()} ADDED TO INVENTORY. PENDING SHIFT ${shiftStr} ON FIX.`,
         ""
     );
-
     const bodyHtml = `
         <p>${knot.output}</p>
         ${knot.noise ? `<p class="noise-line">NOISE: ${knot.noise}</p>` : ""}
     `;
-
     showResult(
         `STATUS: ${type === "core" ? "CORE" : "BROKEN"} KNOT HEWED — D12:${roll}`,
         knot.name.toUpperCase(),
         bodyHtml,
         `HELD IN INVENTORY · SHIFT ${shiftStr} PENDING UNTIL FIXED`
     );
-
     renderAll();
-
 }
 
 function fixKnot(uid){
-
     const knot = inventory.find(k => k.uid === uid);
     if(!knot) return;
-
-    // Lock suppresses Broken Knots at the moment they'd take effect
     if(knot.type === "broken" && linkValue === 3){
         inventory = inventory.filter(x => x.uid !== uid);
         fixedCount++;
+        const allKnots = loadKnotCards();
+        const filtered = allKnots.filter(k => k.id !== uid);
+        saveKnotCards(filtered);
         addLog(`SUPPRESSED ON FIX — ${knot.name.toUpperCase()} (D12:${knot.d}) SPENT BUT BLOCKED. LINK LOCKED AT +3.`, "suppressed");
         showResult(
             "STATUS: BROKEN KNOT SUPPRESSED",
@@ -282,14 +308,16 @@ function fixKnot(uid){
         renderAll();
         return;
     }
-
     const before = linkValue;
     linkValue = clamp(linkValue + knot.shift);
     const after = linkValue;
-
     inventory = inventory.filter(x => x.uid !== uid);
     fixedCount++;
-
+    
+    const allKnots = loadKnotCards();
+    const filtered = allKnots.filter(k => k.id !== uid);
+    saveKnotCards(filtered);
+    
     let flagNote = "";
     let flagCls = "";
     if(after === 3 && before !== 3){
@@ -299,22 +327,18 @@ function fixKnot(uid){
         flagCls = "rupture";
         flagNote = " LINK REACHES RUPTURE (−3).";
     }
-
     const shiftStr = knot.shift > 0 ? "+" + knot.shift : String(knot.shift);
     addLog(
         `FIXED ${knot.type === "core" ? "CORE" : "BROKEN"} — ${knot.name.toUpperCase()} (D12:${knot.d}) SPENT — LINK ${shiftStr} → ${before > 0 ? "+" + before : before} to ${after > 0 ? "+" + after : after}.${flagNote}`,
         flagCls
     );
-
     showResult(
         `STATUS: KNOT FIXED — ${knot.name.toUpperCase()}`,
         after > 0 ? "+" + after : String(after),
         `<p>${knot.name} spent. Link shift ${shiftStr} applied.</p>`,
         `LINK NOW AT ${after > 0 ? "+" + after : after}${flagNote ? " ·" + flagNote : ""}`
     );
-
     renderAll();
-
 }
 
 function driftTowardZero(){
@@ -340,6 +364,7 @@ function resetSession(){
     hewedCount = 0;
     fixedCount = 0;
     logEntries = [];
+    saveKnotCards([]);
     showResult("STATUS: IDLE — NO KNOT HEWED", "", "", "");
     addLog("SESSION RESET. LINK RETURNED TO ZERO. INVENTORY CLEARED.", "");
     renderAll();
@@ -348,17 +373,29 @@ function resetSession(){
 // ---------- init ----------
 
 document.addEventListener("DOMContentLoaded", () => {
-
+    const savedKnots = loadKnotCards();
+    savedKnots.forEach(k => {
+        inventory.push({
+            uid: k.id,
+            type: k.type,
+            d: k.d,
+            name: k.name,
+            output: k.output,
+            noise: k.noise,
+            shift: k.shift
+        });
+    });
+    uidCounter = savedKnots.length;
+    
     renderReferenceTables();
     renderAll();
-
+    
     document.getElementById("hewCoreBtn").addEventListener("click", () => hewKnot("core"));
     document.getElementById("hewBrokenBtn").addEventListener("click", () => hewKnot("broken"));
     document.getElementById("driftBtn").addEventListener("click", driftTowardZero);
     document.getElementById("nudgePlusBtn").addEventListener("click", () => nudge(1));
     document.getElementById("nudgeMinusBtn").addEventListener("click", () => nudge(-1));
     document.getElementById("resetBtn").addEventListener("click", resetSession);
-
 });
 
 console.log("LINK AND KNOT TERMINAL ONLINE");
