@@ -189,7 +189,7 @@
         gap:14px;
     }
 
-    /* ===== CONTACT CARD ===== */
+    /* ===== CONTACT CARD - FIXED HEIGHT VERSION ===== */
 
     .contact-card{
         position:relative;
@@ -197,9 +197,11 @@
         border:1px solid var(--line);
         background:#050505;
         padding:34px 16px 40px;
-        min-height:230px;
+        min-height:280px; /* Increased from 230px */
         cursor:pointer;
         transition:border-color 0.2s;
+        display:flex;
+        flex-direction:column;
     }
 
     .contact-card:hover{ border-color:var(--dim); }
@@ -282,6 +284,9 @@
         position:relative;
         z-index:1;
         margin-top:12px;
+        flex:1;
+        display:flex;
+        flex-direction:column;
     }
 
     .contact-hidden{
@@ -291,6 +296,7 @@
     .contact-status{
         margin-bottom:10px;
         color:var(--dim);
+        min-height:1.4em;
     }
 
     .contact-status.locked{ color:var(--fg); }
@@ -311,18 +317,32 @@
         font-family:"Times New Roman", serif;
         font-size:21px;
         margin-bottom:10px;
-        min-height:1.3em;
+        min-height:1.4em;
+        white-space:nowrap;
+        overflow:hidden;
+        text-overflow:ellipsis;
     }
 
-    .contact-field{ margin-bottom:10px; }
-    .field-label{ display:block; margin-bottom:3px; }
+    .contact-field{
+        margin-bottom:10px;
+        min-height:1.5em;
+    }
+
+    .field-label{
+        display:block;
+        margin-bottom:3px;
+    }
 
     .contact-acquire-text, .contact-fix-text{
         margin:0;
         font-size:13.5px;
         line-height:1.55;
         color:var(--fg);
-        min-height:1.5em;
+        min-height:4.65em; /* 3 lines at 1.55 line-height */
+        display:-webkit-box;
+        -webkit-line-clamp:3;
+        -webkit-box-orient:vertical;
+        overflow:hidden;
     }
 
     .release-btn{ margin-top:4px; }
