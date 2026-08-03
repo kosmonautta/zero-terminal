@@ -412,9 +412,11 @@
 
     .contact-status.locked{ color:var(--fg); }
 
-    /* replaces scrambled/randomized placeholder text with a single small dart of noise —
-       a plain dot hopping side to side, transform-only (no filter/box-shadow/layout
-       properties) since this repeats once per unresolved card */
+    /* replaces scrambled/randomized placeholder text with the same blip-and-bracket
+       motif as the header scope — a small dot hopping tic-tac style, with a bracket
+       outline tracing the same path a beat behind. Both share one keyframe path
+       (only animation-delay differs) and animate transform/opacity only, since this
+       repeats twice per unresolved card across the whole grid. */
     .noise-line{
         position:relative;
         height:1.4em;
@@ -430,18 +432,45 @@
         content:"";
         position:absolute;
         top:50%;
-        left:4%;
-        width:6px;
-        height:6px;
-        margin-top:-3px;
+        left:6px;
+        width:5px;
+        height:5px;
+        margin-top:-2.5px;
         background:var(--fg);
-        opacity:0.6;
-        animation:noiseDart 5s ease-in-out infinite;
+        opacity:0.75;
+        animation:noiseHop 4.6s cubic-bezier(.4,0,.2,1) infinite;
     }
 
-    @keyframes noiseDart{
-        0%, 100%{ transform:translateX(0); }
-        50%{ transform:translateX(260%); }
+    .noise-line::after{
+        content:"";
+        position:absolute;
+        top:50%;
+        left:6px;
+        width:10px;
+        height:10px;
+        margin-top:-5px;
+        border:1px solid var(--fg);
+        opacity:0.4;
+        animation:noiseHop 4.6s cubic-bezier(.4,0,.2,1) infinite;
+        animation-delay:0.4s;
+    }
+
+    /* five irregular waypoints with pauses, same tic-tac logic as the header scope's
+       blip — sharp non-uniform hops, not a smooth sweep. blip and bracket trace this
+       identical path; only the bracket's animation-delay differs, so it's always a
+       beat behind and the lock never quite closes. */
+    @keyframes noiseHop{
+        0%{   transform:translate(2px,0px); }
+        7%{   transform:translate(2px,0px); }
+        11%{  transform:translate(78px,-3px); }
+        26%{  transform:translate(78px,-3px); }
+        30%{  transform:translate(16px,3px); }
+        45%{  transform:translate(16px,3px); }
+        49%{  transform:translate(96px,-2px); }
+        64%{  transform:translate(96px,-2px); }
+        68%{  transform:translate(42px,2px); }
+        83%{  transform:translate(42px,2px); }
+        100%{ transform:translate(42px,2px); }
     }
 
     .contact-card:not(.acquired) .contact-revealed{ display:none; }
@@ -570,7 +599,7 @@
     @media (prefers-reduced-motion: reduce){
         body::after,
         .acq-blip, .acq-bracket,
-        .noise-line::before,
+        .noise-line::before, .noise-line::after,
         .contact-card:not(.acquired) .reticle{
             animation:none !important;
         }
@@ -599,8 +628,8 @@
 
     <div class="terminal-note">
         RAW SENSOR CONTACTS BELOW ARE UNRESOLVED — CLICK A CONTACT TO LOCK ON.<br>
-        LOCKING DECODES THE CONTACT AND FILES IT TO THIS OPERATOR'S TELEMETRY LOG, PERMANENTLY.<br>
-        REQUIREMENTS READ CLEAR ON SENSOR AT ALL TIMES. EVERYTHING ELSE STAYS ENCRYPTED UNTIL LOCK IS CONFIRMED.<br>
+        LOCKING DECODES THE CONTACT AND FILES IT TO THIS OPERATOR'S TELEMETRY LOG.<br>
+        EVERYTHING STAYS ENCRYPTED UNTIL LOCK IS CONFIRMED.<br>
     </div>
 
     <div class="stat-row">
