@@ -2,7 +2,7 @@
 
 OPERATOR REGISTRY — CHARACTER SHEET LOGIC
 BUILD: 2026-08-05
-Fixed: Reading allocation, Pale calculation, Procedure table display
+Now with Afterimage Telemetry cards support
 
 */
 
@@ -10,6 +10,7 @@ const REGISTRY_KEY = "operatorRegistry.v1";
 const HEX_KEY = "hexGraveCards";
 const KNOT_KEY = "linkKnotCards";
 const ROUTINE_KEY = "routineCards";
+const TELEMETRY_KEY = "afterimageTelemetryCards";
 const READING_MIN = 8;
 const READING_MAX = 16;
 const READING_BUDGET = 36;
@@ -144,13 +145,11 @@ function renderReadings(){
                 }
             }
             
-            // Update Pale
             if(paleEl) {
                 const paleVal = pale(val);
                 paleEl.textContent = paleVal;
             }
             
-            // Update flags
             if(flagEl) {
                 if(val < READING_MIN){
                     flagEl.textContent = "BELOW MINIMUM (" + READING_MIN + ")";
@@ -176,16 +175,7 @@ function renderReadings(){
         if(remainingEl) remainingEl.textContent = remaining;
         if(budgetRow) {
             budgetRow.classList.toggle("bad", remaining !== 0);
-            // Also add a warning if total is over budget
-            if(totalUsed > READING_BUDGET) {
-                budgetRow.style.borderColor = "var(--fg)";
-                budgetRow.style.color = "var(--fg)";
-            } else {
-                budgetRow.style.borderColor = "";
-                budgetRow.style.color = "";
-            }
         }
-        
     } catch(err){
         console.error("OPERATOR REGISTRY — renderReadings failed", err);
     }
@@ -199,11 +189,11 @@ function renderCapacity(){
         const totalEl = byId("capTotal");
         const readout = byId("capacityReadout");
         
-        // Load cards to calculate used slots
         const hexCards = loadCards(HEX_KEY);
         const knotCards = loadCards(KNOT_KEY);
         const routineCards = loadCards(ROUTINE_KEY);
-        const totalSlots = hexCards.length + knotCards.length + routineCards.length;
+        const telemetryCards = loadCards(TELEMETRY_KEY);
+        const totalSlots = hexCards.length + knotCards.length + routineCards.length + telemetryCards.length;
         state.capacity.used = totalSlots;
         
         if(baseEl) baseEl.value = state.capacity.baseline;
@@ -235,6 +225,7 @@ function renderInventory(){
     const hexCards = loadCards(HEX_KEY);
     const knotCards = loadCards(KNOT_KEY);
     const routineCards = loadCards(ROUTINE_KEY);
+    const telemetryCards = loadCards(TELEMETRY_KEY);
     
     let html = '';
     
@@ -283,20 +274,26 @@ function renderInventory(){
         html += `</div></div>`;
     }
     
-    // Routine Cards
+    // Routine Cards (Modules)
     if(routineCards.length > 0){
         html += `<div class="inventory-section"><h3>Routine Cards (${routineCards.length})</h3><div class="card-grid">`;
         routineCards.forEach(card => {
+            const isModule = card.type === "module" || card.ports;
             html += `
                 <div class="card-item" data-type="routine" data-id="${card.id}">
                     <div class="card-header">
-                        <span class="card-name">${card.callsign || card.name || 'Unnamed Routine'}</span>
+                        <span class="card-name">${isModule ? (card.callsign || card.name || 'Unnamed Module') : (card.callsign || card.name || 'Unnamed Routine')}</span>
                         <button class="remove-card-btn" data-type="routine" data-id="${card.id}">✕</button>
                     </div>
                     <div class="card-details">
                         ${card.code ? `<div class="card-tag">${card.code}</div>` : ''}
-                        ${card.sequence ? `<div class="card-desc">${card.sequence.join(' → ')}</div>` : ''}
-                        ${card.size ? `<div class="card-tag">${card.size}U</div>` : ''}
+                        ${isModule ? 
+                            `<div class="card-desc">${card.size || ''}U · ${card.ports ? card.ports.join('+') : ''}</div>` :
+                            (card.sequence ? `<div class="card-desc">${card.sequence.join(' → ')}</div>` : '')
+                        }
+                        ${card.size && !isModule ? `<div class="card-tag">${card.size}U</div>` : ''}
+                        ${card.category ? `<div class="card-tag">${card.category}</div>` : ''}
+                        ${isModule && card.function ? `<div class="card-desc">${card.function}</div>` : ''}
                     </div>
                 </div>
             `;
@@ -304,7 +301,31 @@ function renderInventory(){
         html += `</div></div>`;
     }
     
-    if(!hexCards.length && !knotCards.length && !routineCards.length){
+    // Afterimage Telemetry Cards
+    if(telemetryCards.length > 0){
+        html += `<div class="inventory-section"><h3>Afterimage Telemetry (${telemetryCards.length})</h3><div class="card-grid">`;
+        telemetryCards.forEach(card => {
+            html += `
+                <div class="card-item" data-type="telemetry" data-id="${card.id}">
+                    <div class="card-header">
+                        <span class="card-name">${card.name || card.callsign || 'Unnamed Telemetry'}</span>
+                        <button class="remove-card-btn" data-type="telemetry" data-id="${card.id}">✕</button>
+                    </div>
+                    <div class="card-details">
+                        ${card.code ? `<div class="card-tag">${card.code}</div>` : ''}
+                        ${card.category ? `<div class="card-tag">${card.category}</div>` : ''}
+                        ${card.abbr ? `<div class="card-tag">${card.abbr}</div>` : ''}
+                        <div class="card-desc"><strong>Acquire:</strong> ${card.acquire || ''}</div>
+                        <div class="card-desc"><strong>Fix:</strong> ${card.fix || ''}</div>
+                        ${card.acquiredAt ? `<div class="card-desc" style="font-size:10px;color:var(--dim);">Acquired: ${new Date(card.acquiredAt).toLocaleString()}</div>` : ''}
+                    </div>
+                </div>
+            `;
+        });
+        html += `</div></div>`;
+    }
+    
+    if(!hexCards.length && !knotCards.length && !routineCards.length && !telemetryCards.length){
         html = `<div class="empty-inventory">No cards in inventory. Create cards on their respective pages.</div>`;
     }
     
@@ -320,6 +341,7 @@ function renderInventory(){
                 case 'hex': key = HEX_KEY; break;
                 case 'knot': key = KNOT_KEY; break;
                 case 'routine': key = ROUTINE_KEY; break;
+                case 'telemetry': key = TELEMETRY_KEY; break;
                 default: return;
             }
             if(confirm(`Remove this ${type} card from inventory?`)){
@@ -337,7 +359,6 @@ function renderProcedures(){
         if(!body) return;
         body.innerHTML = "";
         
-        // Create a table for procedures
         const table = document.createElement("table");
         table.className = "procedure-table";
         table.innerHTML = `
@@ -357,25 +378,10 @@ function renderProcedures(){
         
         const tbody = table.querySelector("#procTableBody");
         
-        // Group procedures by reading
-        const groups = {
-            BRN: { label: "BRN", procs: [] },
-            FRM: { label: "FRM", procs: [] },
-            NRV: { label: "NRV", procs: [] }
-        };
-        
-        state.procedures.forEach(proc => {
-            if(groups[proc.reading]) {
-                groups[proc.reading].procs.push(proc);
-            }
-        });
-        
-        // Render each group with a header
         ["BRN", "FRM", "NRV"].forEach(readingKey => {
-            const group = groups[readingKey];
-            if(group.procs.length === 0) return;
+            const procs = state.procedures.filter(p => p.reading === readingKey);
+            if(procs.length === 0) return;
             
-            // Add group header row
             const headerRow = document.createElement("tr");
             headerRow.className = "proc-group-header";
             headerRow.innerHTML = `
@@ -386,17 +392,15 @@ function renderProcedures(){
             `;
             tbody.appendChild(headerRow);
             
-            group.procs.forEach((proc, index) => {
+            procs.forEach((proc, index) => {
                 const row = document.createElement("tr");
                 row.className = "proc-row";
                 if(index % 2 === 0) row.classList.add("even");
                 
-                const readingValue = state.readings[proc.reading] || 0;
-                
                 row.innerHTML = `
                     <td class="proc-name-cell">${proc.name}</td>
                     <td class="proc-desc-cell">${proc.desc || ""}</td>
-                    <td class="proc-reading-cell">${proc.reading} (${readingValue})</td>
+                    <td class="proc-reading-cell">${proc.reading} (${state.readings[proc.reading] || 0})</td>
                     <td class="proc-stamp-cell">
                         <button type="button" class="stamp-dot ${proc.stamped ? "on" : ""}" data-proc-id="${proc.id}"></button>
                     </td>
@@ -410,7 +414,6 @@ function renderProcedures(){
             });
         });
         
-        // Add event listeners for stamp buttons
         tbody.querySelectorAll('.stamp-dot').forEach(btn => {
             btn.addEventListener("click", function() {
                 const procId = this.dataset.procId;
@@ -423,7 +426,6 @@ function renderProcedures(){
             });
         });
         
-        // Add event listeners for roll buttons
         tbody.querySelectorAll('.roll-btn').forEach(btn => {
             btn.addEventListener("click", function() {
                 const procId = this.dataset.procId;
@@ -472,10 +474,8 @@ function bindReadingInputs(){
         
         const handler = (e) => {
             let val = Number(e.target.value) || 0;
-            // Enforce 8-16 range
             if(val < READING_MIN) val = READING_MIN;
             if(val > READING_MAX) val = READING_MAX;
-            
             state.readings[key] = val;
             renderReadings();
             renderProcedures();
@@ -485,7 +485,6 @@ function bindReadingInputs(){
         el.addEventListener("input", handler);
         el.addEventListener("change", handler);
         
-        // Also add blur handler to enforce range
         el.addEventListener("blur", () => {
             let val = Number(el.value) || 0;
             if(val < READING_MIN) {
@@ -519,7 +518,7 @@ function bindCapacityInputs(){
 
 // ===== INIT =====
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", function() {
     console.log("OPERATOR REGISTRY ONLINE — BUILD 2026-08-05");
     
     try{
@@ -570,7 +569,7 @@ document.addEventListener("DOMContentLoaded", () => {
     renderProcedures();
     
     window.addEventListener('storage', (e) => {
-        if(e.key === HEX_KEY || e.key === KNOT_KEY || e.key === ROUTINE_KEY){
+        if(e.key === HEX_KEY || e.key === KNOT_KEY || e.key === ROUTINE_KEY || e.key === TELEMETRY_KEY){
             renderInventory();
             renderCapacity();
         }
