@@ -17,6 +17,8 @@ is not removed on use, only replaced by deliberate Regraving.
 
 */
 
+const HEX_KEY = "hexGraveCards";
+
 const PARAMETERS = [
     {
         key: "shape", label: "Shape",
@@ -87,18 +89,14 @@ const PARAMETERS = [
 ];
 
 let rolling = false;
-let currentHex = null;      // { rolls: [{key,label,d,name,desc}, ...] } once fully collapsed
-let pendingTargetSlot = null; // slot id being regraved, or null for a new Hex
-let intake = [];            // committed hexes: { id, code, name, rolls }
+let currentHex = null;
+let pendingTargetSlot = null;
+let intake = [];
 let logEntries = [];
 let graveCounter = 0;
 let slotCounter = 0;
 
 const glitchAlphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ-—";
-
-// No Latin letters here on purpose — a letter-heavy pool reads as
-// almost-words. Block shades, box-drawing, geometric marks and a few
-// Braille cells read as pure interference instead.
 const matrixNoiseChars = [
     "░","▒","▓","█","▀","▄","▌","▐","▖","▗","▘","▝","▚","▞",
     "■","□","▪","▫","◆","◇","▲","△","▼","▽","●","○",
@@ -108,12 +106,30 @@ const matrixNoiseChars = [
 ];
 let ambientTimer = null;
 
+// ===== CARD SAVING =====
+
+function loadHexCards(){
+    try{
+        const raw = window.localStorage.getItem(HEX_KEY);
+        return raw ? JSON.parse(raw) : [];
+    } catch(err){
+        console.error("Failed to load hex cards", err);
+        return [];
+    }
+}
+
+function saveHexCards(cards){
+    try{
+        window.localStorage.setItem(HEX_KEY, JSON.stringify(cards));
+    } catch(err){
+        console.error("Failed to save hex cards", err);
+    }
+}
+
 function noiseGlyph(){
     return matrixNoiseChars[Math.floor(Math.random() * matrixNoiseChars.length)];
 }
 
-// Builds a run of noise glyphs, each with its own random opacity, so a
-// cell reads as a flickering field of static rather than flat text.
 function noiseGlyphs(len){
     let html = "";
     for(let i = 0; i < len; i++){
@@ -127,9 +143,6 @@ function randNoiseLen(){
     return 3 + Math.floor(Math.random() * 6);
 }
 
-// Keeps every cell that hasn't been rolled yet flickering like dead signal —
-// only cells still carrying .cell-noise get touched, so active/locked/collapsed
-// cells are left alone.
 function startAmbientNoise(){
     if(ambientTimer) return;
     ambientTimer = setInterval(() => {
@@ -246,6 +259,7 @@ function renderIntake(){
         card.querySelector('[data-act="regrave"]').addEventListener("click", () => startRoll(hex.id));
         card.querySelector('[data-act="discard"]').addEventListener("click", () => {
             intake = intake.filter(h => h.id !== hex.id);
+            saveHexCards(intake);
             addLog(`DISCARDED — ${hex.code} "${hex.name.toUpperCase()}" REMOVED FROM INTAKE BRIEF.`);
             renderIntake();
         });
@@ -271,28 +285,20 @@ function clearMatrixLocks(){
 }
 
 function rollParameter(param, onSettled){
-
     const cells = [];
     for(let d = 1; d <= 6; d++) cells.push(document.getElementById(`cell-${param.key}-${d}`));
-
     cells.forEach(cell => {
         cell.classList.remove("cell-noise", "cell-collapsed", "cell-locked");
         cell.classList.add("cell-active");
     });
-
     const finalD = Math.floor(Math.random() * 6) + 1;
-
-    // the whole column churns as noise while the Parameter is "in flight" —
-    // ambient noise is skipped here since these cells no longer carry .cell-noise
     const flickerInterval = setInterval(() => {
         cells.forEach(cell => {
             cell.querySelector(".cell-name").innerHTML = noiseGlyphs(randNoiseLen());
         });
     }, 55);
-
     setTimeout(() => {
         clearInterval(flickerInterval);
-
         cells.forEach((cell, i) => {
             const d = i + 1;
             const opt = param.options[d - 1];
@@ -300,35 +306,26 @@ function rollParameter(param, onSettled){
             cell.classList.add(d === finalD ? "cell-locked" : "cell-collapsed");
             revealText(cell.querySelector(".cell-name"), opt.name);
         });
-
         const opt = param.options[finalD - 1];
-
         const valEl = document.getElementById(`rowval-${param.key}`);
         const rowEl = document.getElementById(`row-${param.key}`);
         rowEl.classList.remove("pending");
-
         revealText(valEl, `${opt.name} (D6:${finalD})`, () => {
             document.getElementById(`rowdesc-${param.key}`).textContent = opt.desc;
         });
-
         onSettled({ key: param.key, label: param.label, d: finalD, name: opt.name, desc: opt.desc });
-
     }, 620);
-
 }
 
 function startRoll(targetSlotId){
-
     if(rolling) return;
     rolling = true;
     pendingTargetSlot = targetSlotId || null;
-
     document.getElementById("graveBtn").disabled = true;
     document.getElementById("commitPanel").classList.remove("active");
     clearMatrixLocks();
     renderHexReadoutSkeleton();
     currentHex = { rolls: [] };
-
     const nameInput = document.getElementById("hexNameInput");
     if(pendingTargetSlot){
         const slot = intake.find(h => h.id === pendingTargetSlot);
@@ -338,9 +335,7 @@ function startRoll(targetSlotId){
         nameInput.value = "";
         setStatus("GRAVING — 0/6 PARAMETERS COLLAPSED");
     }
-
     let index = 0;
-
     function next(){
         if(index >= PARAMETERS.length){
             rolling = false;
@@ -354,47 +349,38 @@ function startRoll(targetSlotId){
                 : `HEX GRAVED — AWAITING NAME AND COMMIT.`);
             return;
         }
-
         const param = PARAMETERS[index];
         setStatus(`${pendingTargetSlot ? "REGRAVING" : "GRAVING"} — ${param.label.toUpperCase()} · ${index}/6 COLLAPSED`);
-
         rollParameter(param, (result) => {
             currentHex.rolls.push(result);
             index++;
             next();
         });
     }
-
     next();
-
 }
 
 function commitHex(){
-
     if(!currentHex || currentHex.rolls.length < PARAMETERS.length) return;
-
     const nameInput = document.getElementById("hexNameInput");
     const name = nameInput.value.trim() || `UNNAMED HEX ${graveCounter + 1}`;
-
     if(pendingTargetSlot){
-
         const slot = intake.find(h => h.id === pendingTargetSlot);
         if(slot){
             slot.name = name;
             slot.rolls = currentHex.rolls;
+            saveHexCards(intake);
             addLog(`OVERRIDDEN — ${slot.code} REGRAVED AS "${name.toUpperCase()}".`);
         }
-
     } else {
-
         graveCounter++;
         const code = "GRV-" + String(graveCounter).padStart(3, "0");
         slotCounter++;
-        intake.push({ id: "slot" + slotCounter, code, name, rolls: currentHex.rolls });
+        const newHex = { id: "slot" + slotCounter, code, name, rolls: currentHex.rolls };
+        intake.push(newHex);
+        saveHexCards(intake);
         addLog(`COMMITTED — ${code} "${name.toUpperCase()}" ADDED TO INTAKE BRIEF.`);
-
     }
-
     pendingTargetSlot = null;
     currentHex = null;
     document.getElementById("commitPanel").classList.remove("active");
@@ -402,22 +388,23 @@ function commitHex(){
     clearMatrixLocks();
     renderHexReadoutSkeleton();
     renderIntake();
-
 }
 
 // ---------- init ----------
 
 document.addEventListener("DOMContentLoaded", () => {
-
+    intake = loadHexCards();
+    graveCounter = intake.length;
+    slotCounter = intake.length;
+    
     renderMatrix();
     renderHexReadoutSkeleton();
     renderReferenceTable();
     renderLog();
     renderIntake();
-
+    
     document.getElementById("graveBtn").addEventListener("click", () => startRoll(null));
     document.getElementById("commitBtn").addEventListener("click", commitHex);
-
 });
 
 console.log("HEX GRAVE TERMINAL ONLINE");
