@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AFTERIMAGE TELEMETRY</title>
+<link rel="stylesheet" href="../style.css">
+<style>
+    :root{
+        --bg:#000;
+        --fg:#fff;
+        --dim:rgba(255,255,255,0.55);
+        --line:rgba(255,255,255,0.22);
+    }
+
+    *{ box-sizing:border-box; }
+
+    html, body{
+        margin:0;
+        padding:0;
+        background:var(--bg);
+        color:var(--fg);
+        font-family:"Times New Roman", Georgia, serif;
+        font-size:18px;
+        line-height:1.7;
+        -webkit-font-smoothing:antialiased;
+    }
+
+    body{ padding-bottom:80px; }
+
+    main{
+        width:min(1080px, 92vw);
+        margin:110px auto 80px;
+    }
+
+    .eyebrow{
+        font-family:"Courier New", monospace;
+        font-size:12px;
+        letter-spacing:3px;
+        text-transform:uppercase;
+        color:var(--dim);
+        margin:0 0 8px 0;
+    }
+
+    h1{
+        font-family:"Times New Roman", serif;
+        font-size:58px;
+        line-height:0.92;
+        margin:0 0 18px 0;
+        font-weight:550;
+        letter-spacing:1px;
+        transform:scaleY(1.15);
+        transform-origin:left top;
+    }
+
+    .whitebox{
+        background:var(--fg);
+        color:var(--bg);
+        display:inline-block;
+        padding:5px 10px;
+        font-family:"Courier New", monospace;
+        font-size:12px;
+        letter-spacing:2px;
+        text-transform:uppercase;
+        font-weight:700;
+    }
+
+    hr{
+        border:none;
+        border-top:1px solid var(--line);
+        margin:30px 0;
+    }
+
+    h2{
+        font-size:19px;
+        margin:0 0 10px 0;
+        font-weight:500;
+        font-style:italic;
+        color:var(--fg);
+    }
+
+    p{ margin:0 0 14px 0; }
+
+    .mono{
+        font-family:"Courier New", monospace;
+        font-size:12px;
+        letter-spacing:1.5px;
+        text-transform:uppercase;
+        color:var(--dim);
+        line-height:1.8;
+    }
+
+    .terminal-note{
+        margin:14px 0 0;
+        padding:12px 14px;
+        border:1px solid var(--line);
+        font-family:"Courier New", monospace;
+        font-size:12px;
+        letter-spacing:1.5px;
+        text-transform:uppercase;
+        line-height:1.9;
+        color:var(--fg);
+    }
+
+    button.btn{
+        background:var(--bg);
+        color:var(--fg);
+        border:1px solid var(--fg);
+        font-family:"Courier New", monospace;
+        font-size:11.5px;
+        letter-spacing:2px;
+        text-transform:uppercase;
+        padding:12px 18px;
+        cursor:pointer;
+    }
+
+    button.btn:hover{ background:var(--fg); color:var(--bg); }
+    button.btn.small{ padding:7px 12px; font-size:10.5px; }
+    button.btn.ghost{ border-color:var(--line); color:var(--dim); }
+    button.btn.ghost:hover{ background:var(--fg); color:var(--bg); border-color:var(--fg); }
+
+    /* ===== REC / STATS ===== */
+
+    .rec-indicator{
+        display:flex;
+        align-items:center;
+        gap:8px;
+        margin-top:14px;
+        font-family:"Courier New", monospace;
+        font-size:11px;
+        letter-spacing:2px;
+        text-transform:uppercase;
+        color:var(--dim);
+    }
+
+    .rec-dot{
+        width:8px;
+        height:8px;
+        border-radius:50%;
+        background:var(--fg);
+        animation:recBlink 1s steps(1) infinite;
+    }
+
+    @keyframes recBlink{ 50%{ opacity:0.15; } }
+
+    .stat-row{
+        display:flex;
+        flex-wrap:wrap;
+        gap:24px;
+        margin:14px 0 0;
+        font-family:"Courier New", monospace;
+        font-size:12px;
+        letter-spacing:1.5px;
+        text-transform:uppercase;
+        color:var(--dim);
+    }
+
+    .stat-row strong{ color:var(--fg); }
+
+    /* ===== CATEGORY GROUPS ===== */
+
+    .category-head{
+        font-family:"Courier New", monospace;
+        font-size:13px;
+        letter-spacing:3px;
+        text-transform:uppercase;
+        font-weight:700;
+        color:var(--fg);
+        margin:36px 0 16px 0;
+        border-top:1px solid var(--line);
+        padding-top:22px;
+    }
+
+    .category-block:first-of-type .category-head{
+        border-top:none;
+        padding-top:0;
+        margin-top:22px;
+    }
+
+    .category-count{
+        color:var(--dim);
+        font-weight:400;
+        margin-left:6px;
+    }
+
+    .contact-grid{
+        display:grid;
+        grid-template-columns:repeat(auto-fill, minmax(230px, 1fr));
+        gap:14px;
+    }
+
+    /* ===== CONTACT CARD ===== */
+
+    .contact-card{
+        position:relative;
+        overflow:hidden;
+        border:1px solid var(--line);
+        background:#050505;
+        padding:34px 16px 40px;
+        min-height:230px;
+        cursor:pointer;
+        transition:border-color 0.2s;
+    }
+
+    .contact-card:hover{ border-color:var(--dim); }
+    .contact-card.acquired{ border-color:var(--fg); cursor:default; }
+
+    /* scanline texture */
+    .contact-card::before{
+        content:"";
+        position:absolute;
+        inset:0;
+        pointer-events:none;
+        background:repeating-linear-gradient(
+            to bottom,
+            rgba(255,255,255,0.05) 0px,
+            rgba(255,255,255,0.05) 1px,
+            transparent 1px,
+            transparent 3px
+        );
+        opacity:0.5;
+        z-index:2;
+    }
+
+    /* lens vignette */
+    .contact-card::after{
+        content:"";
+        position:absolute;
+        inset:0;
+        pointer-events:none;
+        background:radial-gradient(ellipse at center, transparent 35%, rgba(0,0,0,0.6) 100%);
+        z-index:2;
+    }
+
+    .reticle{
+        position:absolute;
+        width:14px;
+        height:14px;
+        border-color:var(--dim);
+        border-style:solid;
+        border-width:0;
+        z-index:3;
+        pointer-events:none;
+    }
+
+    .reticle.tl{ top:8px; left:8px; border-top-width:1px; border-left-width:1px; }
+    .reticle.tr{ top:8px; right:8px; border-top-width:1px; border-right-width:1px; }
+    .reticle.bl{ bottom:8px; left:8px; border-bottom-width:1px; border-left-width:1px; }
+    .reticle.br{ bottom:8px; right:8px; border-bottom-width:1px; border-right-width:1px; }
+
+    .contact-card.acquired .reticle{ border-color:var(--fg); }
+
+    .contact-meta{
+        position:absolute;
+        top:8px;
+        left:26px;
+        right:26px;
+        display:flex;
+        justify-content:space-between;
+        z-index:3;
+        font-size:10px;
+        letter-spacing:1.5px;
+        pointer-events:none;
+    }
+
+    .contact-code, .contact-sensor{ color:var(--dim); }
+
+    .contact-telemetry{
+        position:absolute;
+        bottom:8px;
+        left:26px;
+        right:26px;
+        font-size:9.5px;
+        letter-spacing:1px;
+        color:rgba(255,255,255,0.32);
+        z-index:3;
+        text-align:center;
+        pointer-events:none;
+    }
+
+    .contact-body{
+        position:relative;
+        z-index:1;
+        margin-top:12px;
+    }
+
+    .contact-hidden{
+        filter:blur(0.4px) contrast(1.15) brightness(0.85);
+    }
+
+    .contact-status{
+        margin-bottom:10px;
+        color:var(--dim);
+    }
+
+    .contact-status.locked{ color:var(--fg); }
+
+    .noise-line{
+        font-family:"Courier New", monospace;
+        font-size:12px;
+        letter-spacing:1px;
+        color:rgba(255,255,255,0.5);
+        margin-bottom:6px;
+        min-height:1.4em;
+    }
+
+    .contact-card:not(.acquired) .contact-revealed{ display:none; }
+    .contact-card.acquired .contact-hidden{ display:none; }
+
+    .contact-name{
+        font-family:"Times New Roman", serif;
+        font-size:21px;
+        margin-bottom:10px;
+        min-height:1.3em;
+    }
+
+    .contact-field{ margin-bottom:10px; }
+    .field-label{ display:block; margin-bottom:3px; }
+
+    .contact-acquire-text, .contact-fix-text{
+        margin:0;
+        font-size:13.5px;
+        line-height:1.55;
+        color:var(--fg);
+        min-height:1.5em;
+    }
+
+    .release-btn{ margin-top:4px; }
+
+    @keyframes contactGlitch{
+        0%{   transform:translateX(0);   filter:brightness(1)   contrast(1.3) blur(2px); }
+        10%{  transform:translateX(-3px);filter:brightness(1.6) contrast(1.6) blur(0px); }
+        20%{  transform:translateX(2px); filter:brightness(0.6) contrast(1.8) blur(3px); }
+        30%{  transform:translateX(-4px);filter:brightness(1.3) contrast(1.2) blur(1px); }
+        45%{  transform:translateX(1px); filter:brightness(0.8) contrast(1.5) blur(0px); }
+        60%{  transform:translateX(-2px);filter:brightness(1.4) contrast(1.1) blur(2px); }
+        75%{  transform:translateX(3px); filter:brightness(0.9) contrast(1.3) blur(0px); }
+        90%{  transform:translateX(-1px);filter:brightness(1.1) contrast(1.1) blur(0px); }
+        100%{ transform:translateX(0);   filter:brightness(1)   contrast(1)   blur(0px); }
+    }
+
+    .contact-card.locking{
+        animation:contactGlitch 0.65s steps(2, end);
+    }
+
+    /* ===== LOG ===== */
+
+    .log-panel{
+        margin-top:16px;
+        border:1px solid var(--line);
+        max-height:240px;
+        overflow-y:auto;
+        font-family:"Courier New", monospace;
+        font-size:11.5px;
+        letter-spacing:0.5px;
+        line-height:1.9;
+    }
+
+    .log-empty{
+        padding:16px;
+        color:var(--dim);
+        text-transform:uppercase;
+        letter-spacing:2px;
+        font-size:11px;
+    }
+
+    .log-entry{
+        padding:9px 14px;
+        border-bottom:1px solid var(--line);
+        color:var(--dim);
+    }
+
+    .log-entry:last-child{ border-bottom:none; }
+    .log-entry .le-tag{ color:var(--fg); margin-right:8px; }
+
+    /* ===== NAV ===== */
+
+    .nav-link{
+        display:block;
+        margin-top:18px;
+        font-family:"Courier New", monospace;
+        font-size:13px;
+        letter-spacing:2px;
+        text-transform:uppercase;
+        border-bottom:1px solid var(--line);
+        color:var(--fg);
+        text-decoration:none;
+        width:max-content;
+    }
+
+    .nav-link:hover{ border-bottom-color:var(--fg); }
+
+    @media (max-width: 720px){
+        h1{ font-size:42px; }
+        .contact-grid{ grid-template-columns:1fr; }
+    }
+</style>
+</head>
+<body>
+<main>
+
+    <p class="eyebrow">NODE // 008</p>
+    <h1>AFTERIMAGE TELEMETRY</h1>
+    <div class="whitebox">ULTRABLACK OPERATOR — HORIZOGRAPH TERMINAL</div>
+
+    <div class="rec-indicator"><span class="rec-dot"></span> REC <span id="telemetryClock">00:00:00</span></div>
+
+    <div class="terminal-note">
+        RAW SENSOR CONTACTS BELOW ARE UNRESOLVED — CLICK A CONTACT TO LOCK ON.<br>
+        LOCKING DECODES THE CONTACT AND FILES IT TO THIS OPERATOR'S TELEMETRY LOG, PERMANENTLY.<br>
+        ACQUIRE CONDITIONS AND FIX EFFECTS STAY ENCRYPTED UNTIL LOCK IS CONFIRMED.<br>
+        DATA IS SAVED IN THIS BROWSER ONLY. RELEASE A LOCKED CONTACT TO CLEAR IT.
+    </div>
+
+    <div class="stat-row">
+        <span>CONTACTS LOGGED: <strong id="statLogged">0 / 28</strong></span>
+    </div>
+
+    <div id="contactSections"></div>
+
+    <hr>
+
+    <h2>Telemetry Log</h2>
+    <div class="log-panel" id="logPanel"></div>
+
+    <hr>
+    <a class="nav-link" href="../operator-registry/">→ OPERATOR REGISTRY</a>
+    <a class="nav-link" href="../hex-grave/">→ HEX GRAVE</a>
+    <a class="nav-link" href="../link-and-knot/">→ LINK AND KNOT</a>
+    <a class="nav-link" href="../routine/">→ ROUTINE</a>
+    <a class="nav-link" href="../">→ KERNEL</a>
+
+</main>
+<script src="afterimage-telemetry.js"></script>
+</body>
+</html>
