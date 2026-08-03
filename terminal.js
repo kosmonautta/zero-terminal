@@ -26,7 +26,23 @@ const ACCESS = {
 
     "REGISTRY": "operator-registry/",
 
-    "OPERATOR REGISTRY": "operator-registry/"
+    "OPERATOR REGISTRY": "operator-registry/",
+
+    "FIELD": "field-baseline-operational-structure/",
+
+    "BASELINE": "field-baseline-operational-structure/",
+
+    "OPERATIONAL": "field-baseline-operational-structure/",
+
+    "FIELD": "field-baseline-operational-structure/",
+
+    "FIELD BASELINE": "field-baseline-operational-structure/",
+
+    "AFTERIMAGE": "afterimage-telemetry/",
+
+    "TELEMETRY": "afterimage-telemetry/",
+
+    "AFTERIMAGE TELEMETRY": "afterimage-telemetry/",
 };
 
 function targetURL(relPath){
