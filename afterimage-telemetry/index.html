@@ -419,10 +419,15 @@
        animation-delay differs). Crosshair is a background gradient so both pseudo-
        elements stay free for the moving parts. transform/opacity only, since this
        repeats per unresolved card across the whole grid. */
+    /* replaces scrambled/randomized placeholder text with a small quartered scope —
+       same shape as the header's acq-scope (crosshair dividing it into four squares)
+       instead of a horizontal strip or a stack of repeated squares. If a card's
+       markup renders more than one .noise-line row, only the first becomes the
+       scope — any siblings after it are hidden so each card shows exactly one. */
     .noise-line{
         position:relative;
-        width:56px;
-        height:56px;
+        width:100px;
+        height:100px;
         margin-bottom:6px;
         overflow:hidden;
         border:1px solid var(--line);
@@ -433,13 +438,17 @@
             rgba(255,255,255,0.02);
     }
 
+    .noise-line ~ .noise-line{
+        display:none;
+    }
+
     .noise-line::before{
         content:"";
         position:absolute;
-        top:6px;
-        left:6px;
-        width:5px;
-        height:5px;
+        top:8px;
+        left:8px;
+        width:6px;
+        height:6px;
         background:var(--fg);
         opacity:0.75;
         animation:noiseHop 4.6s cubic-bezier(.4,0,.2,1) infinite;
@@ -448,32 +457,32 @@
     .noise-line::after{
         content:"";
         position:absolute;
-        top:6px;
-        left:6px;
-        width:10px;
-        height:10px;
+        top:8px;
+        left:8px;
+        width:14px;
+        height:14px;
         border:1px solid var(--fg);
         opacity:0.4;
         animation:noiseHop 4.6s cubic-bezier(.4,0,.2,1) infinite;
         animation-delay:0.4s;
     }
 
-    /* five irregular points spread across all four quadrants, with pauses between —
-       sharp non-uniform hops, not a smooth sweep. blip and bracket trace this
-       identical path; only the bracket's animation-delay differs, so it's always a
-       beat behind and the lock never quite closes. */
+    /* five irregular points spread across all four quadrants of the square, with
+       pauses between — sharp non-uniform hops, not a smooth sweep. blip and bracket
+       trace this identical path; only the bracket's animation-delay differs, so it's
+       always a beat behind and the lock never quite closes. */
     @keyframes noiseHop{
         0%{   transform:translate(0px,0px);   }
         7%{   transform:translate(0px,0px);   }
-        11%{  transform:translate(30px,34px); }
-        26%{  transform:translate(30px,34px); }
-        30%{  transform:translate(-2px,28px); }
-        45%{  transform:translate(-2px,28px); }
-        49%{  transform:translate(24px,4px);  }
-        64%{  transform:translate(24px,4px);  }
-        68%{  transform:translate(8px,16px);  }
-        83%{  transform:translate(8px,16px);  }
-        100%{ transform:translate(8px,16px);  }
+        11%{  transform:translate(54px,60px); }
+        26%{  transform:translate(54px,60px); }
+        30%{  transform:translate(-4px,50px); }
+        45%{  transform:translate(-4px,50px); }
+        49%{  transform:translate(44px,6px);  }
+        64%{  transform:translate(44px,6px);  }
+        68%{  transform:translate(14px,28px); }
+        83%{  transform:translate(14px,28px); }
+        100%{ transform:translate(14px,28px); }
     }
 
     .contact-card:not(.acquired) .contact-revealed{ display:none; }
@@ -631,8 +640,8 @@
 
     <div class="terminal-note">
         RAW SENSOR CONTACTS BELOW ARE UNRESOLVED — CLICK A CONTACT TO LOCK ON.<br>
-        LOCKING DECODES THE CONTACT AND FILES IT TO THIS OPERATOR'S TELEMETRY LOG.<br>
-        EVERYTHING STAYS ENCRYPTED UNTIL LOCK IS CONFIRMED.<br>
+        LOCKING DECODES THE CONTACT AND FILES IT TO THIS OPERATOR'S TELEMETRY LOG, PERMANENTLY.<br>
+        REQUIREMENTS READ CLEAR ON SENSOR AT ALL TIMES. EVERYTHING ELSE STAYS ENCRYPTED UNTIL LOCK IS CONFIRMED.<br>
     </div>
 
     <div class="stat-row">
