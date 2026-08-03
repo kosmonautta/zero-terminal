@@ -183,9 +183,16 @@
         border:1px solid var(--line);
         padding:9px 12px;
         font-family:"Courier New", monospace;
-        font-size:14px;
+        font-size:22px;
+        font-weight:700;
         text-align:center;
         min-width:70px;
+        transition:background 0.15s, color 0.15s;
+    }
+
+    .rc-pale.flash{
+        background:var(--fg);
+        color:var(--bg);
     }
 
     .rc-pale-label{
@@ -214,21 +221,32 @@
     .budget-row{
         margin-top:14px;
         font-family:"Courier New", monospace;
-        font-size:12px;
+        font-size:13px;
         letter-spacing:1.5px;
         text-transform:uppercase;
         color:var(--dim);
         border:1px solid var(--line);
-        padding:12px 16px;
+        padding:14px 16px;
+        transition:background 0.15s, color 0.15s;
     }
 
     .budget-row strong{
         color:var(--fg);
+        font-size:16px;
     }
 
     .budget-row.bad{
         border-color:var(--fg);
         color:var(--fg);
+    }
+
+    .budget-row.flash{
+        background:var(--fg);
+        color:var(--bg);
+    }
+
+    .budget-row.flash strong{
+        color:var(--bg);
     }
 
     /* ===== CAPACITY ===== */
@@ -387,16 +405,6 @@
         color:var(--fg);
     }
 
-    /* ===== ADD PROCEDURE ===== */
-
-    .add-row{
-        display:grid;
-        grid-template-columns:2fr 1fr 1fr auto;
-        gap:10px;
-        margin-top:16px;
-        align-items:end;
-    }
-
     button.btn{
         background:var(--bg);
         color:var(--fg);
@@ -453,7 +461,6 @@
         .readings-grid{ grid-template-columns:1fr; }
         .capacity-grid{ grid-template-columns:repeat(2, 1fr); }
         .identity-grid{ grid-template-columns:1fr; }
-        .add-row{ grid-template-columns:1fr 1fr; }
     }
 
     @media (max-width: 600px){
@@ -476,7 +483,7 @@
 <body>
 <main>
 
-    <p class="eyebrow">NODE // 007</p>
+    <p class="eyebrow">NODE // 008</p>
     <h1>OPERATOR REGISTRY</h1>
     <div class="whitebox">ULTRABLACK OPERATOR</div>
 
@@ -593,31 +600,6 @@
     <p class="mono">Unstamped → 1d20 + Reading &nbsp;·&nbsp; Stamped → 2d20 (best) + Reading</p>
 
     <div id="procBody"></div>
-
-    <div class="add-row">
-        <div>
-            <label for="newProcName">New Procedure</label>
-            <input type="text" id="newProcName" placeholder="PROCEDURE NAME">
-        </div>
-        <div>
-            <label for="newProcReading">Reading</label>
-            <select id="newProcReading">
-                <option value="BRN">BRN</option>
-                <option value="FRM">FRM</option>
-                <option value="NRV">NRV</option>
-            </select>
-        </div>
-        <div>
-            <label for="newProcType">Type</label>
-            <select id="newProcType">
-                <option value="standard">STANDARD</option>
-                <option value="nonstandard">NON-STANDARD</option>
-            </select>
-        </div>
-        <div>
-            <button class="btn" id="addProcBtn" type="button">+ ADD</button>
-        </div>
-    </div>
 
     <div class="action-row">
         <button class="btn ghost" id="resetBtn" type="button">RESET SHEET</button>
