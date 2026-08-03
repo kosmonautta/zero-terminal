@@ -391,132 +391,123 @@
         border: 1px dashed var(--line);
     }
 
-    /* ===== PROCEDURES ===== */
+    /* ===== PROCEDURE TABLE ===== */
 
-    .reading-group-head{
-        display:flex;
-        justify-content:space-between;
-        align-items:baseline;
-        font-family:"Courier New", monospace;
-        font-size:12px;
-        letter-spacing:2px;
-        text-transform:uppercase;
-        font-weight:700;
-        color:var(--fg);
-        border-bottom:1px solid var(--fg);
-        padding:18px 4px 6px;
+    .procedure-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 16px;
+        font-family: "Courier New", monospace;
+        font-size: 13px;
     }
 
-    .reading-group-head:first-child{
-        padding-top:6px;
+    .procedure-table th {
+        text-align: left;
+        padding: 10px 8px;
+        border-bottom: 2px solid var(--fg);
+        font-size: 11px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: var(--dim);
+        font-weight: 700;
     }
 
-    .reading-group-head .rgh-val{
-        color:var(--dim);
-        font-weight:400;
+    .procedure-table td {
+        padding: 10px 8px;
+        border-bottom: 1px solid var(--line);
+        vertical-align: middle;
     }
 
-    .procedure-row{
-        display:flex;
-        align-items:center;
-        gap:14px;
-        padding:12px 4px;
-        border-bottom:1px solid var(--line);
+    .procedure-table .proc-group-header td {
+        padding: 14px 8px 6px 8px;
+        border-bottom: 1px solid var(--fg);
+        font-weight: 700;
+        font-size: 14px;
+        letter-spacing: 2px;
+        color: var(--fg);
     }
 
-    .stamp-dot{
-        flex-shrink:0;
-        width:20px;
-        height:20px;
-        border:1px solid var(--fg);
-        background:var(--bg);
-        cursor:pointer;
-        padding:0;
+    .procedure-table .proc-group-header .group-reading {
+        font-weight: 400;
+        color: var(--dim);
+        font-size: 12px;
+        margin-left: 16px;
+        letter-spacing: 1px;
     }
 
-    .stamp-dot.on{
-        background:var(--fg);
+    .procedure-table .proc-row.even {
+        background: rgba(255,255,255,0.03);
     }
 
-    .proc-info{
-        flex:1;
-        min-width:0;
+    .procedure-table .proc-name-cell {
+        font-family: "Times New Roman", serif;
+        font-size: 16px;
+        font-weight: 500;
     }
 
-    .proc-name-line{
-        font-family:"Times New Roman", serif;
-        font-size:16px;
+    .procedure-table .proc-desc-cell {
+        font-size: 11px;
+        color: var(--dim);
     }
 
-    .proc-reading-tag{
-        font-family:"Courier New", monospace;
-        font-size:11px;
-        letter-spacing:1px;
-        color:var(--dim);
+    .procedure-table .proc-reading-cell {
+        font-size: 12px;
+        color: var(--dim);
+        text-align: center;
     }
 
-    .proc-desc,
-    .proc-tag{
-        display:block;
-        font-family:"Courier New", monospace;
-        font-size:10.5px;
-        letter-spacing:0.8px;
-        color:var(--dim);
-        margin-top:2px;
-        text-transform:uppercase;
+    .procedure-table .proc-stamp-cell {
+        text-align: center;
     }
 
-    .proc-actions{
-        display:flex;
-        align-items:center;
-        gap:10px;
-        flex-shrink:0;
+    .procedure-table .stamp-dot {
+        width: 24px;
+        height: 24px;
+        border: 2px solid var(--fg);
+        background: var(--bg);
+        cursor: pointer;
+        padding: 0;
+        border-radius: 50%;
+        transition: background 0.15s;
     }
 
-    .proc-result{
-        font-family:"Courier New", monospace;
-        font-size:12px;
-        letter-spacing:0.5px;
-        color:var(--dim);
-        min-width:11em;
-        text-align:right;
-        white-space:nowrap;
-        overflow:hidden;
-        text-overflow:ellipsis;
+    .procedure-table .stamp-dot.on {
+        background: var(--fg);
     }
 
-    .roll-btn{
-        background:var(--bg);
-        border:1px solid var(--fg);
-        color:var(--fg);
-        font-family:"Courier New", monospace;
-        font-size:10.5px;
-        letter-spacing:1.5px;
-        text-transform:uppercase;
-        padding:7px 10px;
-        cursor:pointer;
-        white-space:nowrap;
-        flex-shrink:0;
+    .procedure-table .proc-result-cell {
+        font-size: 12px;
+        color: var(--dim);
+        min-width: 120px;
+        max-width: 200px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
     }
 
-    .roll-btn:hover{
-        background:var(--fg);
-        color:var(--bg);
+    .procedure-table .proc-action-cell {
+        text-align: center;
     }
 
-    .remove-btn{
-        background:none;
-        border:none;
-        color:var(--dim);
-        font-family:"Courier New", monospace;
-        font-size:14px;
-        cursor:pointer;
-        flex-shrink:0;
+    .procedure-table .roll-btn {
+        background: var(--bg);
+        border: 1px solid var(--fg);
+        color: var(--fg);
+        font-family: "Courier New", monospace;
+        font-size: 10px;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        padding: 6px 12px;
+        cursor: pointer;
+        transition: background 0.15s, color 0.15s;
     }
 
-    .remove-btn:hover{
-        color:var(--fg);
+    .procedure-table .roll-btn:hover {
+        background: var(--fg);
+        color: var(--bg);
     }
+
+    /* ===== BUTTONS ===== */
 
     button.btn{
         background:var(--bg);
@@ -576,20 +567,25 @@
         .identity-grid{ grid-template-columns:1fr; }
     }
 
+    @media (max-width: 768px) {
+        .procedure-table {
+            font-size: 11px;
+        }
+        .procedure-table .proc-name-cell {
+            font-size: 13px;
+        }
+        .procedure-table .proc-result-cell {
+            min-width: 80px;
+            max-width: 100px;
+        }
+        .procedure-table th,
+        .procedure-table td {
+            padding: 6px 4px;
+        }
+    }
+
     @media (max-width: 600px){
         h1{ font-size:38px; }
-        .procedure-row{
-            flex-wrap:wrap;
-        }
-        .proc-actions{
-            width:100%;
-            justify-content:space-between;
-            margin-left:34px;
-            margin-top:6px;
-        }
-        .proc-result{
-            text-align:left;
-        }
         .card-grid{
             grid-template-columns:1fr;
         }
@@ -599,7 +595,7 @@
 <body>
 <main>
 
-    <p class="eyebrow">NODE // 007</p>
+    <p class="eyebrow">NODE // 008</p>
     <h1>OPERATOR REGISTRY</h1>
     <div class="whitebox">ULTRABLACK OPERATOR</div>
 
@@ -639,7 +635,7 @@
             <div class="rc-row">
                 <div style="flex:1;">
                     <label for="readingBRN">Reading</label>
-                    <input type="number" id="readingBRN" min="0" value="12">
+                    <input type="number" id="readingBRN" min="8" max="16" value="12">
                 </div>
                 <div class="rc-pale">
                     <span class="rc-pale-label">PALE</span>
@@ -655,7 +651,7 @@
             <div class="rc-row">
                 <div style="flex:1;">
                     <label for="readingFRM">Reading</label>
-                    <input type="number" id="readingFRM" min="0" value="12">
+                    <input type="number" id="readingFRM" min="8" max="16" value="12">
                 </div>
                 <div class="rc-pale">
                     <span class="rc-pale-label">PALE</span>
@@ -671,7 +667,7 @@
             <div class="rc-row">
                 <div style="flex:1;">
                     <label for="readingNRV">Reading</label>
-                    <input type="number" id="readingNRV" min="0" value="12">
+                    <input type="number" id="readingNRV" min="8" max="16" value="12">
                 </div>
                 <div class="rc-pale">
                     <span class="rc-pale-label">PALE</span>
@@ -710,7 +706,6 @@
     </div>
     <div class="capacity-readout" id="capacityReadout">REMAINING: <strong id="capRemaining">6</strong></div>
 
-    <!-- ===== INVENTORY SECTION - THIS WAS MISSING! ===== -->
     <hr>
 
     <h2>Inventory</h2>
@@ -721,7 +716,6 @@
 
     <h2>Procedure Index</h2>
     <p class="mono">Unstamped → 1d20 + Reading &nbsp;·&nbsp; Stamped → 2d20 (best) + Reading</p>
-
     <div id="procBody"></div>
 
     <div class="action-row">
