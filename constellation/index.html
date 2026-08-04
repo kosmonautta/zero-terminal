@@ -31,27 +31,6 @@
         position:relative;
     }
 
-    /* fine grain, mono thermal noise — same texture as the telemetry page, kept to a
-       single page-level overlay rather than anything per-star */
-    body::after{
-        content:"";
-        position:fixed;
-        inset:0;
-        pointer-events:none;
-        z-index:49;
-        opacity:0.045;
-        background-image:
-            repeating-linear-gradient(0deg, rgba(255,255,255,0.6) 0px, transparent 1px, transparent 2px),
-            repeating-linear-gradient(90deg, rgba(255,255,255,0.3) 0px, transparent 1px, transparent 3px);
-        animation:flirGrain 0.4s steps(2) infinite;
-    }
-
-    @keyframes flirGrain{
-        0%{ transform:translate(0,0); }
-        50%{ transform:translate(-1px,1px); }
-        100%{ transform:translate(1px,-1px); }
-    }
-
     main{
         width:min(980px, 92vw);
         margin:110px auto 80px;
