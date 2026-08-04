@@ -191,16 +191,16 @@ function drawLine(svg, a, b, closing){
     requestAnimationFrame(() => line.classList.add("drawn"));
 }
 
-function drawStar(container, star, lit){
+function drawStar(container, star, lit, settled){
     const g = ns("g");
-    g.setAttribute("class", "field-star" + (lit ? " lit" : ""));
+    g.setAttribute("class", "field-star" + (lit ? " lit" : "") + (settled ? " settled" : ""));
     g.setAttribute("transform", `translate(${star.x},${star.y})`);
 
     const title = ns("title");
     title.textContent = star.name;
     g.appendChild(title);
 
-    if(lit){
+    if(settled){
         const glow = ns("circle");
         glow.setAttribute("r", 12);
         glow.setAttribute("class", "star-glow");
@@ -247,7 +247,8 @@ function renderField(){
     }
 
     AFTERIMAGES.forEach(star => {
-        drawStar(content, star, selected.includes(star.name));
+        const lit = selected.includes(star.name);
+        drawStar(content, star, lit, lit && !!match);
     });
 }
 
