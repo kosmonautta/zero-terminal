@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CONSTELLATION</title>
+<link rel="stylesheet" href="../style.css">
+<style>
+    :root{
+        --bg:#000;
+        --fg:#fff;
+        --dim:rgba(255,255,255,0.55);
+        --line:rgba(255,255,255,0.22);
+    }
+
+    *{ box-sizing:border-box; }
+
+    html, body{
+        margin:0;
+        padding:0;
+        background:var(--bg);
+        color:var(--fg);
+        font-family:"Times New Roman", Georgia, serif;
+        font-size:18px;
+        line-height:1.7;
+        -webkit-font-smoothing:antialiased;
+    }
+
+    body{
+        padding-bottom:80px;
+        position:relative;
+    }
+
+    /* fine grain, mono thermal noise — same texture as the telemetry page, kept to a
+       single page-level overlay rather than anything per-star */
+    body::after{
+        content:"";
+        position:fixed;
+        inset:0;
+        pointer-events:none;
+        z-index:49;
+        opacity:0.045;
+        background-image:
+            repeating-linear-gradient(0deg, rgba(255,255,255,0.6) 0px, transparent 1px, transparent 2px),
+            repeating-linear-gradient(90deg, rgba(255,255,255,0.3) 0px, transparent 1px, transparent 3px);
+        animation:flirGrain 0.4s steps(2) infinite;
+    }
+
+    @keyframes flirGrain{
+        0%{ transform:translate(0,0); }
+        50%{ transform:translate(-1px,1px); }
+        100%{ transform:translate(1px,-1px); }
+    }
+
+    main{
+        width:min(980px, 92vw);
+        margin:110px auto 80px;
+        position:relative;
+        z-index:1;
+    }
+
+    .eyebrow{
+        font-family:"Courier New", monospace;
+        font-size:12px;
+        letter-spacing:3px;
+        text-transform:uppercase;
+        color:var(--dim);
+        margin:0 0 8px 0;
+    }
+
+    h1{
+        font-family:"Times New Roman", serif;
+        font-size:58px;
+        line-height:0.92;
+        margin:0 0 18px 0;
+        font-weight:550;
+        letter-spacing:1px;
+        transform:scaleY(1.15);
+        transform-origin:left top;
+    }
+
+    .whitebox{
+        background:var(--fg);
+        color:var(--bg);
+        display:inline-block;
+        padding:5px 10px;
+        font-family:"Courier New", monospace;
+        font-size:12px;
+        letter-spacing:2px;
+        text-transform:uppercase;
+        font-weight:700;
+    }
+
+    hr{
+        border:none;
+        border-top:1px solid var(--line);
+        margin:30px 0;
+    }
+
+    h2{
+        font-size:19px;
+        margin:0 0 10px 0;
+        font-weight:500;
+        font-style:italic;
+        color:var(--fg);
+    }
+
+    p{ margin:0 0 14px 0; }
+
+    .mono{
+        font-family:"Courier New", monospace;
+        font-size:12px;
+        letter-spacing:1.5px;
+        text-transform:uppercase;
+        color:var(--dim);
+        line-height:1.8;
+    }
+
+    .terminal-note{
+        margin:14px 0 0;
+        padding:12px 14px;
+        border:1px solid var(--line);
+        font-family:"Courier New", monospace;
+        font-size:12px;
+        letter-spacing:1.5px;
+        text-transform:uppercase;
+        line-height:1.9;
+        color:var(--fg);
+    }
+
+    button.btn{
+        background:var(--bg);
+        color:var(--fg);
+        border:1px solid var(--fg);
+        font-family:"Courier New", monospace;
+        font-size:11.5px;
+        letter-spacing:2px;
+        text-transform:uppercase;
+        padding:10px 16px;
+        cursor:pointer;
+    }
+
+    button.btn:hover{ background:var(--fg); color:var(--bg); }
+
+    /* ===== FIELD ===== */
+
+    .field-wrap{
+        position:relative;
+        border:1px solid var(--line);
+        background:#050505;
+        overflow:hidden;
+    }
+
+    #starfield{
+        width:100%;
+        height:auto;
+        aspect-ratio:600/340;
+        display:block;
+    }
+
+    .field-empty{
+        position:absolute;
+        inset:0;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        font-family:"Courier New", monospace;
+        font-size:12px;
+        letter-spacing:2px;
+        text-transform:uppercase;
+        color:var(--dim);
+        pointer-events:none;
+    }
+
+    .star-body{
+        fill:var(--dim);
+        opacity:0.45;
+        transition:fill 0.3s ease, opacity 0.3s ease;
+    }
+
+    .field-star.lit .star-body{
+        fill:var(--fg);
+        opacity:0.95;
+    }
+
+    .star-glow{
+        fill:var(--fg);
+        opacity:0.1;
+    }
+
+    .star-label{
+        font-family:"Courier New", monospace;
+        font-size:9px;
+        letter-spacing:1px;
+        text-transform:uppercase;
+        fill:var(--fg);
+    }
+
+    .field-star{ cursor:pointer; }
+
+    .field-line{
+        stroke:var(--fg);
+        stroke-width:1;
+        opacity:0;
+        transition:opacity 0.5s ease;
+    }
+
+    .field-line.drawn{ opacity:0.5; }
+
+    .field-line.closing{ stroke-width:1.3; }
+    .field-line.closing.drawn{ opacity:0.85; }
+
+    /* ===== STATS / RESULT ===== */
+
+    .stat-row{
+        display:flex;
+        flex-wrap:wrap;
+        gap:24px;
+        margin:16px 0 0;
+        font-family:"Courier New", monospace;
+        font-size:12px;
+        letter-spacing:1.5px;
+        text-transform:uppercase;
+        color:var(--dim);
+    }
+
+    .stat-row strong{ color:var(--fg); }
+
+    .result-panel{
+        margin-top:22px;
+        border:1px solid var(--line);
+        padding:20px 22px;
+        min-height:5em;
+    }
+
+    .result-status{
+        font-family:"Courier New", monospace;
+        font-size:12px;
+        letter-spacing:2px;
+        text-transform:uppercase;
+        color:var(--dim);
+        margin-bottom:8px;
+    }
+
+    .result-name{
+        font-family:"Times New Roman", serif;
+        font-size:26px;
+        letter-spacing:0.5px;
+        min-height:1.2em;
+        transition:opacity 0.6s ease, filter 0.6s ease;
+    }
+
+    .result-name.resolving{
+        opacity:0;
+        filter:blur(4px);
+    }
+
+    .result-sub{
+        font-family:"Courier New", monospace;
+        font-size:12px;
+        letter-spacing:1px;
+        text-transform:uppercase;
+        color:var(--dim);
+        margin-top:10px;
+        line-height:1.8;
+    }
+
+    /* ===== ACTIONS ===== */
+
+    .action-row{
+        display:flex;
+        flex-wrap:wrap;
+        gap:10px;
+        margin:16px 0 0;
+    }
+
+    .key-row{
+        display:flex;
+        gap:10px;
+        margin-top:16px;
+        flex-wrap:wrap;
+    }
+
+    .key-row input{
+        flex:1;
+        min-width:220px;
+        background:var(--bg);
+        color:var(--fg);
+        border:1px solid var(--line);
+        font-family:"Courier New", monospace;
+        letter-spacing:1.5px;
+        padding:10px 12px;
+        text-transform:uppercase;
+    }
+
+    .key-row input::placeholder{
+        color:var(--dim);
+        text-transform:uppercase;
+    }
+
+    .manual-note{
+        margin-top:6px;
+        font-family:"Courier New", monospace;
+        font-size:11px;
+        letter-spacing:1px;
+        color:var(--dim);
+    }
+
+    /* ===== CATALOG ===== */
+
+    .star-grid{
+        display:grid;
+        grid-template-columns:repeat(auto-fill, minmax(160px, 1fr));
+        gap:10px;
+    }
+
+    .star-card{
+        border:1px solid var(--line);
+        padding:10px 12px;
+        cursor:pointer;
+        background:var(--bg);
+        transition:background 0.15s ease, color 0.15s ease;
+    }
+
+    .star-card:hover,
+    .star-card.selected{
+        background:var(--fg);
+        color:var(--bg);
+    }
+
+    .sc-code{
+        font-family:"Courier New", monospace;
+        font-size:10px;
+        letter-spacing:1.5px;
+        text-transform:uppercase;
+        color:inherit;
+        opacity:0.6;
+        margin-bottom:2px;
+    }
+
+    .sc-name{
+        font-family:"Times New Roman", serif;
+        font-size:14px;
+        color:inherit;
+    }
+
+    /* ===== NAV ===== */
+
+    .nav-link{
+        display:block;
+        margin-top:18px;
+        font-family:"Courier New", monospace;
+        font-size:13px;
+        letter-spacing:2px;
+        text-transform:uppercase;
+        border-bottom:1px solid var(--line);
+        color:var(--fg);
+        text-decoration:none;
+        width:max-content;
+    }
+
+    .nav-link:hover{ border-bottom-color:var(--fg); }
+
+    @media (prefers-reduced-motion: reduce){
+        body::after{ animation:none !important; }
+        .star-body, .field-line, .result-name{ transition:none !important; }
+    }
+
+    @media (max-width: 720px){
+        h1{ font-size:42px; }
+        .star-grid{ grid-template-columns:repeat(2, 1fr); }
+    }
+</style>
+</head>
+<body>
+<main>
+
+    <p class="eyebrow">NODE // 011</p>
+    <h1>CONSTELLATION</h1>
+    <div class="whitebox">ULTRABLACK OPERATOR — HORIZOGRAPH TERMINAL</div>
+
+    <div class="terminal-note">
+        SELECT AFTERIMAGES BELOW TO PROJECT THEM ONTO THE FIELD.<br>
+        THE SYSTEM DRAWS ONLY THE LINES BETWEEN WHAT YOU HAVE CHOSEN.<br>
+        SOME ARRANGEMENTS RESOLVE INTO A NAMED CONSTELLATION. MOST WILL NOT.<br>
+        ORDER DOES NOT MATTER — ONLY WHICH POINTS OF LIGHT ARE PRESENT.
+    </div>
+
+    <hr>
+
+    <h2>Field</h2>
+    <div class="field-wrap">
+        <svg id="starfield" viewBox="0 0 600 340" preserveAspectRatio="xMidYMid meet"></svg>
+        <div class="field-empty" id="fieldEmpty">NO POINTS PROJECTED</div>
+    </div>
+
+    <div class="stat-row">
+        <span>POINTS PROJECTED: <strong id="statPoints">0</strong></span>
+        <span>FORMATIONS CHARTED: <strong id="statCharted">0 / 18</strong></span>
+    </div>
+
+    <div class="result-panel">
+        <div class="result-status" id="resultStatus">STATUS: SKY EMPTY</div>
+        <div class="result-name" id="resultName"></div>
+        <div class="result-sub" id="resultSub"></div>
+    </div>
+
+    <div class="action-row">
+        <button class="btn" id="clearBtn" type="button">CLEAR FIELD</button>
+    </div>
+
+    <div class="key-row">
+        <input id="manualInput" autocomplete="off" placeholder="e.g. Gimbal, Tic Tac, GoFast">
+        <button class="btn" id="buildBtn" type="button">PROJECT FROM INPUT</button>
+    </div>
+    <div class="manual-note">NAMES SEPARATED BY COMMA. UNRECOGNIZED NAMES ARE IGNORED.</div>
+
+    <hr>
+
+    <h2>Afterimage Catalog</h2>
+    <p class="mono">Select an afterimage to add or remove it from the field</p>
+
+    <div id="catalog"></div>
+
+    <hr>
+    <a class="nav-link" href="../afterimage-telemetry/">→ AFTERIMAGE TELEMETRY</a>
+    <a class="nav-link" href="../horizograph/">→ HORIZOGRAPH</a>
+    <a class="nav-link" href="../spiritbox/">→ SPIRITBOX</a>
+    <a class="nav-link" href="../operator-registry/">→ OPERATOR REGISTRY</a>
+    <a class="nav-link" href="../">→ KERNEL</a>
+
+</main>
+<script src="constellation.js"></script>
+</body>
+</html>
