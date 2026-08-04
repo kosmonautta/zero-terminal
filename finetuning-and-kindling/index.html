@@ -1,1 +1,451 @@
-a
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FINETUNING AND KINDLING</title>
+<link rel="stylesheet" href="../style.css">
+<style>
+    :root{
+        --bg:#000;
+        --fg:#fff;
+        --dim:rgba(255,255,255,0.55);
+        --line:rgba(255,255,255,0.22);
+    }
+
+    *{ box-sizing:border-box; }
+
+    html, body{
+        margin:0;
+        padding:0;
+        background:var(--bg);
+        color:var(--fg);
+        font-family:"Times New Roman", Georgia, serif;
+        font-size:18px;
+        line-height:1.7;
+        -webkit-font-smoothing:antialiased;
+    }
+
+    body{ padding-bottom:80px; }
+
+    main{
+        width:min(980px, 92vw);
+        margin:110px auto 80px;
+    }
+
+    .eyebrow{
+        font-family:"Courier New", monospace;
+        font-size:12px;
+        letter-spacing:3px;
+        text-transform:uppercase;
+        color:var(--dim);
+        margin:0 0 8px 0;
+    }
+
+    h1{
+        font-family:"Times New Roman", serif;
+        font-size:52px;
+        line-height:0.95;
+        margin:0 0 18px 0;
+        font-weight:550;
+        letter-spacing:0.5px;
+        transform:scaleY(1.12);
+        transform-origin:left top;
+    }
+
+    .whitebox{
+        background:var(--fg);
+        color:var(--bg);
+        display:inline-block;
+        padding:5px 10px;
+        font-family:"Courier New", monospace;
+        font-size:12px;
+        letter-spacing:2px;
+        text-transform:uppercase;
+        font-weight:700;
+    }
+
+    hr{
+        border:none;
+        border-top:1px solid var(--line);
+        margin:30px 0;
+    }
+
+    h2{
+        font-size:19px;
+        margin:0 0 10px 0;
+        font-weight:500;
+        font-style:italic;
+        color:var(--fg);
+    }
+
+    p{ margin:0 0 14px 0; }
+
+    .mono{
+        font-family:"Courier New", monospace;
+        font-size:12px;
+        letter-spacing:1.5px;
+        text-transform:uppercase;
+        color:var(--dim);
+        line-height:1.8;
+    }
+
+    .terminal-note{
+        margin:14px 0 0;
+        padding:12px 14px;
+        border:1px solid var(--line);
+        font-family:"Courier New", monospace;
+        font-size:12px;
+        letter-spacing:1.5px;
+        text-transform:uppercase;
+        line-height:1.9;
+        color:var(--fg);
+    }
+
+    .stat-row{
+        display:flex;
+        flex-wrap:wrap;
+        gap:24px;
+        margin:20px 0 0;
+        font-family:"Courier New", monospace;
+        font-size:12px;
+        letter-spacing:1.5px;
+        text-transform:uppercase;
+        color:var(--dim);
+    }
+    .stat-row strong{ color:var(--fg); }
+
+    /* ===== SIGNAL FIELD (Finetune) ===== */
+
+    .signal-wrap{ margin:20px 0 6px; }
+
+    .signal-field{
+        position:relative;
+        width:100%;
+        min-height:220px;
+        border:1px solid var(--line);
+        background:#020202;
+        padding:16px;
+        overflow:hidden;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+    }
+
+    .signal-field.live{
+        align-items:flex-start;
+        justify-content:flex-start;
+    }
+
+    .signal-field .signal-placeholder{
+        font-family:"Courier New", monospace;
+        font-size:12px;
+        letter-spacing:2px;
+        text-transform:uppercase;
+        color:var(--dim);
+    }
+
+    .noise-row{
+        font-family:"Courier New", monospace;
+        font-size:12px;
+        line-height:1.5;
+        letter-spacing:1px;
+        white-space:pre;
+        color:rgba(255,255,255,0.5);
+    }
+
+    .signal-field.resolved{
+        justify-content:flex-start;
+        align-items:stretch;
+        padding:0;
+        border-color:var(--fg);
+    }
+
+    .signal-field.resolved .op-card{
+        border:none;
+    }
+
+    #signalStatus, #pyreStatus{
+        margin-top:10px;
+        font-family:"Courier New", monospace;
+        font-size:11px;
+        letter-spacing:1.5px;
+        text-transform:uppercase;
+        color:var(--dim);
+    }
+
+    .action-row{
+        display:flex;
+        flex-wrap:wrap;
+        gap:10px;
+        margin:16px 0 0;
+        align-items:center;
+    }
+
+    button.btn{
+        background:var(--bg);
+        color:var(--fg);
+        border:1px solid var(--fg);
+        font-family:"Courier New", monospace;
+        font-size:11.5px;
+        letter-spacing:2px;
+        text-transform:uppercase;
+        padding:10px 16px;
+        cursor:pointer;
+    }
+    button.btn:hover{ background:var(--fg); color:var(--bg); }
+    button.btn:disabled{ opacity:0.35; cursor:default; }
+    button.btn.small{ padding:7px 12px; font-size:10.5px; }
+
+    /* ===== CARDS (Yoke / Flare) ===== */
+
+    .card-grid{
+        display:grid;
+        grid-template-columns:repeat(2, 1fr);
+        gap:14px;
+        margin-top:14px;
+    }
+
+    .grid-empty{
+        grid-column:1 / -1;
+        border:1px solid var(--line);
+        padding:20px;
+        text-align:center;
+        font-family:"Courier New", monospace;
+        font-size:11px;
+        letter-spacing:2px;
+        text-transform:uppercase;
+        color:var(--dim);
+    }
+
+    .op-card{
+        border:1px solid var(--line);
+        padding:16px 16px 14px;
+        background:var(--bg);
+        transition:background 0.2s, color 0.2s, border-color 0.2s;
+    }
+
+    .op-card .oc-coord{
+        font-family:"Courier New", monospace;
+        font-size:10.5px;
+        letter-spacing:1.5px;
+        text-transform:uppercase;
+        color:var(--dim);
+        margin-bottom:6px;
+    }
+
+    .op-card .oc-name{
+        font-family:"Times New Roman", serif;
+        font-size:22px;
+        letter-spacing:0.5px;
+        margin-bottom:10px;
+    }
+
+    .op-card .oc-field{
+        font-size:13.5px;
+        line-height:1.55;
+        margin-bottom:8px;
+    }
+
+    .op-card .oc-field .oc-label{
+        display:block;
+        font-family:"Courier New", monospace;
+        font-size:10px;
+        letter-spacing:1.5px;
+        text-transform:uppercase;
+        color:var(--dim);
+        margin-bottom:2px;
+    }
+
+    .op-card.yoke-card.fixed .oc-field .oc-label{ color:rgba(0,0,0,0.55); }
+
+    .op-card .oc-controls{
+        margin-top:12px;
+    }
+
+    /* Fixed Yoke = spent, inverted to a black-on-white card, per spec */
+    .op-card.yoke-card.fixed{
+        background:var(--fg);
+        color:var(--bg);
+        border-color:var(--fg);
+    }
+    .op-card.yoke-card.fixed .oc-coord{ color:rgba(0,0,0,0.55); }
+    .op-card.yoke-card.fixed button.btn{
+        background:var(--bg);
+        color:var(--fg);
+        border-color:var(--bg);
+    }
+    .op-card.yoke-card.fixed button.btn:hover{
+        background:var(--fg);
+        color:var(--bg);
+        border-color:var(--bg);
+    }
+
+    .op-card.flare-card{
+        border-color:var(--fg);
+    }
+    .op-card.flare-card .oc-name{ color:var(--fg); }
+
+    .op-card.just-cut{
+        animation:cutFlash 0.4s ease-out;
+    }
+    @keyframes cutFlash{
+        0%{ filter:brightness(2.2) contrast(1.4); }
+        100%{ filter:brightness(1) contrast(1); }
+    }
+
+    @media (max-width: 640px){
+        .card-grid{ grid-template-columns:1fr; }
+    }
+
+    /* ===== PYRE (Kindling) ===== */
+
+    .pyre-wrap{
+        display:none;
+        margin:20px 0 6px;
+    }
+    .pyre-wrap.active{ display:block; }
+
+    .pyre-field{
+        position:relative;
+        width:100%;
+        min-height:240px;
+        border:1px solid var(--fg);
+        background:#020202;
+        padding:16px;
+        overflow:hidden;
+    }
+
+    .pyre-field.burning .noise-row{
+        color:rgba(255,255,255,0.7);
+    }
+
+    .pyre-field.burning{
+        animation:pyreShake 0.18s infinite;
+    }
+    @keyframes pyreShake{
+        0%{ transform:translate(0,0); }
+        25%{ transform:translate(-1px,1px); }
+        50%{ transform:translate(1px,-1px); }
+        75%{ transform:translate(-1px,-1px); }
+        100%{ transform:translate(0,0); }
+    }
+
+    .pyre-field.resolved{
+        border-color:var(--fg);
+        animation:none;
+        padding:0;
+    }
+    .pyre-field.resolved .op-card{ border:none; }
+
+    /* ===== LOG ===== */
+
+    .log-panel{
+        margin-top:16px;
+        border:1px solid var(--line);
+        max-height:220px;
+        overflow-y:auto;
+        font-family:"Courier New", monospace;
+        font-size:11.5px;
+        letter-spacing:0.5px;
+        line-height:1.9;
+    }
+    .log-empty{
+        padding:16px;
+        color:var(--dim);
+        text-transform:uppercase;
+        letter-spacing:2px;
+        font-size:11px;
+    }
+    .log-entry{
+        padding:9px 14px;
+        border-bottom:1px solid var(--line);
+        color:var(--dim);
+    }
+    .log-entry:last-child{ border-bottom:none; }
+    .log-entry .le-tag{ color:var(--fg); margin-right:8px; }
+
+    /* ===== NAV ===== */
+
+    .nav-link{
+        display:block;
+        margin-top:18px;
+        font-family:"Courier New", monospace;
+        font-size:13px;
+        letter-spacing:2px;
+        text-transform:uppercase;
+        border-bottom:1px solid var(--line);
+        color:var(--fg);
+        text-decoration:none;
+        width:max-content;
+    }
+    .nav-link:hover{ border-bottom-color:var(--fg); }
+</style>
+</head>
+<body>
+<main>
+
+    <p class="eyebrow">NODE // 003</p>
+    <h1>FINETUNING AND KINDLING</h1>
+    <div class="whitebox">KIND-II OPERATOR — NICKING TERMINAL</div>
+
+    <div class="terminal-note">
+        FINETUNE FORCES A ROW AND A CATEGORY AGAINST THE STATIC. NOTHING IS SHOWN UNTIL IT CUTS.<br>
+        FIX A YOKE TO SPEND IT — IT DOES NOT LEAVE YOUR INTAKE, IT GOES BLACK AND WAITS TO BE KINDLED.<br>
+        KINDLE DRIVES A FIXED YOKE PAST ITS THRESHOLD. WHAT COMES BACK OUT IS A FLARE, NOT THE YOKE.<br>
+        FIX THE FLARE TO RESOLVE IT. THE COST IS PAID. NOTHING IS LEFT ON FILE AFTER.
+    </div>
+
+    <div class="stat-row">
+        <span>YOKES NICKED: <strong id="statNicked">0</strong></span>
+        <span>YOKES FIXED: <strong id="statFixed">0</strong></span>
+        <span>FLARES HELD: <strong id="statFlares">0</strong></span>
+    </div>
+
+    <h2 style="margin-top:28px;">Signal Field</h2>
+    <div class="signal-wrap">
+        <div class="signal-field" id="signalField">
+            <div class="signal-placeholder">NO SIGNAL CUT — AWAITING FINETUNE</div>
+        </div>
+        <div id="signalStatus">STATUS: IDLE</div>
+    </div>
+
+    <div class="action-row">
+        <button class="btn" id="finetuneBtn" type="button">FINETUNE — NICK A YOKE</button>
+    </div>
+
+    <hr>
+
+    <h2>Held Yokes</h2>
+    <p class="mono">Nicked and awaiting use. Fix to spend one — it goes black and can be Kindled.</p>
+    <div class="card-grid" id="yokeGrid"></div>
+
+    <div class="pyre-wrap" id="pyreWrap">
+        <h2 style="margin-top:28px;">The Pyre</h2>
+        <div class="pyre-field" id="pyreField"></div>
+        <div id="pyreStatus">STATUS: IDLE</div>
+    </div>
+
+    <hr>
+
+    <h2>Held Flares</h2>
+    <p class="mono">Burned clear of a spent Yoke. Fix to resolve one — the cost is paid and nothing remains.</p>
+    <div class="card-grid" id="flareGrid"></div>
+
+    <hr>
+
+    <h2>Terminal Log</h2>
+    <div class="log-panel" id="logPanel">
+        <div class="log-empty">NO ACTIVITY LOGGED</div>
+    </div>
+
+    <hr>
+    <a class="nav-link" href="../doomer/">→ DOOMER</a>
+    <a class="nav-link" href="../operator-registry/">→ OPERATOR REGISTRY</a>
+    <a class="nav-link" href="../spiritbox/">→ SPIRITBOX</a>
+    <a class="nav-link" href="../">→ KERNEL</a>
+
+</main>
+<script src="finetuning-and-kindling.js"></script>
+</body>
+</html>
