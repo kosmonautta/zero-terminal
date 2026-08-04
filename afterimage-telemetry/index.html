@@ -380,6 +380,8 @@
 
     /* only the mystery/identity portion of an unresolved contact stays degraded */
     .contact-hidden{
+        position:relative;
+        flex:1;
         filter:blur(0.4px) contrast(1.15) brightness(0.85);
     }
 
@@ -391,25 +393,25 @@
 
     .contact-status.locked{ color:var(--fg); }
 
-    /* replaces scrambled/randomized placeholder text with a small quartered scope —
-       same shape as the header's acq-scope (crosshair dividing it into four squares)
-       instead of a horizontal strip. The blip hops between five points spread across
-       all four quadrants; the bracket traces the identical path a beat behind (only
-       animation-delay differs). Crosshair is a background gradient so both pseudo-
-       elements stay free for the moving parts. transform/opacity only, since this
-       repeats per unresolved card across the whole grid. */
-    /* replaces scrambled/randomized placeholder text with a small quartered scope —
-       same shape as the header's acq-scope (crosshair dividing it into four squares)
-       instead of a horizontal strip or a stack of repeated squares. If a card's
-       markup renders more than one .noise-line row, only the first becomes the
-       scope — any siblings after it are hidden so each card shows exactly one. */
-    .noise-line{
+    /* status text needs to float above the full-card noise-line now that the
+       crosshair spans the whole card instead of a small nested box */
+    .contact-hidden .contact-status{
         position:relative;
-        width:100px;
-        height:100px;
-        margin-bottom:6px;
+        z-index:2;
+    }
+
+    /* ===== FULL-CARD TARGETING CROSSHAIR ===== */
+    /* The crosshair now divides the WHOLE CARD into four quadrants — .noise-line
+       is stretched to inset:0 on the card's hidden layer, not a small box sitting
+       inside it. Six directional path variants exist (different quadrant order =
+       different direction of travel), and each card is assigned a variant plus a
+       negative animation-delay, both seeded from its id via hopParams() in the JS
+       — so contacts never hop in sync, and none of them share a starting phase. */
+    .noise-line{
+        position:absolute;
+        inset:0;
+        z-index:1;
         overflow:hidden;
-        border:1px solid var(--line);
         color:transparent;
         background:
             linear-gradient(to right, transparent calc(50% - 0.5px), var(--line) calc(50% - 0.5px), var(--line) calc(50% + 0.5px), transparent calc(50% + 0.5px)),
@@ -424,44 +426,79 @@
     .noise-line::before{
         content:"";
         position:absolute;
-        top:8px;
-        left:8px;
-        width:6px;
-        height:6px;
+        top:0; left:0;
+        width:6px; height:6px;
+        margin:-3px 0 0 -3px;
         background:var(--fg);
         opacity:0.75;
-        animation:noiseHop 4.6s cubic-bezier(.4,0,.2,1) infinite;
+        animation-name:var(--hop-name, noiseHop1);
+        animation-duration:var(--hop-duration, 4.6s);
+        animation-timing-function:cubic-bezier(.4,0,.2,1);
+        animation-iteration-count:infinite;
+        animation-delay:var(--hop-delay, 0s);
     }
 
     .noise-line::after{
         content:"";
         position:absolute;
-        top:8px;
-        left:8px;
-        width:14px;
-        height:14px;
+        top:0; left:0;
+        width:14px; height:14px;
+        margin:-7px 0 0 -7px;
         border:1px solid var(--fg);
         opacity:0.4;
-        animation:noiseHop 4.6s cubic-bezier(.4,0,.2,1) infinite;
-        animation-delay:0.4s;
+        animation-name:var(--hop-name, noiseHop1);
+        animation-duration:var(--hop-duration, 4.6s);
+        animation-timing-function:cubic-bezier(.4,0,.2,1);
+        animation-iteration-count:infinite;
+        animation-delay:var(--hop-bracket-delay, 0.4s);
     }
 
-    /* five irregular points spread across all four quadrants of the square, with
-       pauses between — sharp non-uniform hops, not a smooth sweep. blip and bracket
-       trace this identical path; only the bracket's animation-delay differs, so it's
-       always a beat behind and the lock never quite closes. */
-    @keyframes noiseHop{
-        0%{   transform:translate(0px,0px);   }
-        7%{   transform:translate(0px,0px);   }
-        11%{  transform:translate(54px,60px); }
-        26%{  transform:translate(54px,60px); }
-        30%{  transform:translate(-4px,50px); }
-        45%{  transform:translate(-4px,50px); }
-        49%{  transform:translate(44px,6px);  }
-        64%{  transform:translate(44px,6px);  }
-        68%{  transform:translate(14px,28px); }
-        83%{  transform:translate(14px,28px); }
-        100%{ transform:translate(14px,28px); }
+    /* six distinct hop paths — different quadrant order (= different direction),
+       different hold/travel timing, expressed in top/left % so they scale to
+       whatever size the card renders at. blip and bracket trace the identical
+       path within a card; only the bracket's animation-delay differs (+0.4s),
+       so it's always a beat behind and the lock never quite closes. */
+    @keyframes noiseHop1{
+        0%{top:15%;left:15%;} 6%{top:15%;left:15%;}
+        11%{top:80%;left:78%;} 26%{top:80%;left:78%;}
+        30%{top:75%;left:12%;} 45%{top:75%;left:12%;}
+        49%{top:12%;left:70%;} 64%{top:12%;left:70%;}
+        68%{top:45%;left:45%;} 100%{top:45%;left:45%;}
+    }
+    @keyframes noiseHop2{
+        0%{top:80%;left:20%;} 8%{top:80%;left:20%;}
+        18%{top:15%;left:80%;} 33%{top:15%;left:80%;}
+        38%{top:50%;left:50%;} 52%{top:50%;left:50%;}
+        58%{top:78%;left:78%;} 74%{top:78%;left:78%;}
+        79%{top:18%;left:18%;} 100%{top:18%;left:18%;}
+    }
+    @keyframes noiseHop3{
+        0%{top:18%;left:78%;} 9%{top:18%;left:78%;}
+        16%{top:78%;left:22%;} 31%{top:78%;left:22%;}
+        36%{top:22%;left:22%;} 50%{top:22%;left:22%;}
+        55%{top:70%;left:75%;} 70%{top:70%;left:75%;}
+        76%{top:45%;left:12%;} 100%{top:45%;left:12%;}
+    }
+    @keyframes noiseHop4{
+        0%{top:50%;left:50%;} 7%{top:50%;left:50%;}
+        13%{top:15%;left:15%;} 27%{top:15%;left:15%;}
+        33%{top:82%;left:80%;} 48%{top:82%;left:80%;}
+        54%{top:80%;left:18%;} 69%{top:80%;left:18%;}
+        75%{top:18%;left:82%;} 100%{top:18%;left:82%;}
+    }
+    @keyframes noiseHop5{
+        0%{top:82%;left:82%;} 10%{top:82%;left:82%;}
+        17%{top:15%;left:20%;} 32%{top:15%;left:20%;}
+        39%{top:20%;left:80%;} 55%{top:20%;left:80%;}
+        62%{top:78%;left:20%;} 78%{top:78%;left:20%;}
+        84%{top:48%;left:48%;} 100%{top:48%;left:48%;}
+    }
+    @keyframes noiseHop6{
+        0%{top:15%;left:80%;} 6%{top:15%;left:80%;}
+        14%{top:48%;left:48%;} 29%{top:48%;left:48%;}
+        35%{top:15%;left:18%;} 50%{top:15%;left:18%;}
+        57%{top:80%;left:80%;} 72%{top:80%;left:80%;}
+        78%{top:80%;left:18%;} 100%{top:80%;left:18%;}
     }
 
     .contact-card:not(.acquired) .contact-revealed{ display:none; }
