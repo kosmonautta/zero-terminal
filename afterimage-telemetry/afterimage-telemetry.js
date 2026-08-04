@@ -85,13 +85,6 @@ const CATEGORIES = [
 ];
 
 const glitchAlphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 .,-—";
-const matrixNoiseChars = [
-    "░","▒","▓","█","▀","▄","▌","▐","▖","▗","▘","▝","▚","▞",
-    "■","□","▪","▫","◆","◇","▲","△","▼","▽","●","○",
-    "─","│","┼","┤","├","┬","┴","╬","╫","╪",
-    "⠿","⠶","⠛","⠹","⠭","⠽","⠾","⠷",
-    "#","%","&","*","/","\\","~","^"
-];
 
 // ---------- flatten dataset ----------
 
@@ -120,23 +113,9 @@ const AFTERIMAGES = [];
 
 let acquiredMap = {};
 let logEntries = [];
-let ambientTimer = null;
 let clockSeconds = 0;
 
 // ---------- helpers ----------
-
-function noiseGlyph(){
-    return matrixNoiseChars[Math.floor(Math.random() * matrixNoiseChars.length)];
-}
-
-function noiseGlyphs(len){
-    let html = "";
-    for(let i = 0; i < len; i++){
-        const opacity = (0.2 + Math.random() * 0.6).toFixed(2);
-        html += `<span style="opacity:${opacity}">${noiseGlyph()}</span>`;
-    }
-    return html;
-}
 
 function scramble(text){
     return text
@@ -169,6 +148,27 @@ function pseudoTelemetry(seedStr){
     return `BRG ${String(brg).padStart(3, "0")} · ALT ${alt.toLocaleString()}FT`;
 }
 
+// deterministic per-card hop path + phase, seeded from the card's id. Picks one
+// of six directional variants (different quadrant order = different direction
+// of travel) plus a duration and a NEGATIVE animation-delay, so every card
+// starts already mid-cycle at a different point instead of all beginning in
+// lockstep at t=0. Different hash multiplier than pseudoTelemetry so the two
+// don't correlate.
+function hopParams(seedStr){
+    let h = 0;
+    for(let i = 0; i < seedStr.length; i++) h = (h * 131 + seedStr.charCodeAt(i)) >>> 0;
+    const variant = (h % 6) + 1;
+    const duration = (3.8 + (h % 190) / 100).toFixed(2);
+    const delay = -((h % 460) / 100).toFixed(2); // negative = starts mid-cycle
+    const bracketDelay = (parseFloat(delay) + 0.4).toFixed(2);
+    return {
+        name: `noiseHop${variant}`,
+        duration: `${duration}s`,
+        delay: `${delay}s`,
+        bracketDelay: `${bracketDelay}s`
+    };
+}
+
 // ---------- persistence ----------
 
 function loadAcquired(){
@@ -194,6 +194,9 @@ function saveAcquired(){
 // ---------- rendering ----------
 
 function buildCardHTML(item){
+    const hop = hopParams(item.id);
+    const hopStyle = `--hop-name:${hop.name}; --hop-duration:${hop.duration}; --hop-delay:${hop.delay}; --hop-bracket-delay:${hop.bracketDelay};`;
+
     return `
     <div class="contact-card" id="contact-${item.id}" data-id="${item.id}">
         <span class="reticle tl"></span>
@@ -207,10 +210,7 @@ function buildCardHTML(item){
         <div class="contact-body">
             <div class="contact-hidden">
                 <div class="contact-status mono">SIGNAL: UNRESOLVED</div>
-                <div class="noise-line" data-len="9">${noiseGlyphs(9)}</div>
-                <div class="noise-line" data-len="27">${noiseGlyphs(27)}</div>
-                <div class="noise-line" data-len="23">${noiseGlyphs(23)}</div>
-                <div class="noise-line" data-len="25">${noiseGlyphs(25)}</div>
+                <div class="noise-line" style="${hopStyle}"></div>
             </div>
             <div class="contact-revealed">
                 <div class="contact-status mono locked">CONTACT CONFIRMED</div>
@@ -289,18 +289,6 @@ function addLog(text){
     renderLog();
 }
 
-// ---------- ambient static ----------
-
-function startAmbientNoise(){
-    if(ambientTimer) return;
-    ambientTimer = setInterval(() => {
-        document.querySelectorAll(".contact-card:not(.acquired):not(.locking) .noise-line").forEach(el => {
-            const len = parseInt(el.dataset.len, 10) || 12;
-            el.innerHTML = noiseGlyphs(len);
-        });
-    }, 220);
-}
-
 // ---------- actions ----------
 
 function lockContact(id){
@@ -353,7 +341,6 @@ function tickClock(){
 document.addEventListener("DOMContentLoaded", () => {
     loadAcquired();
     buildAll();
-    startAmbientNoise();
     renderStats();
     renderLog();
     setInterval(tickClock, 1000);
