@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DOOMER</title>
+<link rel="stylesheet" href="../style.css">
+<style>
+    :root{
+        --bg:#000;
+        --fg:#fff;
+        --dim:rgba(255,255,255,0.55);
+        --line:rgba(255,255,255,0.22);
+    }
+
+    *{ box-sizing:border-box; }
+
+    html, body{
+        margin:0;
+        padding:0;
+        background:var(--bg);
+        color:var(--fg);
+        font-family:"Times New Roman", Georgia, serif;
+        font-size:18px;
+        line-height:1.7;
+        -webkit-font-smoothing:antialiased;
+    }
+
+    body{ padding-bottom:80px; }
+
+    main{
+        width:min(1280px, 92vw);
+        margin:110px auto 80px;
+    }
+
+    .page-head{
+        margin-bottom:34px;
+    }
+
+    .head-left{
+        max-width:640px;
+    }
+
+    .eyebrow{
+        font-family:"Courier New", monospace;
+        font-size:12px;
+        letter-spacing:3px;
+        text-transform:uppercase;
+        color:var(--dim);
+        margin:0 0 8px 0;
+    }
+
+    h1{
+        font-family:"Times New Roman", serif;
+        font-size:58px;
+        line-height:0.92;
+        margin:0 0 18px 0;
+        font-weight:550;
+        letter-spacing:1px;
+        transform:scaleY(1.15);
+        transform-origin:left top;
+        max-width:100%;
+        word-break:break-word;
+    }
+
+    h1 .title-primary{
+        display:block;
+    }
+
+    h1 .title-secondary{
+        display:block;
+        margin-top:6px;
+    }
+
+    .whitebox{
+        background:var(--fg);
+        color:var(--bg);
+        display:inline-block;
+        padding:5px 10px;
+        font-family:"Courier New", monospace;
+        font-size:12px;
+        letter-spacing:2px;
+        text-transform:uppercase;
+        font-weight:700;
+    }
+
+    .hero-tag{
+        margin-top:18px;
+    }
+
+    .hero-lead{
+        margin-top:20px;
+        padding-left:14px;
+        border-left:1px solid var(--line);
+        font-family:"Times New Roman", serif;
+        font-size:16px;
+        font-style:italic;
+        line-height:1.6;
+        color:var(--fg);
+        max-width:560px;
+    }
+
+    .columns{
+        column-count:3;
+        column-gap:42px;
+        column-fill:balance;
+    }
+
+    .columns section,
+    .columns p,
+    .columns h2,
+    .columns h3,
+    .columns table,
+    .columns .callout,
+    .columns .terminal-note,
+    .columns .break-block{
+        break-inside:avoid;
+        -webkit-column-break-inside:avoid;
+        page-break-inside:avoid;
+    }
+
+    section{
+        margin:0 0 28px 0;
+    }
+
+    h2{
+        font-size:19px;
+        margin:0 0 10px 0;
+        font-weight:500;
+        font-style:italic;
+        color:var(--fg);
+        break-after:avoid;
+    }
+
+    .part-title{
+        font-family:"Times New Roman", serif;
+        font-size:44px;
+        line-height:0.95;
+        margin:0 0 10px 0;
+        font-weight:550;
+        font-style:normal;
+        letter-spacing:1px;
+        color:var(--fg);
+    }
+
+    .field-subtitle{
+        font-family:"Courier New", monospace;
+        font-size:13px;
+        letter-spacing:2px;
+        text-transform:uppercase;
+        font-weight:700;
+        color:var(--fg);
+        margin:16px 0 6px 0;
+    }
+
+    .field-subtitle:first-of-type{
+        margin-top:4px;
+    }
+
+    .article-label{
+        font-family:"Courier New", monospace;
+        font-size:12px;
+        letter-spacing:2px;
+        text-transform:uppercase;
+        color:var(--dim);
+        margin:0 0 10px 0;
+    }
+
+    /* Article headers rendered as whitebox badges. Two-class selector keeps
+       this ahead of both .article-label and .whitebox regardless of source order. */
+    .article-label.whitebox{
+        background:var(--fg);
+        color:var(--bg);
+        display:inline-block;
+        padding:5px 10px;
+        font-weight:700;
+        margin:0 0 12px 0;
+    }
+
+    p{
+        margin:0 0 14px 0;
+        text-align:justify;
+        text-justify:inter-word;
+    }
+
+    .mono{
+        font-family:"Courier New", monospace;
+        font-size:12px;
+        letter-spacing:1.5px;
+        text-transform:uppercase;
+        color:var(--dim);
+        line-height:1.8;
+    }
+
+    .callout{
+        margin:12px 0;
+        padding-left:14px;
+        border-left:1px solid var(--line);
+        color:var(--fg);
+        font-family:"Courier New", monospace;
+        font-size:12px;
+        letter-spacing:1.5px;
+        text-transform:uppercase;
+        line-height:1.8;
+    }
+
+    .terminal-note{
+        margin:14px 0;
+        padding:12px 14px;
+        border:1px solid var(--line);
+        font-family:"Courier New", monospace;
+        font-size:12px;
+        letter-spacing:1.5px;
+        text-transform:uppercase;
+        line-height:1.9;
+        color:var(--fg);
+    }
+
+    hr{
+        border:none;
+        border-top:1px solid var(--line);
+        margin:30px 0;
+        column-span:all;
+    }
+
+    .span-all{
+        column-span:all;
+    }
+
+    .break-block{
+        margin:30px 0 18px;
+        padding:14px 0 0;
+        border-top:1px solid var(--line);
+    }
+
+    table{
+        width:100%;
+        border-collapse:collapse;
+        margin:14px 0 18px;
+        font-size:14px;
+        line-height:1.5;
+        table-layout:fixed;
+    }
+
+    th, td{
+        border:1px solid var(--line);
+        padding:10px 10px;
+        vertical-align:top;
+        text-align:left;
+        overflow-wrap:break-word;
+    }
+
+    th{
+        font-family:"Courier New", monospace;
+        font-size:11px;
+        letter-spacing:1.5px;
+        text-transform:uppercase;
+        font-weight:700;
+        background:var(--fg);
+        color:var(--bg);
+        border-color:var(--bg);
+    }
+
+    /* Lets wide tables scroll horizontally instead of breaking the page on narrow screens */
+    .table-scroll{
+        width:100%;
+        overflow-x:auto;
+        margin:14px 0 18px;
+    }
+
+    .table-scroll table{
+        margin:0;
+        min-width:640px;
+    }
+
+    .param-table{
+        font-size:13px;
+        line-height:1.5;
+    }
+
+    .param-table td strong{
+        display:inline;
+    }
+
+    .card{
+        border:1px solid var(--line);
+        padding:14px 14px 12px;
+    }
+
+    .card h3{
+        margin:0 0 8px 0;
+        font-size:15px;
+        font-weight:600;
+        letter-spacing:0.4px;
+    }
+
+    .card ol,
+    .card ul{
+        margin:0;
+        padding-left:20px;
+    }
+
+    .card li{
+        margin:0 0 6px 0;
+    }
+
+    .echo-register ul{
+        column-count:3;
+        column-gap:28px;
+    }
+
+    .echo-register li{
+        break-inside:avoid;
+        -webkit-column-break-inside:avoid;
+    }
+
+    /* Overdrive crosstab — category columns x row numbers, Yoke name in each cell */
+    .overdrive-grid{
+        width:100%;
+        margin:18px 0 20px;
+        min-width:600px;
+    }
+
+    .overdrive-grid table{
+        margin:0;
+        table-layout:fixed;
+        font-size:13px;
+    }
+
+    .overdrive-grid th{
+        background:var(--fg);
+        color:var(--bg);
+    }
+
+    .overdrive-grid th.corner{
+        background:var(--bg);
+        color:var(--fg);
+        border-color:var(--line);
+    }
+
+    .overdrive-grid th.axis-signal{
+        background:var(--bg);
+        color:var(--fg);
+        border-color:var(--line);
+        text-align:left;
+    }
+
+    .overdrive-grid td.dread-cell{
+        background:#0a0a0a;
+        text-align:center;
+        padding:16px 8px;
+        vertical-align:middle;
+    }
+
+    .overdrive-grid td.dread-cell .dread-name{
+        font-family:"Courier New", monospace;
+        font-weight:700;
+        font-size:14px;
+        letter-spacing:1.5px;
+        color:var(--fg);
+        display:block;
+    }
+
+    .overdrive-grid td.dread-cell .dread-pair{
+        display:block;
+        margin-top:5px;
+        font-family:"Courier New", monospace;
+        font-size:9.5px;
+        letter-spacing:1px;
+        color:var(--dim);
+        text-transform:uppercase;
+    }
+
+    .overdrive-dossier{
+        margin-top:6px;
+    }
+
+    .overdrive-dossier .param-table th{
+        font-size:10.5px;
+    }
+
+    .nav-link{
+        display:block;
+        margin-top:18px;
+        font-family:"Courier New", monospace;
+        font-size:13px;
+        letter-spacing:2px;
+        text-transform:uppercase;
+        border-bottom:1px solid var(--line);
+        color:var(--fg);
+        text-decoration:none;
+        width:max-content;
+    }
+
+    .nav-link:hover{
+        border-bottom-color:var(--fg);
+    }
+
+    @media (max-width: 1100px){
+        .columns{ column-count:2; }
+        h1{ font-size:52px; }
+        .part-title{ font-size:38px; }
+        .echo-register ul{ column-count:2; }
+    }
+
+    @media (max-width: 780px){
+        main{ width:min(92vw, 720px); margin:80px auto 60px; }
+        .columns{ column-count:1; }
+        h1{ font-size:42px; }
+        .part-title{ font-size:32px; }
+        table{ font-size:12px; }
+        .param-table{ font-size:11.5px; }
+        .echo-register ul{ column-count:1; }
+        .overdrive-grid td.dread-cell .dread-name{ font-size:12px; }
+    }
+</style>
+</head>
+<body>
+<main>
+
+    <div class="page-head">
+        <div class="head-left">
+            <p class="eyebrow">NODE // 002</p>
+            <h1><span class="title-primary">KIND-II OPERATOR</span><span class="title-secondary">DOOMER</span></h1>
+            <div class="whitebox hero-tag">ULTRABLACK OPERATOR</div>
+            <p class="hero-lead">Kindling is not phase reversal. A Flare is not a reversed Yoke — it is what a Yoke leaves behind when it's driven past its own threshold: trace ESP, residual and spent. Kind-II ESP has never touched Focal Phase and never will. The Doomer is Liminal, permanently. What the Doomer lacks is not power, but the door an ESPer has — the ability to phase-reverse back toward lighter, Focal expression. That door does not exist here, and there is no idle setting on what remains: Doomer output runs redlined by default, every reading pinned to the edge of what the body can discharge before something in the Operant's ledger has to give.</p>
+        </div>
+    </div>
+
+    <div class="columns">
+
+        <section>
+            <div class="article-label whitebox">ARTICLE I — DEFINITIONS</div>
+            <p><strong>§1.1</strong> A Kind-II Operator (Doomer) is an individual whose interface with ESP exceeds passive reception but does not reach structural mastery. Contact is confirmed. Control is not.</p>
+            <p><strong>§1.2</strong> The Doomer channels and discharges ESP without possessing the refinement Kind-I Operators exhibit. The Doomer does not build. The Doomer takes.</p>
+            <p><strong>§1.3</strong> Absence of refinement is not absence of yield. Doomer output trades frequency for magnitude. Foundational gaps recorded under <span class="mono">[REDACTED]</span>.</p>
+            <p><strong>§1.4</strong> Liminal Phase is the only phase a Kind-II Operator's ESP occupies — origin and terminus both. Focal Phase, and the return path to it, belongs to Kind-I Operators alone.</p>
+            <div class="callout">&gt;&gt; INPUT UNSTABLE<br>&gt;&gt; PARAMETER COLLAPSE REFUSED</div>
+        </section>
+
+        <section>
+            <div class="article-label whitebox">ARTICLE II — NICKING</div>
+            <p><strong>§2.1</strong> ESP activity accessible to a Kind-II Operator cannot be collapsed into Hex Grave. It cannot be built, filed, or fixed in advance. It is Nicked — during Finetuning, and nowhere else.</p>
+            <p><strong>§2.2</strong> A Yoke is theft of coherence from ambient static, held briefly legible before it decays back into noise.</p>
+            <p><strong>§2.3</strong> Nicking requires the operator to force two axes into agreement, chosen in the same instant the theft closes:</p>
+            <div class="callout">&gt;&gt; Signal<br>&gt;&gt; Noise</div>
+            <p><strong>§2.4</strong> A Yoke not bound at the moment of Nicking dissolves. No record. No recovery. No second attempt on the same static.</p>
+            <p><strong>§2.5</strong> Repeated failure to bind results in reclassification under Protocol Katabasis.</p>
+            <div class="callout">&gt;&gt; SIGNAL LOSS DETECTED<br>&gt;&gt; STATIC UNRECOVERABLE</div>
+        </section>
+
+        <section>
+            <div class="article-label whitebox">ARTICLE III — THE LIMINAL BINARY</div>
+            <p><strong>§3.1</strong> Kind-II Operators have no access to Focal Phase. The stabilizing apparatus that permits Hex Grave — and the return path to Focal Phase an ESPer relies on — is structurally absent in Doomer physiology. The Doomer is Liminal, permanently.</p>
+            <p><strong>§3.2</strong> Kind-II ESP exists only within the Liminal binary: Yoke, the base liminal form drawn directly from static, and Flare, the trace residue thrown off when that same Yoke is Kindled past its threshold. Neither end of this binary touches Focal Phase.</p>
+            <p><strong>§3.3</strong> The binary trades predictability for magnitude. Doomer output is fewer in number and greater in consequence than Kind-I output.</p>
+            <p><strong>§3.4</strong> Kindling does not reverse phase. There is none left to reverse into, and Kind-II ESP was never Focal to begin with. Kindling escalates: a Fixed Yoke driven past its own threshold, burning off as a Flare — trace residual ESP, not a mirrored form of the Yoke it came from.</p>
+        </section>
+
+        <section>
+            <div class="article-label whitebox">ARTICLE IV — VOLATILITY</div>
+            <p><strong>§4.1</strong> Doomer output is inherently volatile — redlined by design, not by accident — against the surrounding environment, the causal continuum, and the Operator's own Readings.</p>
+            <p><strong>§4.2</strong> The Operant does not possess a complete model for Kind-II cascade failure.</p>
+            <p><strong>§4.3</strong> Kind-II manifestations are to be:</p>
+            <div class="callout">&gt;&gt; monitored without interruption<br>&gt;&gt; never left unsupervised<br>&gt;&gt; logged after discharge, never before</div>
+            <p><strong>§4.4</strong> Kind-II escalation does not follow Rites. It follows Kindling. There is no ritual buffer between a Yoke Fixed and a Flare Kindled.</p>
+            <div class="callout">&gt;&gt; INPUT UNSTABLE<br>&gt;&gt; FLARE VARIANCE LOGGED</div>
+        </section>
+
+        <section>
+            <div class="article-label whitebox">ARTICLE V — REGISTRATION AND BRIEF STRUCTURE</div>
+            <p><strong>§5.1</strong> Each Kind-II Operator shall maintain an Intake Brief containing:</p>
+            <div class="callout">&gt;&gt; every Yoke Nicked<br>&gt;&gt; every Flare Kindled<br>&gt;&gt; associated cost incurred</div>
+            <p><strong>§5.2</strong> Yokes and Flares shall be treated as: operational liability disclosures, not capability disclosures.</p>
+            <p><strong>§5.3</strong> Cross-record inconsistencies will be flagged under Review Code 9.</p>
+        </section>
+
+        <section>
+            <div class="article-label whitebox">ARTICLE VI — CONTAINMENT PRINCIPLE</div>
+            <p><strong>§6.1</strong> The Operant assumes control over the Doomer and their ESP under government oversight, to the extent that control remains available.</p>
+            <p><strong>§6.2</strong> The Operant establishes: frameworks within which Kind-II ESP behaves as if under containment or custody, acknowledging that no such containment has ever fully held.</p>
+            <div class="terminal-note">IF YOU CAN READ THIS<br>THE COST IS ALREADY OWED<br>NOTHING TAKEN RETURNS</div>
+        </section>
+
+        <section class="span-all break-block">
+            <div class="article-label whitebox">KIND-II DEPLOYMENT BRIEF</div>
+            <div class="mono">OPERATOR ACCESS // VIOLATION CODE: [REDACTED]</div>
+            <hr>
+        </section>
+
+        <section class="span-all">
+            <h2 class="part-title">DOOMER FIELD PROCEDURE</h2>
+            <p class="mono">On Nicking, Kindling, and the cost of a Flare Fixed</p>
+            <hr>
+        </section>
+
+        <section class="span-all">
+            <h2>YOKE / FLARE PROCEDURE DIRECTIVES</h2>
+            <h3 class="field-subtitle">Nicking</h3>
+            <p>A Yoke is Nicked during Finetuning — mid-mission, not before it. There is no briefing stage for a Doomer, no study, no preparation ahead of the theft. The operator forces one Signal and one Noise into agreement in that same motion and the static yields, or it does not. A Nicked Yoke occupies one inventory slot. Failed Nicking attempts cost the action and nothing else — the static simply refuses to close.</p>
+            <br>
+            <h3 class="field-subtitle">Fixing (the Yoke)</h3>
+            <p>At any point, during the operator's turn, they can Fix a Yoke with a Half-Action. This is its use. Fixing a Yoke does not remove it from inventory, but it cannot be Fixed again until it has been Kindled.</p>
+            <br>
+            <h3 class="field-subtitle">Kindling</h3>
+            <p>After a Yoke has been Fixed, the operator may choose to Kindle it. This is not phase reversal — the Yoke was never Focal, and what spills out of it isn't either. Kindling drives an already-liminal Signal and Noise past their own threshold, burning the excess off as a Flare: trace residual ESP thrown clear of the spent Yoke, not a mirror of it. Kindling is a Full Action. There is no Rite Action and no Observation Action available to a Doomer; Kindling either completes on this turn or the Yoke is spent for nothing.</p>
+            <br>
+            <h3 class="field-subtitle">Fixing (the Flare)</h3>
+            <p>A Kindled Flare must be Fixed to resolve. Fixing a Flare always pays its Cost in full, immediately, regardless of outcome. There is no partial payment and no refusal once Kindling has completed. A Flare Fixed does not settle back toward the Yoke's base state — there is no lighter state left to settle toward. The Yoke beneath it is spent; what's left is residue only.</p>
+        </section>
+
+        <section class="span-all">
+            <h2>YOKE FINETUNING</h2>
+            <p>A Yoke is not rolled blind. Nicking happens here, in Finetuning — one Signal forced against one Noise, chosen by the Doomer in the same breath the theft closes; the static offers no other axes. Signal is the shape of the force itself: a SPIKE is a singular point of penetration or projection, a LOOP is recurrence and sustained continuation, a SEAM is junction and transition between states, a LENS is direction, concentration, and convergence. Noise is what the static does with it once forced: ECHO reflects and propagates it, DRIFT displaces and destabilizes it, SCAR leaves it as persistent, permanent imprint, NULL suppresses and erases it outright.</p>
+            <p>A Yoke is named by its pair: Signal over Noise. SPIKE / ECHO. LENS / NULL. Sixteen possible pairs. Each is a debt not yet called.</p>
+        </section>
+
+        <section class="span-all">
+            <h2>FLARE KINDLING</h2>
+            <p>Every Fixed Yoke carries a Flare state, reached only through Kindling — trace residual ESP burned off the spent Yoke, not a mirror of it. Cross-reference category against row below to find it. This is not a second roll; the pairing was fixed the moment the Yoke was Nicked.</p>
+
+            <div class="table-scroll overdrive-grid">
+                <table>
+                    <thead>
+                        <tr>
+                            <th class="corner">ROW \ CATEGORY</th>
+                            <th>HARD LOCK</th>
+                            <th>RED SHIFT</th>
+                            <th>LOST TRACK</th>
+                            <th>SHADOWBOX</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th class="axis-signal">1</th>
+                            <td class="dread-cell"><span class="dread-name">FALLOW</span><span class="dread-pair">HARD LOCK · 1</span></td>
+                            <td class="dread-cell"><span class="dread-name">KERN</span><span class="dread-pair">RED SHIFT · 1</span></td>
+                            <td class="dread-cell"><span class="dread-name">DREAR</span><span class="dread-pair">LOST TRACK · 1</span></td>
+                            <td class="dread-cell"><span class="dread-name">FEN</span><span class="dread-pair">SHADOWBOX · 1</span></td>
+                        </tr>
+                        <tr>
+                            <th class="axis-signal">2</th>
+                            <td class="dread-cell"><span class="dread-name">BOLT</span><span class="dread-pair">HARD LOCK · 2</span></td>
+                            <td class="dread-cell"><span class="dread-name">WOLD</span><span class="dread-pair">RED SHIFT · 2</span></td>
+                            <td class="dread-cell"><span class="dread-name">FORLORN</span><span class="dread-pair">LOST TRACK · 2</span></td>
+                            <td class="dread-cell"><span class="dread-name">GLOOM</span><span class="dread-pair">SHADOWBOX · 2</span></td>
+                        </tr>
+                        <tr>
+                            <th class="axis-signal">3</th>
+                            <td class="dread-cell"><span class="dread-name">WANE</span><span class="dread-pair">HARD LOCK · 3</span></td>
+                            <td class="dread-cell"><span class="dread-name">WITHER</span><span class="dread-pair">RED SHIFT · 3</span></td>
+                            <td class="dread-cell"><span class="dread-name">ORDEAL</span><span class="dread-pair">LOST TRACK · 3</span></td>
+                            <td class="dread-cell"><span class="dread-name">GRIM</span><span class="dread-pair">SHADOWBOX · 3</span></td>
+                        </tr>
+                        <tr>
+                            <th class="axis-signal">4</th>
+                            <td class="dread-cell"><span class="dread-name">SUNDER</span><span class="dread-pair">HARD LOCK · 4</span></td>
+                            <td class="dread-cell"><span class="dread-name">RIVEN</span><span class="dread-pair">RED SHIFT · 4</span></td>
+                            <td class="dread-cell"><span class="dread-name">CINDER</span><span class="dread-pair">LOST TRACK · 4</span></td>
+                            <td class="dread-cell"><span class="dread-name">BLIGHT</span><span class="dread-pair">SHADOWBOX · 4</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <p class="mono">Dossier — Yoke and Flare, full effect and cost, cross-referenced against the grid above</p>
+
+            <h3 class="field-subtitle">Hard Lock — offense. No windup, no escape, fires the instant you reach it.</h3>
+            <div class="table-scroll overdrive-dossier">
+                <table class="param-table">
+                    <colgroup>
+                        <col style="width:14%"><col style="width:43%"><col style="width:43%">
+                    </colgroup>
+                    <thead><tr><th>Pairing</th><th>Yoke</th><th>Flare</th></tr></thead>
+                    <tbody>
+                        <tr><td><strong>FALLOW</strong><br>Hard Lock · 1</td><td>Effect: Choose an area nearby. Everyone inside takes a HEAVY FRM Hit and is hurled to just outside its edge.<br>Cost: HAZE FRM Hit to you, or knocked prone.</td><td><strong>BLACK FALLOW</strong><br>Effect: The chosen area is erased outright; everyone inside takes a HYPER FRM Hit instead.<br>Cost: HEAVY FRM Hit to you, no save.</td></tr>
+                        <tr><td><strong>BOLT</strong><br>Hard Lock · 2</td><td>Effect: Accelerate your own mass, close the distance to any visible enemy instantly, and slam into them for a HEAVY FRM Hit; they're hurled clear.<br>Cost: HAZE FRM Hit to you on landing.</td><td><strong>DEAD BOLT</strong><br>Effect: Ram every visible enemy in sequence, one HEAVY FRM Hit each, before the round ends.<br>Cost: HEAVY FRM Hit to you once the sequence stops.</td></tr>
+                        <tr><td><strong>WANE</strong><br>Hard Lock · 3</td><td>Effect: Reach into a target's near future and detonate it early — their next HAZE Hit lands as HEAVY, or their next HEAVY Hit lands as HYPER.<br>Cost: The same escalation is loaded on you — your next Hit taken escalates one step, whenever it lands.</td><td><strong>FINAL WANE</strong><br>Effect: Every Hit, from anyone, escalates one tier for the rest of the scene. Once this scene, rewrite a Hit that already landed a tier worse.<br>Cost: The escalation applies to you too, permanently, and the rewrite can be turned back on a Hit you already took.</td></tr>
+                        <tr><td><strong>SUNDER</strong><br>Hard Lock · 4</td><td>Effect: A line cuts through everyone standing between two points you choose. Everything it crosses takes a HEAVY Hit (Attribute of your choice) and is knocked aside.<br>Cost: HAZE Hit, same Attribute, to you.</td><td><strong>GREAT SUNDER</strong><br>Effect: The fault becomes a wall for the rest of the scene; crossing it costs a HYPER Hit.<br>Cost: You don't choose which side you're on when it closes.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3 class="field-subtitle">Red Shift — movement. Blink, teleport, avoid reactions, outrun the moment.</h3>
+            <div class="table-scroll overdrive-dossier">
+                <table class="param-table">
+                    <colgroup>
+                        <col style="width:14%"><col style="width:43%"><col style="width:43%">
+                    </colgroup>
+                    <thead><tr><th>Pairing</th><th>Yoke</th><th>Flare</th></tr></thead>
+                    <tbody>
+                        <tr><td><strong>KERN</strong><br>Red Shift · 1</td><td>Effect: Blink to a point you can see, no reaction provoked. Everything nearby is dragged toward it; anyone caught in the pull takes a HEAVY FRM Hit.<br>Cost: HAZE NRV Hit — the pull spends your next reaction.</td><td><strong>BLACK KERN</strong><br>Effect: Everything nearby collapses toward the point, HYPER FRM Hit on collision.<br>Cost: HEAVY NRV Hit, you're at the center same as everyone.</td></tr>
+                        <tr><td><strong>WOLD</strong><br>Red Shift · 2</td><td>Effect: Swap positions with any creature in sight, any distance, no reaction provoked either way.<br>Cost: HAZE NRV Hit — you're the one who has to reassemble first.</td><td><strong>DEAD WOLD</strong><br>Effect: Place every creature anywhere you choose within sight, no reactions provoked anywhere.<br>Cost: HEAVY NRV Hit — your own landing spot isn't yours to pick.</td></tr>
+                        <tr><td><strong>WITHER</strong><br>Red Shift · 3</td><td>Effect: Blink to touch or target a creature, no reaction provoked, then mark them: every Hit they take before your next turn is increased one tier.<br>Cost: HAZE NRV Hit to you the instant the mark lands.</td><td><strong>TRUE WITHER</strong><br>Effect: Every Hit inflicted for the rest of the scene is upgraded one tier.<br>Cost: HEAVY NRV Hit, permanently in effect on you too.</td></tr>
+                        <tr><td><strong>RIVEN</strong><br>Red Shift · 4</td><td>Effect: Open two linked fractures that stay open for the rest of the scene. Anything entering one exits the other at full speed, no reaction provoked.<br>Cost: HAZE FRM Hit to you the first time each scene it's used.</td><td><strong>OPEN RIVEN</strong><br>Effect: Anyone crossing the breach can be redirected anywhere visible, any time, for the rest of the scene.<br>Cost: HEAVY FRM Hit if the Static redirects you through it instead.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3 class="field-subtitle">Lost Track — unaccounted for. Off the sensor, off the record, off your own memory.</h3>
+            <div class="table-scroll overdrive-dossier">
+                <table class="param-table">
+                    <colgroup>
+                        <col style="width:14%"><col style="width:43%"><col style="width:43%">
+                    </colgroup>
+                    <thead><tr><th>Pairing</th><th>Yoke</th><th>Flare</th></tr></thead>
+                    <tbody>
+                        <tr><td><strong>DREAR</strong><br>Lost Track · 1</td><td>Effect: A pressure wave rolls out from you — every enemy nearby takes a HAZE NRV Hit and is pushed directly away, no traceable source.<br>Cost: HAZE NRV Hit to you — you don't remember casting it until someone tells you.</td><td><strong>DEEP DREAR</strong><br>Effect: HEAVY NRV Hit, everyone thrown well clear of you, still no visible cause.<br>Cost: HEAVY NRV Hit — you lose the whole exchange, not just the cast.</td></tr>
+                        <tr><td><strong>FORLORN</strong><br>Lost Track · 2</td><td>Effect: Remove a target entirely until the start of their next turn, then place them anywhere you choose.<br>Cost: HAZE NRV Hit — allies can't reach you for aid during that span.</td><td><strong>LAST FORLORN</strong><br>Effect: Every enemy banished until the end of the scene, then redistributed by the Static.<br>Cost: HEAVY NRV Hit — you're off the grid the same span.</td></tr>
+                        <tr><td><strong>ORDEAL</strong><br>Lost Track · 3</td><td>Effect: Force BRN, NRV, and FRM tests on a target. Each failure is a HAZE Hit to the matching Attribute.<br>Cost: You take the same three tests, hidden from you until they resolve.</td><td><strong>FINAL ORDEAL</strong><br>Effect: Every enemy takes all three HAZE tests before further tests can escalate them.<br>Cost: You take them too, unwarned.</td></tr>
+                        <tr><td><strong>CINDER</strong><br>Lost Track · 4</td><td>Effect: Detonate every anomaly or hazard clinging near a target — everyone close to them takes a HEAVY FRM Hit, no identifiable epicenter.<br>Cost: HAZE FRM Hit to you, untraceable for the rest of the scene.</td><td><strong>CINDER RAIN</strong><br>Effect: The area around every combatant becomes hazardous for the rest of the scene; ending a turn anywhere costs a HAZE FRM Hit.<br>Cost: Including wherever you're standing, always.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3 class="field-subtitle">Shadowbox — a shade double stands in. What happens to it happens to whoever it's bound to.</h3>
+            <div class="table-scroll overdrive-dossier">
+                <table class="param-table">
+                    <colgroup>
+                        <col style="width:14%"><col style="width:43%"><col style="width:43%">
+                    </colgroup>
+                    <thead><tr><th>Pairing</th><th>Yoke</th><th>Flare</th></tr></thead>
+                    <tbody>
+                        <tr><td><strong>FEN</strong><br>Shadowbox · 1</td><td>Effect: Split off a shade double of a target in sight. Anyone who strikes it lands the Hit — HAZE FRM — on the real target instead, wherever they are.<br>Cost: HAZE FRM Hit to you when the binding is cut, by time or by force.</td><td><strong>BLACK FEN</strong><br>Effect: The shade holds for the rest of the scene; anyone can strike it to land a HEAVY FRM Hit on the real target from anywhere.<br>Cost: HEAVY FRM Hit to you if it's ever destroyed early.</td></tr>
+                        <tr><td><strong>GLOOM</strong><br>Shadowbox · 2</td><td>Effect: Split off a shade double where you stand; you may immediately move anywhere nearby. Attacks against "you" this exchange strike the double.<br>Cost: HAZE NRV Hit if the double is destroyed before your next turn.</td><td><strong>TOTAL GLOOM</strong><br>Effect: Every ally gets a shade for the round; the field fills with echoes enemies can't sort from real.<br>Cost: HEAVY NRV Hit to you if your own double falls.</td></tr>
+                        <tr><td><strong>GRIM</strong><br>Shadowbox · 3</td><td>Effect: Bind a target to a shade double only you can see and strike. Your next Hit against the double lands on them instead, undefended.<br>Cost: HAZE Hit (BRN) — your next attack roll against anyone else suffers.</td><td><strong>GRIM HOUR</strong><br>Effect: The bound double takes every Hit you land for the rest of the scene, all undefended.<br>Cost: The link is permanent this fight — whatever finally destroys the double reaches back to you too, full severity.</td></tr>
+                        <tr><td><strong>BLIGHT</strong><br>Shadowbox · 4</td><td>Effect: Seed shade motes on everyone you choose. Your next offensive working relays through their mote onto them too.<br>Cost: You're wearing a mote too — there's a real chance your own next casting relays back onto you.</td><td><strong>DEEP BLIGHT</strong><br>Effect: Every casting for the rest of the scene relays through a mote onto another bound target automatically.<br>Cost: Permanent exposure — your own mote is always live too.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="span-all">
+            <h2>SEQUENCE REGISTER</h2>
+            <div class="card echo-register">
+                <ul>
+                    <li><strong>Nick a Yoke</strong> — full action. force Signal and Noise into agreement against the static, during Finetuning.</li>
+                    <li><strong>Get a Yoke</strong> — the theft closes. One inventory slot spent.</li>
+                    <li><strong>Fix a Yoke</strong> — use it. Half-Action.</li>
+                    <li><strong>Kindle a Flare</strong> — full action. drive a Fixed Yoke into Overdrive, burning it off as trace residual ESP. Full Action.</li>
+                    <li><strong>Get a Flare</strong> — trace esp is burned. No return to the Yoke's base state.</li>
+                    <li><strong>Fix a Flare</strong> — use it. Half-action. Cost is paid in full, immediately.</li>
+                </ul>
+            </div>
+            <a class="nav-link" href="../finetuning-and-kindling">→ FINETUNING AND KINDLING</a>
+            <a class="nav-link" href="../spiritbox">→ SPIRITBOX</a>
+            <a class="nav-link" href="../operator-registry">→ OPERATOR REGISTRY</a>
+            <a class="nav-link" href="../">→ KERNEL</a>
+        </section>
+
+    </div>
+</main>
+</body>
+</html>
