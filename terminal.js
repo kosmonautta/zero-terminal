@@ -3,7 +3,7 @@ const ACCESS = {
     "ESPER": "esper/",
 
     "LINKWALKER": "linkwalker/",
-
+    
     "FORERUNNER": "forerunner/",
 
     "SPIRITBOX": "spiritbox/",
@@ -43,6 +43,18 @@ const ACCESS = {
     "TELEMETRY": "afterimage-telemetry/",
 
     "AFTERIMAGE TELEMETRY": "afterimage-telemetry/",
+
+    "HORIZOGRAPH": "horizograph/",
+
+    "CONSTELLATION": "constellation/",
+
+    "DOOMER": "doomer/",
+
+    "FINETUNING": "finetuning-and-kindling/",
+
+    "KINDLING": "finetuning-and-kindling/",
+    
+    "FINETUNING AND KINDLING": "finetuning-and-kindling/"
 };
 
 function targetURL(relPath){
