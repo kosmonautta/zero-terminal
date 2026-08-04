@@ -3,10 +3,9 @@
 CONSTELLATION — STARFIELD TERMINAL
 
 AFTERIMAGES holds every named point of light: its code, its display
-name, its fixed position on the field (x, y in a 600×340 space), and
-a small rotation so the tic-tac silhouettes don't all sit perfectly
-level. Position is fixed per afterimage so the same combination
-always draws the same shape.
+name, and its fixed position on the field (x, y in a 600×340 space).
+Position is fixed per afterimage so the same combination always
+draws the same shape.
 
 CONSTELLATIONS holds every known formation as an unordered set of
 required afterimage names, plus the name of the mechanic it grants
@@ -25,25 +24,25 @@ and the matcher all read from these two arrays.
 const CONSTELLATION_KEY = "constellationCards";
 
 const AFTERIMAGES = [
-    { code: "AI-01", name: "Gimbal",            x: 60,  y: 60,  rot: 8   },
-    { code: "AI-02", name: "Tic Tac",            x: 140, y: 110, rot: -15 },
-    { code: "AI-03", name: "Ghost Return",       x: 230, y: 50,  rot: 20  },
-    { code: "AI-04", name: "False Horizon",      x: 320, y: 140, rot: -5  },
-    { code: "AI-05", name: "GoFast",             x: 410, y: 70,  rot: 12  },
-    { code: "AI-06", name: "Fastwalker",         x: 500, y: 130, rot: -10 },
-    { code: "AI-07", name: "Jellyfish",          x: 80,  y: 200, rot: 18  },
-    { code: "AI-08", name: "Cold Core",          x: 170, y: 250, rot: -8  },
-    { code: "AI-09", name: "Negative Parallax",  x: 260, y: 190, rot: 4   },
-    { code: "AI-10", name: "Green Pyramid",      x: 350, y: 240, rot: -18 },
-    { code: "AI-11", name: "Static Memory",      x: 440, y: 200, rot: 10  },
-    { code: "AI-12", name: "Black Triangle",     x: 530, y: 250, rot: -4  },
-    { code: "AI-13", name: "Split Echo",         x: 100, y: 290, rot: 16  },
-    { code: "AI-14", name: "Observer Drift",     x: 200, y: 310, rot: -12 },
-    { code: "AI-15", name: "Missing Frame",      x: 300, y: 300, rot: 6   },
-    { code: "AI-16", name: "Dead Vector",        x: 390, y: 310, rot: -20 },
-    { code: "AI-17", name: "Plasma Wake",        x: 480, y: 290, rot: 14  },
-    { code: "AI-18", name: "Pressure Scar",      x: 30,  y: 150, rot: -6  },
-    { code: "AI-19", name: "Mosul Orb",          x: 560, y: 180, rot: 9   }
+    { code: "AI-01", name: "Gimbal",            x: 60,  y: 60  },
+    { code: "AI-02", name: "Tic Tac",            x: 140, y: 110 },
+    { code: "AI-03", name: "Ghost Return",       x: 230, y: 50  },
+    { code: "AI-04", name: "False Horizon",      x: 320, y: 140 },
+    { code: "AI-05", name: "GoFast",             x: 410, y: 70  },
+    { code: "AI-06", name: "Fastwalker",         x: 500, y: 130 },
+    { code: "AI-07", name: "Jellyfish",          x: 80,  y: 200 },
+    { code: "AI-08", name: "Cold Core",          x: 170, y: 250 },
+    { code: "AI-09", name: "Negative Parallax",  x: 260, y: 190 },
+    { code: "AI-10", name: "Green Pyramid",      x: 350, y: 240 },
+    { code: "AI-11", name: "Static Memory",      x: 440, y: 200 },
+    { code: "AI-12", name: "Black Triangle",     x: 530, y: 250 },
+    { code: "AI-13", name: "Split Echo",         x: 100, y: 290 },
+    { code: "AI-14", name: "Observer Drift",     x: 200, y: 310 },
+    { code: "AI-15", name: "Missing Frame",      x: 300, y: 300 },
+    { code: "AI-16", name: "Dead Vector",        x: 390, y: 310 },
+    { code: "AI-17", name: "Plasma Wake",        x: 480, y: 290 },
+    { code: "AI-18", name: "Pressure Scar",      x: 30,  y: 150 },
+    { code: "AI-19", name: "Mosul Orb",          x: 560, y: 180 }
 ];
 
 const CONSTELLATIONS = [
@@ -192,28 +191,26 @@ function drawLine(svg, a, b, closing){
     requestAnimationFrame(() => line.classList.add("drawn"));
 }
 
-function drawStar(svg, star, lit){
+function drawStar(container, star, lit){
     const g = ns("g");
     g.setAttribute("class", "field-star" + (lit ? " lit" : ""));
-    g.setAttribute("transform", `translate(${star.x},${star.y}) rotate(${star.rot})`);
+    g.setAttribute("transform", `translate(${star.x},${star.y})`);
 
     const title = ns("title");
     title.textContent = star.name;
     g.appendChild(title);
 
     if(lit){
-        const glow = ns("ellipse");
-        glow.setAttribute("rx", 13);
-        glow.setAttribute("ry", 7);
+        const glow = ns("circle");
+        glow.setAttribute("r", 12);
         glow.setAttribute("class", "star-glow");
         g.appendChild(glow);
     }
 
-    const body = ns("ellipse");
-    const isTicTac = star.name === "Tic Tac";
-    body.setAttribute("rx", isTicTac ? 9 : 6.5);
-    body.setAttribute("ry", isTicTac ? 4.2 : 3);
+    const body = ns("circle");
+    body.setAttribute("r", 6.5);
     body.setAttribute("class", "star-body");
+    body.setAttribute("filter", "url(#starGrain)");
     g.appendChild(body);
 
     if(lit){
@@ -221,19 +218,18 @@ function drawStar(svg, star, lit){
         label.setAttribute("class", "star-label");
         label.setAttribute("y", -12);
         label.setAttribute("text-anchor", "middle");
-        label.setAttribute("transform", `rotate(${-star.rot})`);
         label.textContent = star.name;
         g.appendChild(label);
     }
 
     g.addEventListener("click", () => toggle(star.name));
-    svg.appendChild(g);
+    container.appendChild(g);
 }
 
 function renderField(){
-    const svg = document.getElementById("starfield");
+    const content = document.getElementById("fieldContent");
     const emptyEl = document.getElementById("fieldEmpty");
-    svg.innerHTML = "";
+    content.innerHTML = "";
     emptyEl.style.display = selected.length === 0 ? "flex" : "none";
 
     const match = findMatch();
@@ -242,16 +238,16 @@ function renderField(){
     for(let i = 0; i < selected.length - 1; i++){
         const a = afterimageByName[selected[i]];
         const b = afterimageByName[selected[i + 1]];
-        drawLine(svg, a, b);
+        drawLine(content, a, b);
     }
     if(closesLoop){
         const a = afterimageByName[selected[selected.length - 1]];
         const b = afterimageByName[selected[0]];
-        drawLine(svg, a, b, true);
+        drawLine(content, a, b, true);
     }
 
     AFTERIMAGES.forEach(star => {
-        drawStar(svg, star, selected.includes(star.name));
+        drawStar(content, star, selected.includes(star.name));
     });
 }
 
