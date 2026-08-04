@@ -132,6 +132,73 @@ AFTERIMAGES.forEach(a => afterimageByName[a.name] = a);
 const nameByLower = {};
 AFTERIMAGES.forEach(a => nameByLower[a.name.toLowerCase()] = a.name);
 
+// Per-star jitter/glitch keyframes — generated once at load, not per render, so a
+// star's motion stays consistent while you're looking at it. Each star gets its own
+// @keyframes rule with its own step count and its own random displacement at each
+// step (not a shared path just scaled by a multiplier), plus its own duration and a
+// negative delay so nothing starts in phase. That's what actually makes them read as
+// independent and glitchy instead of a synchronized group wobble.
+function randRange(min, max){
+    return min + Math.random() * (max - min);
+}
+
+function buildJitterKeyframe(name){
+    const stops = 5 + Math.floor(Math.random() * 4); // 5–8 stops: varied "frequency"
+    let body = "";
+    for(let s = 0; s <= stops; s++){
+        const pct = Math.round((s / stops) * 100);
+        if(s === 0 || s === stops){
+            body += `${pct}%{ transform:translate(0px,0px); opacity:0.4; }`;
+        } else {
+            const dx = randRange(-2.6, 2.6).toFixed(2);
+            const dy = randRange(-2.6, 2.6).toFixed(2);
+            const op = randRange(0.22, 0.62).toFixed(2);
+            body += `${pct}%{ transform:translate(${dx}px,${dy}px); opacity:${op}; }`;
+        }
+    }
+    return `@keyframes ${name}{ ${body} }`;
+}
+
+function buildGlitchKeyframe(name){
+    const stops = 6 + Math.floor(Math.random() * 5); // 6–10 stops: choppier than jitter
+    let body = "";
+    for(let s = 0; s <= stops; s++){
+        const pct = Math.round((s / stops) * 100);
+        if(s === 0 || s === stops){
+            body += `${pct}%{ transform:translate(0px,0px); opacity:0.92; }`;
+        } else {
+            const dx = randRange(-3.6, 3.6).toFixed(2);
+            const dy = randRange(-3.6, 3.6).toFixed(2);
+            const op = randRange(0.28, 1).toFixed(2);
+            body += `${pct}%{ transform:translate(${dx}px,${dy}px); opacity:${op}; }`;
+        }
+    }
+    return `@keyframes ${name}{ ${body} }`;
+}
+
+const jitterParams = {};
+let starKeyframeCSS = "";
+AFTERIMAGES.forEach(a => {
+    const jitterName = `jitter_${a.code}`;
+    const glitchName = `glitch_${a.code}`;
+    starKeyframeCSS += buildJitterKeyframe(jitterName);
+    starKeyframeCSS += buildGlitchKeyframe(glitchName);
+    jitterParams[a.code] = {
+        jitterName,
+        glitchName,
+        jdur: randRange(2.2, 5.4).toFixed(2),
+        jdelay: -randRange(0, 5).toFixed(2),
+        gdur: randRange(0.9, 2.4).toFixed(2),
+        gdelay: -randRange(0, 2.4).toFixed(2)
+    };
+});
+
+(function injectStarKeyframes(){
+    const styleEl = document.createElement("style");
+    styleEl.textContent = starKeyframeCSS;
+    document.head.appendChild(styleEl);
+})();
+
 let selected = []; // names, in the order they were added
 
 // ===== CARD SAVING =====
@@ -211,6 +278,17 @@ function drawStar(container, star, lit, settled){
     body.setAttribute("r", 6.5);
     body.setAttribute("class", "star-body");
     body.setAttribute("filter", "url(#starGrain)");
+    const jp = jitterParams[star.code];
+    if(jp){
+        if(settled){
+            // shared calm animation, driven by the .field-star.settled CSS rule —
+            // no need for per-star variety once it's no longer erratic
+        } else if(lit){
+            body.style.animation = `${jp.glitchName} ${jp.gdur}s steps(1, end) ${jp.gdelay}s infinite`;
+        } else {
+            body.style.animation = `${jp.jitterName} ${jp.jdur}s ease-in-out ${jp.jdelay}s infinite`;
+        }
+    }
     g.appendChild(body);
 
     if(lit){
