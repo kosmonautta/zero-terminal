@@ -1,0 +1,989 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BANNING AND KINDLING</title>
+    <style>
+        :root {
+            --bg: #000;
+            --fg: #fff;
+            --dim: rgba(255, 255, 255, 0.55);
+            --line: rgba(255, 255, 255, 0.22);
+            --ember: rgba(255, 150, 60, 0.9);
+            --ember-dim: rgba(255, 100, 30, 0.4);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            background: var(--bg);
+            color: var(--fg);
+            font-family: "Times New Roman", Georgia, serif;
+            font-size: 18px;
+            line-height: 1.7;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body {
+            padding-bottom: 80px;
+            position: relative;
+        }
+
+        /* -------- AMBIENT PAGE STATIC (signature texture) -------- */
+        .page-static {
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            pointer-events: none;
+            opacity: 0.045;
+            mix-blend-mode: overlay;
+            background-image: repeating-linear-gradient(
+                0deg,
+                rgba(255, 255, 255, 0.9) 0px,
+                transparent 1px,
+                transparent 2px
+            );
+        }
+
+        main {
+            width: min(1280px, 92vw);
+            margin: 100px auto 80px;
+            position: relative;
+        }
+
+        .page-head {
+            margin-bottom: 40px;
+        }
+
+        .head-left {
+            max-width: 640px;
+        }
+
+        .eyebrow {
+            font-family: "Courier New", monospace;
+            font-size: 12px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--dim);
+            margin: 0 0 8px 0;
+        }
+
+        h1 {
+            font-family: "Times New Roman", serif;
+            font-size: 58px;
+            line-height: 0.92;
+            margin: 0 0 18px 0;
+            font-weight: 550;
+            letter-spacing: 1px;
+            transform: scaleY(1.15);
+            transform-origin: left top;
+            max-width: 100%;
+            word-break: break-word;
+        }
+
+        h1 .title-primary {
+            display: block;
+        }
+
+        h1 .title-secondary {
+            display: block;
+            margin-top: 6px;
+        }
+
+        .whitebox {
+            background: var(--fg);
+            color: var(--bg);
+            display: inline-block;
+            padding: 5px 10px;
+            font-family: "Courier New", monospace;
+            font-size: 12px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            font-weight: 700;
+        }
+
+        .hero-tag {
+            margin-top: 18px;
+        }
+
+        .hero-sub {
+            margin: 14px 0 0;
+            max-width: 520px;
+            color: var(--dim);
+            font-size: 15px;
+            font-style: italic;
+        }
+
+        .columns {
+            column-count: 3;
+            column-gap: 42px;
+            column-fill: balance;
+        }
+
+        .columns section,
+        .columns p,
+        .columns h2,
+        .columns h3,
+        .columns table,
+        .columns .callout,
+        .columns .terminal-note,
+        .columns .break-block {
+            break-inside: avoid;
+            -webkit-column-break-inside: avoid;
+            page-break-inside: avoid;
+        }
+
+        section {
+            margin: 0 0 30px 0;
+        }
+
+        h2 {
+            font-size: 19px;
+            margin: 0 0 10px 0;
+            font-weight: 500;
+            font-style: italic;
+            color: var(--fg);
+            break-after: avoid;
+        }
+
+        .article-label {
+            font-family: "Courier New", monospace;
+            font-size: 12px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--dim);
+            margin: 0 0 10px 0;
+        }
+
+        .article-label.whitebox {
+            background: var(--fg);
+            color: var(--bg);
+            display: inline-block;
+            padding: 5px 10px;
+            font-weight: 700;
+            margin: 0 0 12px 0;
+        }
+
+        p {
+            margin: 0 0 14px 0;
+            text-align: justify;
+            text-justify: inter-word;
+        }
+
+        .mono {
+            font-family: "Courier New", monospace;
+            font-size: 12px;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: var(--dim);
+            line-height: 1.8;
+        }
+
+        .terminal-note {
+            margin: 14px 0;
+            padding: 14px 16px;
+            border: 1px solid var(--line);
+            font-family: "Courier New", monospace;
+            font-size: 12px;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            line-height: 1.95;
+            color: var(--fg);
+            column-span: all;
+            position: relative;
+            background: linear-gradient(180deg, rgba(255,255,255,0.02), transparent 60%);
+        }
+
+        hr {
+            border: none;
+            border-top: 1px solid var(--line);
+            margin: 34px 0;
+            column-span: all;
+        }
+
+        .span-all {
+            column-span: all;
+        }
+
+        .break-block {
+            margin: 32px 0 20px;
+            padding: 16px 0 0;
+            border-top: 1px solid var(--line);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 0;
+            font-size: 14px;
+            line-height: 1.5;
+            table-layout: fixed;
+            position: relative;
+            z-index: 2;
+        }
+
+        th,
+        td {
+            border: 1px solid var(--line);
+            padding: 10px 10px;
+            vertical-align: top;
+            text-align: left;
+            overflow-wrap: break-word;
+        }
+
+        th {
+            font-family: "Courier New", monospace;
+            font-size: 11px;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            font-weight: 700;
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 14px;
+            margin-top: 14px;
+        }
+
+        .grid-empty {
+            grid-column: 1 / -1;
+            border: 1px solid var(--line);
+            padding: 20px;
+            text-align: center;
+            font-family: "Courier New", monospace;
+            font-size: 11px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--dim);
+        }
+
+        .op-card {
+            border: 1px solid var(--line);
+            padding: 16px 16px 14px;
+            background: var(--bg);
+            transition: background 0.2s, color 0.2s, border-color 0.2s;
+            overflow-wrap: break-word;
+            word-break: break-word;
+        }
+
+        .op-card .oc-coord {
+            font-family: "Courier New", monospace;
+            font-size: 10.5px;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: var(--dim);
+            margin-bottom: 6px;
+        }
+
+        .op-card .oc-name {
+            font-family: "Times New Roman", serif;
+            font-size: 22px;
+            letter-spacing: 0.5px;
+            margin-bottom: 10px;
+        }
+
+        .op-card .oc-field {
+            font-size: 13.5px;
+            line-height: 1.55;
+            margin-bottom: 8px;
+            overflow-wrap: break-word;
+            word-break: break-word;
+        }
+
+        .op-card .oc-field .oc-label {
+            display: block;
+            font-family: "Courier New", monospace;
+            font-size: 10px;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: var(--dim);
+            margin-bottom: 2px;
+        }
+
+        .op-card .oc-controls {
+            margin-top: 12px;
+        }
+
+        .op-card.bale-card.fixed {
+            background: var(--fg);
+            color: var(--bg);
+            border-color: var(--fg);
+        }
+
+        .op-card.bale-card.fixed .oc-coord {
+            color: rgba(0, 0, 0, 0.55);
+        }
+
+        .op-card.bale-card.fixed .oc-name {
+            color: var(--bg);
+        }
+
+        .op-card.bale-card.fixed .oc-field .oc-label {
+            color: rgba(0, 0, 0, 0.55);
+        }
+
+        .op-card.bale-card.fixed .oc-field {
+            color: var(--bg);
+        }
+
+        .op-card.bale-card.fixed button.btn {
+            background: var(--bg);
+            color: var(--fg);
+            border-color: var(--bg);
+        }
+
+        .op-card.bale-card.fixed button.btn:hover {
+            background: var(--fg);
+            color: var(--bg);
+            border-color: var(--bg);
+        }
+
+        .op-card.dread-card {
+            border-color: var(--fg);
+        }
+
+        .op-card.dread-card .oc-name {
+            color: var(--fg);
+        }
+
+        .op-card.just-banned {
+            animation: banFlash 0.7s ease-out;
+        }
+
+        @keyframes banFlash {
+            0% {
+                filter: brightness(2.4) contrast(1.5);
+                opacity: 0;
+                transform: scale(0.94) translateY(4px);
+                letter-spacing: 3px;
+            }
+            35% {
+                opacity: 1;
+            }
+            100% {
+                filter: brightness(1) contrast(1);
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        /* -------- BUTTONS -------- */
+        button.btn {
+            background: var(--bg);
+            color: var(--fg);
+            border: 1px solid var(--fg);
+            font-family: "Courier New", monospace;
+            font-size: 11.5px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            padding: 10px 16px;
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s;
+            font-weight: 700;
+        }
+
+        button.btn:hover {
+            background: var(--fg);
+            color: var(--bg);
+        }
+
+        button.btn:focus-visible {
+            outline: 2px solid var(--fg);
+            outline-offset: 3px;
+        }
+
+        button.btn:disabled {
+            opacity: 0.35;
+            cursor: default;
+            background: var(--bg);
+            color: var(--fg);
+        }
+
+        button.btn.small {
+            padding: 7px 12px;
+            font-size: 10.5px;
+        }
+
+        /* ============================================================
+           THE OSSUARY — matrix panel with layered x-ray static + glitch
+           ============================================================ */
+
+        .ossuary-panel {
+            position: relative;
+            width: 100%;
+            min-width: 600px;
+            border: 1px solid var(--line);
+            background: #010101;
+            padding: 14px;
+            overflow: hidden;
+            isolation: isolate;
+            transition: border-color 0.4s ease;
+        }
+
+        .ossuary-panel.awaiting-roll {
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+
+        .ossuary-static {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            image-rendering: pixelated;
+            pointer-events: none;
+            opacity: 0.14;
+            mix-blend-mode: overlay;
+            transition: opacity 0.5s ease;
+        }
+
+        .ossuary-panel.awaiting-roll .ossuary-static {
+            opacity: 0.4;
+        }
+
+        .ossuary-glitch {
+            position: absolute;
+            inset: 0;
+            z-index: 4;
+            pointer-events: none;
+        }
+
+        .ossuary-glitch .scanline {
+            position: absolute;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.75);
+            mix-blend-mode: screen;
+            animation: scanlineMove 0.12s linear infinite;
+        }
+
+        @keyframes scanlineMove {
+            0% { top: -8%; }
+            100% { top: 108%; }
+        }
+
+        .ossuary-glitch .vhs-line {
+            position: absolute;
+            top: 0;
+            height: 100%;
+            width: 1px;
+            background: rgba(255, 255, 255, 0.35);
+        }
+
+        .ossuary-glitch .flash-stripe {
+            position: absolute;
+            left: 0;
+            width: 100%;
+            mix-blend-mode: screen;
+            animation: flashStripe 0.18s ease-out forwards;
+        }
+
+        @keyframes flashStripe {
+            0% { opacity: 0.65; height: 2px; }
+            100% { opacity: 0; height: 16px; }
+        }
+
+        .table-scroll {
+            width: 100%;
+            overflow-x: auto;
+            position: relative;
+            z-index: 2;
+        }
+
+        .table-scroll table {
+            min-width: 560px;
+        }
+
+        .overdrive-grid th,
+        .overdrive-grid .corner,
+        .overdrive-grid .axis-signal {
+            background: var(--bg) !important;
+            color: var(--fg) !important;
+            border-color: var(--line) !important;
+            transition: background 0.15s ease, color 0.15s ease;
+        }
+
+        .overdrive-grid th.highlighted,
+        .overdrive-grid .corner.highlighted,
+        .overdrive-grid .axis-signal.highlighted {
+            background: var(--fg) !important;
+            color: var(--bg) !important;
+            border-color: var(--fg) !important;
+        }
+
+        .overdrive-grid td.dread-cell {
+            background: #0a0a0a;
+            text-align: center;
+            padding: 16px 8px;
+            vertical-align: middle;
+            transition: background 0.2s ease, border-color 0.2s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .overdrive-grid td.dread-cell .dread-name {
+            font-family: "Courier New", monospace;
+            font-weight: 700;
+            font-size: 14px;
+            letter-spacing: 1.5px;
+            color: var(--fg);
+            display: block;
+            position: relative;
+            z-index: 2;
+        }
+
+        .overdrive-grid td.dread-cell .dread-pair {
+            display: block;
+            margin-top: 5px;
+            font-family: "Courier New", monospace;
+            font-size: 9.5px;
+            letter-spacing: 1px;
+            color: var(--dim);
+            text-transform: uppercase;
+            position: relative;
+            z-index: 2;
+        }
+
+        .cell-noise {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            z-index: 1;
+            font-family: "Courier New", monospace;
+            font-size: 8px;
+            line-height: 1.2;
+            letter-spacing: 0.3px;
+            color: rgba(255, 255, 255, 0.05);
+            overflow: hidden;
+            opacity: 0;
+            transition: opacity 0.3s;
+            white-space: pre;
+            padding: 4px;
+        }
+
+        .awaiting-roll td.dread-cell .cell-noise {
+            opacity: 1;
+            color: rgba(255, 255, 255, 0.09);
+            animation: noiseFlicker 0.08s infinite alternate;
+        }
+
+        @keyframes noiseFlicker {
+            0% { opacity: 0.35; transform: translate(0, 0); }
+            100% { opacity: 0.9; transform: translate(1px, -1px); }
+        }
+
+        @keyframes shakeAwaiting {
+            0% { transform: translate(0, 0) scale(1); }
+            25% { transform: translate(-1.5px, 1.5px) scale(0.99); }
+            50% { transform: translate(1.5px, -1.5px) scale(1); }
+            75% { transform: translate(-1.5px, -1.5px) scale(1.01); }
+            100% { transform: translate(0, 0) scale(1); }
+        }
+
+        .awaiting-roll td.dread-cell {
+            animation: shakeAwaiting 0.12s infinite alternate;
+            background: #0a0a0a;
+        }
+
+        .awaiting-roll td.dread-cell .dread-name,
+        .awaiting-roll td.dread-cell .dread-pair {
+            animation: chromaticFlicker 0.16s infinite;
+        }
+
+        @keyframes chromaticFlicker {
+            0% { text-shadow: 1px 0 rgba(255, 60, 60, 0.35), -1px 0 rgba(60, 220, 255, 0.35); }
+            50% { text-shadow: -1px 0 rgba(255, 60, 60, 0.3), 1px 0 rgba(60, 220, 255, 0.3); }
+            100% { text-shadow: 1px 0 rgba(255, 60, 60, 0.35), -1px 0 rgba(60, 220, 255, 0.35); }
+        }
+
+        .overdrive-grid td.highlighted {
+            background: var(--fg) !important;
+            border-color: var(--fg);
+        }
+
+        .overdrive-grid td.highlighted .dread-name {
+            color: var(--bg);
+        }
+
+        .overdrive-grid td.highlighted .dread-pair {
+            color: rgba(0, 0, 0, 0.55);
+        }
+
+        .overdrive-grid td.highlighted .cell-noise {
+            opacity: 0 !important;
+        }
+
+        .ban-controls {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+            flex-wrap: wrap;
+            margin: 14px 0 0;
+        }
+
+        .ban-status-text {
+            font-family: "Courier New", monospace;
+            font-size: 12px;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: var(--dim);
+            min-height: 16px;
+        }
+
+        #chosenBaleDisplay {
+            margin-top: 14px;
+            min-height: 0;
+        }
+
+        /* ============================================================
+           THE PYRE — organic, chaotic, embers, mild shake (kept)
+           ============================================================ */
+
+        .pyre-wrap {
+            display: none;
+            margin: 20px 0 6px;
+        }
+        .pyre-wrap.active {
+            display: block;
+        }
+
+        .pyre-stage {
+            position: relative;
+            width: 100%;
+            min-height: 280px;
+            border: 1px solid var(--fg);
+            background: #020202;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .pyre-stage.burning {
+            animation: pyreShakeMild 0.06s infinite;
+        }
+
+        @keyframes pyreShakeMild {
+            0% { transform: translate(0, 0) rotate(0deg) scale(1); }
+            20% { transform: translate(-4px, 3px) rotate(-1deg) scale(1.005); }
+            40% { transform: translate(4px, -3px) rotate(1deg) scale(0.995); }
+            60% { transform: translate(-3px, -4px) rotate(-0.8deg) scale(1); }
+            80% { transform: translate(3px, 4px) rotate(0.8deg) scale(1.005); }
+            100% { transform: translate(0, 0) rotate(0deg) scale(1); }
+        }
+
+        .pyre-blob {
+            position: absolute;
+            width: min(260px, 60vw);
+            height: min(260px, 60vw);
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            border-radius: 59% 41% 47% 53% / 42% 57% 43% 58%;
+            background: radial-gradient(circle at 40% 35%, rgba(255, 225, 170, 0.95), rgba(255, 120, 30, 0.55) 45%, rgba(60, 10, 0, 0.15) 75%, transparent 100%);
+            filter: blur(1px);
+            animation: blobMorph 4.2s ease-in-out infinite alternate, blobGlow 1.3s ease-in-out infinite alternate;
+            z-index: 1;
+            display: none;
+        }
+
+        .pyre-stage.burning .pyre-blob,
+        .pyre-stage.settling .pyre-blob {
+            display: block;
+        }
+
+        @keyframes blobMorph {
+            0% { border-radius: 59% 41% 47% 53% / 42% 57% 43% 58%; }
+            33% { border-radius: 45% 55% 62% 38% / 55% 40% 60% 45%; }
+            66% { border-radius: 62% 38% 40% 60% / 35% 62% 38% 65%; }
+            100% { border-radius: 40% 60% 55% 45% / 60% 35% 65% 40%; }
+        }
+
+        @keyframes blobGlow {
+            0% { box-shadow: 0 0 40px rgba(255, 140, 40, 0.35); }
+            100% { box-shadow: 0 0 90px rgba(255, 90, 20, 0.65); }
+        }
+
+        .pyre-stage::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            z-index: 2;
+            pointer-events: none;
+            opacity: 0;
+            background: repeating-linear-gradient(0deg, transparent 0px, transparent 2px, rgba(255, 255, 255, 0.04) 2px, rgba(255, 255, 255, 0.04) 3px);
+        }
+        .pyre-stage.burning::before {
+            opacity: 1;
+            animation: glitchScan 0.08s linear infinite;
+        }
+
+        @keyframes glitchScan {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(100%); }
+        }
+
+        .ember {
+            position: absolute;
+            bottom: 46%;
+            border-radius: 50%;
+            background: var(--ember);
+            pointer-events: none;
+            z-index: 3;
+            animation: emberRise linear forwards;
+        }
+
+        @keyframes emberRise {
+            0% { transform: translate(0, 0) scale(1); opacity: 0.95; }
+            100% { transform: translate(var(--dx, 0px), -170px) scale(0.15); opacity: 0; }
+        }
+
+        .pyre-reveal {
+            position: relative;
+            z-index: 4;
+            width: 100%;
+            max-width: 480px;
+            padding: 0 20px;
+            opacity: 0;
+        }
+        .pyre-reveal.active {
+            opacity: 1;
+            animation: banFlash 0.6s ease-out;
+        }
+        .pyre-reveal .op-card {
+            background: rgba(0, 0, 0, 0.55);
+            backdrop-filter: blur(1px);
+        }
+
+        #pyreStatus {
+            margin-top: 10px;
+            font-family: "Courier New", monospace;
+            font-size: 11px;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: var(--dim);
+            min-height: 14px;
+        }
+
+        /* -------- LOG -------- */
+        .log-panel {
+            margin-top: 16px;
+            border: 1px solid var(--line);
+            max-height: 220px;
+            overflow-y: auto;
+            font-family: "Courier New", monospace;
+            font-size: 11.5px;
+            letter-spacing: 0.5px;
+            line-height: 1.9;
+        }
+
+        .log-empty {
+            padding: 16px;
+            color: var(--dim);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-size: 11px;
+        }
+
+        .log-entry {
+            padding: 9px 14px;
+            border-bottom: 1px solid var(--line);
+            color: var(--dim);
+        }
+
+        .log-entry:last-child {
+            border-bottom: none;
+        }
+
+        .log-entry .le-tag {
+            color: var(--fg);
+            margin-right: 8px;
+        }
+
+        /* -------- NAV -------- */
+        .nav-link {
+            display: block;
+            margin-top: 18px;
+            font-family: "Courier New", monospace;
+            font-size: 13px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            border-bottom: 1px solid var(--line);
+            color: var(--fg);
+            text-decoration: none;
+            width: max-content;
+        }
+
+        .nav-link:hover {
+            border-bottom-color: var(--fg);
+        }
+
+        @media (max-width: 1100px) {
+            .columns { column-count: 2; }
+            h1 { font-size: 52px; }
+        }
+
+        @media (max-width: 780px) {
+            main { width: min(92vw, 720px); margin: 80px auto 60px; }
+            .columns { column-count: 1; }
+            h1 { font-size: 42px; }
+            table { font-size: 12px; }
+            .card-grid { grid-template-columns: 1fr; }
+            .pyre-stage { min-height: 220px; }
+            .ossuary-panel { min-width: 0; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .page-static,
+            .ossuary-static,
+            .ossuary-glitch .scanline,
+            .pyre-stage::before {
+                display: none !important;
+            }
+            .pyre-stage.burning,
+            .awaiting-roll td.dread-cell,
+            .awaiting-roll td.dread-cell .dread-name,
+            .awaiting-roll td.dread-cell .cell-noise,
+            .pyre-blob {
+                animation: none !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="page-static" aria-hidden="true"></div>
+
+    <main>
+
+        <div class="page-head">
+            <div class="head-left">
+                <p class="eyebrow">NODE // 003</p>
+                <h1><span class="title-primary">BANNING AND</span><span class="title-secondary">KINDLING</span></h1>
+                <div class="whitebox hero-tag">KIND-II OPERATOR — BANNING TERMINAL</div>
+                <p class="hero-sub">The matrix holds sixteen shapes under static. Roll against it, and something surfaces.</p>
+            </div>
+        </div>
+
+        <div class="columns">
+
+            <section class="span-all">
+                <div class="terminal-note">
+                    BAN A BALE — ROLL 2D4 AGAINST THE MATRIX. THE STATIC WILL YIELD.<br>
+                    FIX A BALE TO SPEND IT — IT GOES BLACK AND BECOMES AVAILABLE FOR KINDLING.<br>
+                    KINDLE A FIXED BALE — THE PYRE BURNS IT INTO A DREAD. THE BALE IS SPENT; THE DREAD REMAINS.<br>
+                    FIX THE DREAD TO RESOLVE IT — THE COST IS PAID. NOTHING IS LEFT ON FILE.
+                </div>
+            </section>
+
+            <section class="span-all break-block">
+                <div class="article-label whitebox">THE OSSUARY — BALE BANNING</div>
+                <p class="mono">Force the static to yield. Roll 2d4 against the matrix.</p>
+
+                <div class="ossuary-panel" id="ossuaryPanel">
+                    <canvas class="ossuary-static" id="ossuaryStatic"></canvas>
+                    <div class="ossuary-glitch" id="ossuaryGlitch"></div>
+                    <div class="table-scroll overdrive-grid" id="matrixWrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th class="corner">ROW \ CATEGORY</th>
+                                    <th id="th-HARD LOCK">HARD LOCK</th>
+                                    <th id="th-RED SHIFT">RED SHIFT</th>
+                                    <th id="th-LOST TRACK">LOST TRACK</th>
+                                    <th id="th-SHADOWBOX">SHADOWBOX</th>
+                                </tr>
+                            </thead>
+                            <tbody id="matrixBody">
+                                <tr id="row-1">
+                                    <th class="axis-signal">1</th>
+                                    <td id="cell-1-HARD LOCK" class="dread-cell"><span class="dread-name">FALLOW</span><span class="dread-pair">HARD LOCK · 1</span><span class="cell-noise"></span></td>
+                                    <td id="cell-1-RED SHIFT" class="dread-cell"><span class="dread-name">KERN</span><span class="dread-pair">RED SHIFT · 1</span><span class="cell-noise"></span></td>
+                                    <td id="cell-1-LOST TRACK" class="dread-cell"><span class="dread-name">DREAR</span><span class="dread-pair">LOST TRACK · 1</span><span class="cell-noise"></span></td>
+                                    <td id="cell-1-SHADOWBOX" class="dread-cell"><span class="dread-name">FEN</span><span class="dread-pair">SHADOWBOX · 1</span><span class="cell-noise"></span></td>
+                                </tr>
+                                <tr id="row-2">
+                                    <th class="axis-signal">2</th>
+                                    <td id="cell-2-HARD LOCK" class="dread-cell"><span class="dread-name">BOLT</span><span class="dread-pair">HARD LOCK · 2</span><span class="cell-noise"></span></td>
+                                    <td id="cell-2-RED SHIFT" class="dread-cell"><span class="dread-name">WOLD</span><span class="dread-pair">RED SHIFT · 2</span><span class="cell-noise"></span></td>
+                                    <td id="cell-2-LOST TRACK" class="dread-cell"><span class="dread-name">FORLORN</span><span class="dread-pair">LOST TRACK · 2</span><span class="cell-noise"></span></td>
+                                    <td id="cell-2-SHADOWBOX" class="dread-cell"><span class="dread-name">GLOOM</span><span class="dread-pair">SHADOWBOX · 2</span><span class="cell-noise"></span></td>
+                                </tr>
+                                <tr id="row-3">
+                                    <th class="axis-signal">3</th>
+                                    <td id="cell-3-HARD LOCK" class="dread-cell"><span class="dread-name">WANE</span><span class="dread-pair">HARD LOCK · 3</span><span class="cell-noise"></span></td>
+                                    <td id="cell-3-RED SHIFT" class="dread-cell"><span class="dread-name">WITHER</span><span class="dread-pair">RED SHIFT · 3</span><span class="cell-noise"></span></td>
+                                    <td id="cell-3-LOST TRACK" class="dread-cell"><span class="dread-name">ORDEAL</span><span class="dread-pair">LOST TRACK · 3</span><span class="cell-noise"></span></td>
+                                    <td id="cell-3-SHADOWBOX" class="dread-cell"><span class="dread-name">GRIM</span><span class="dread-pair">SHADOWBOX · 3</span><span class="cell-noise"></span></td>
+                                </tr>
+                                <tr id="row-4">
+                                    <th class="axis-signal">4</th>
+                                    <td id="cell-4-HARD LOCK" class="dread-cell"><span class="dread-name">SUNDER</span><span class="dread-pair">HARD LOCK · 4</span><span class="cell-noise"></span></td>
+                                    <td id="cell-4-RED SHIFT" class="dread-cell"><span class="dread-name">RIVEN</span><span class="dread-pair">RED SHIFT · 4</span><span class="cell-noise"></span></td>
+                                    <td id="cell-4-LOST TRACK" class="dread-cell"><span class="dread-name">CINDER</span><span class="dread-pair">LOST TRACK · 4</span><span class="cell-noise"></span></td>
+                                    <td id="cell-4-SHADOWBOX" class="dread-cell"><span class="dread-name">BLIGHT</span><span class="dread-pair">SHADOWBOX · 4</span><span class="cell-noise"></span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="ban-controls">
+                    <button class="btn" id="banBtn">BAN A BALE</button>
+                    <span class="ban-status-text" id="banStatus">STATUS: THE MATRIX SITS DARK</span>
+                </div>
+
+                <div id="chosenBaleDisplay"></div>
+            </section>
+
+            <section class="span-all break-block">
+                <div class="article-label whitebox">HELD BALES</div>
+                <p class="mono">Banned and awaiting use. Fix to spend one — it goes black and can be Kindled.</p>
+                <div class="card-grid" id="baleGrid"></div>
+            </section>
+
+            <section class="span-all break-block">
+                <div class="pyre-wrap" id="pyreWrap">
+                    <h2 style="margin-top:28px;">The Pyre</h2>
+                    <div class="pyre-stage" id="pyreStage">
+                        <div class="pyre-blob" id="pyreBlob"></div>
+                        <div class="pyre-reveal" id="pyreReveal"></div>
+                    </div>
+                    <div id="pyreStatus">STATUS: IDLE</div>
+                </div>
+            </section>
+
+            <section class="span-all break-block">
+                <div class="article-label whitebox">HELD DREADS</div>
+                <p class="mono">Kindled from spent Bales. Fix to resolve one — the cost is paid and nothing remains.</p>
+                <div class="card-grid" id="dreadGrid"></div>
+            </section>
+
+            <section class="span-all break-block">
+                <div class="article-label whitebox">TERMINAL LOG</div>
+                <div class="log-panel" id="logPanel">
+                    <div class="log-empty">NO ACTIVITY LOGGED</div>
+                </div>
+            </section>
+
+            <section class="span-all">
+                <a class="nav-link" href="../doomer/">→ DOOMER</a>
+                <a class="nav-link" href="../operator-registry/">→ OPERATOR REGISTRY</a>
+                <a class="nav-link" href="../spiritbox/">→ SPIRITBOX</a>
+                <a class="nav-link" href="../">→ KERNEL</a>
+            </section>
+
+        </div>
+
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>
