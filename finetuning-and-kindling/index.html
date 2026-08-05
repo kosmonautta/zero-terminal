@@ -573,22 +573,22 @@
         .pyre-section {
             display: none;
             margin: 20px 0 6px;
-            text-align: center;
+            flex-direction: column;
+            align-items: center;
         }
 
         .pyre-section.active {
-            display: block;
+            display: flex;
         }
 
         .pyre-wrap {
-            display: inline-block;
-            width: auto;
-            min-width: 40%;
-            max-width: 90%;
-            margin: 0 auto;
+            display: block;
+            width: 70%;
+            max-width: 700px;
+            min-height: 220px;
+            margin: 10px auto 0;
             border: 1px solid var(--line);
             background: #010101;
-            min-height: 120px;
             position: relative;
             overflow: hidden;
             transition: border-color 0.3s, transform 0.1s;
@@ -631,7 +631,7 @@
             line-height: 1.2;
             letter-spacing: 0.5px;
             color: rgba(255, 255, 255, 0.3);
-            min-height: 120px;
+            min-height: 220px;
             padding: 16px;
             display: flex;
             align-items: center;
@@ -862,8 +862,8 @@
                 grid-template-columns: 1fr;
             }
             .pyre-wrap {
-                min-width: 60%;
-                max-width: 100%;
+                width: 90%;
+                min-height: 200px;
             }
         }
     </style>
@@ -1383,9 +1383,9 @@
             // Start the box shake
             pyreWrap.classList.add("burning");
 
-            // Generate noise covering the whole box
-            let lines = 8;
-            let cols = 35;
+            // Generate noise covering the whole box (taller)
+            let lines = 12;
+            let cols = 45;
             let noiseInt = setInterval(() => {
                 pyreContent.innerHTML = noiseBlock(lines, cols, noiseChars);
             }, 50);
