@@ -308,7 +308,6 @@
             margin: 18px 0 20px;
             min-width: 600px;
             overflow: hidden;
-            /* Prevents shake scroll */;
         }
 
         .overdrive-grid table {
@@ -317,13 +316,23 @@
             font-size: 13px;
         }
 
-        /* Make all headers black (consistent with .corner and .axis-signal) */
+        /* All headers black by default */
         .overdrive-grid th,
         .overdrive-grid .corner,
         .overdrive-grid .axis-signal {
             background: var(--bg) !important;
             color: var(--fg) !important;
             border-color: var(--line) !important;
+            transition: background 0.15s ease, color 0.15s ease;
+        }
+
+        /* Headers turn white when highlighted */
+        .overdrive-grid th.highlighted,
+        .overdrive-grid .corner.highlighted,
+        .overdrive-grid .axis-signal.highlighted {
+            background: var(--fg) !important;
+            color: var(--bg) !important;
+            border-color: var(--fg) !important;
         }
 
         .overdrive-grid td.dread-cell {
@@ -331,7 +340,9 @@
             text-align: center;
             padding: 16px 8px;
             vertical-align: middle;
-            transition: all 0.2s ease;
+            transition: background 0.2s ease, border-color 0.2s ease;
+            position: relative;
+            overflow: hidden;
         }
 
         .overdrive-grid td.dread-cell .dread-name {
@@ -341,6 +352,8 @@
             letter-spacing: 1.5px;
             color: var(--fg);
             display: block;
+            position: relative;
+            z-index: 2;
         }
 
         .overdrive-grid td.dread-cell .dread-pair {
@@ -351,6 +364,42 @@
             letter-spacing: 1px;
             color: var(--dim);
             text-transform: uppercase;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Cell noise layer */
+        .cell-noise {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            z-index: 1;
+            font-family: "Courier New", monospace;
+            font-size: 8px;
+            line-height: 1.2;
+            letter-spacing: 0.3px;
+            color: rgba(255, 255, 255, 0.04);
+            overflow: hidden;
+            opacity: 0;
+            transition: opacity 0.3s;
+            white-space: pre;
+            padding: 4px;
+        }
+
+        .awaiting-roll td.dread-cell .cell-noise {
+            opacity: 1;
+            animation: noiseFlicker 0.08s infinite alternate;
+        }
+
+        @keyframes noiseFlicker {
+            0% {
+                opacity: 0.3;
+                transform: translate(0, 0);
+            }
+            100% {
+                opacity: 0.8;
+                transform: translate(1px, -1px);
+            }
         }
 
         /* Shaking cells awaiting input */
@@ -359,13 +408,13 @@
                 transform: translate(0, 0) scale(1);
             }
             25% {
-                transform: translate(-1px, 1px) scale(0.99);
+                transform: translate(-1.5px, 1.5px) scale(0.99);
             }
             50% {
-                transform: translate(1px, -1px) scale(1);
+                transform: translate(1.5px, -1.5px) scale(1);
             }
             75% {
-                transform: translate(-1px, -1px) scale(1.01);
+                transform: translate(-1.5px, -1.5px) scale(1.01);
             }
             100% {
                 transform: translate(0, 0) scale(1);
@@ -390,9 +439,8 @@
             color: rgba(0, 0, 0, 0.55);
         }
 
-        .overdrive-grid th.highlighted {
-            background: var(--fg) !important;
-            color: var(--bg) !important;
+        .overdrive-grid td.highlighted .cell-noise {
+            opacity: 0 !important;
         }
 
         .overdrive-dossier {
@@ -523,19 +571,27 @@
         }
 
         /* -------- PYRE (Kindling) -------- */
-        .pyre-wrap {
+        .pyre-section {
             display: none;
             margin: 20px 0 6px;
+        }
+
+        .pyre-section.active {
+            display: block;
+        }
+
+        .pyre-wrap {
             border: 1px solid var(--line);
             background: #010101;
-            min-height: 220px;
+            min-height: 200px;
             position: relative;
             overflow: hidden;
             transition: border-color 0.3s;
+            width: 80%;
+            margin: 0 auto;
         }
 
         .pyre-wrap.active {
-            display: block;
             border-color: var(--fg);
         }
 
@@ -546,7 +602,7 @@
             letter-spacing: 0.5px;
             white-space: pre;
             color: rgba(255, 255, 255, 0.3);
-            min-height: 220px;
+            min-height: 200px;
             padding: 16px;
             display: flex;
             align-items: center;
@@ -567,7 +623,7 @@
         }
 
         .pyre-content.burning {
-            animation: pyreShake 0.06s infinite;
+            animation: pyreShake 0.05s infinite;
             color: rgba(255, 255, 255, 0.7);
             border-color: var(--fg);
         }
@@ -577,16 +633,16 @@
                 transform: translate(0, 0) rotate(0deg);
             }
             20% {
-                transform: translate(-4px, 3px) rotate(-1deg);
+                transform: translate(-6px, 4px) rotate(-1.5deg);
             }
             40% {
-                transform: translate(4px, -3px) rotate(1deg);
+                transform: translate(6px, -4px) rotate(1.5deg);
             }
             60% {
-                transform: translate(-3px, -4px) rotate(-0.5deg);
+                transform: translate(-4px, -6px) rotate(-0.8deg);
             }
             80% {
-                transform: translate(3px, 4px) rotate(0.5deg);
+                transform: translate(4px, 6px) rotate(0.8deg);
             }
             100% {
                 transform: translate(0, 0) rotate(0deg);
@@ -595,8 +651,22 @@
 
         .pyre-content .dread-reveal {
             width: 100%;
-            max-width: 540px;
+            max-width: 500px;
             margin: auto;
+            animation: dreadReveal 0.6s ease-out;
+        }
+
+        @keyframes dreadReveal {
+            0% {
+                opacity: 0;
+                transform: scale(0.8) rotate(-2deg);
+                filter: blur(4px);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1) rotate(0deg);
+                filter: blur(0);
+            }
         }
 
         .pyre-content .dread-reveal .op-card {
@@ -611,6 +681,12 @@
             letter-spacing: 1.5px;
             text-transform: uppercase;
             color: var(--dim);
+            text-align: center;
+            display: none;
+        }
+
+        #pyreStatus.active {
+            display: block;
         }
 
         /* -------- BUTTONS -------- */
@@ -624,6 +700,7 @@
             text-transform: uppercase;
             padding: 10px 16px;
             cursor: pointer;
+            transition: background 0.2s, color 0.2s;
         }
 
         button.btn:hover {
@@ -756,6 +833,9 @@
             .card-grid {
                 grid-template-columns: 1fr;
             }
+            .pyre-wrap {
+                width: 100%;
+            }
         }
     </style>
 </head>
@@ -799,31 +879,31 @@
                         <tbody id="matrixBody">
                             <tr id="row-1">
                                 <th class="axis-signal">1</th>
-                                <td id="cell-1-HARD LOCK" class="dread-cell"><span class="dread-name">FALLOW</span><span class="dread-pair">HARD LOCK · 1</span></td>
-                                <td id="cell-1-RED SHIFT" class="dread-cell"><span class="dread-name">KERN</span><span class="dread-pair">RED SHIFT · 1</span></td>
-                                <td id="cell-1-LOST TRACK" class="dread-cell"><span class="dread-name">DREAR</span><span class="dread-pair">LOST TRACK · 1</span></td>
-                                <td id="cell-1-SHADOWBOX" class="dread-cell"><span class="dread-name">FEN</span><span class="dread-pair">SHADOWBOX · 1</span></td>
+                                <td id="cell-1-HARD LOCK" class="dread-cell"><span class="dread-name">FALLOW</span><span class="dread-pair">HARD LOCK · 1</span><span class="cell-noise"></span></td>
+                                <td id="cell-1-RED SHIFT" class="dread-cell"><span class="dread-name">KERN</span><span class="dread-pair">RED SHIFT · 1</span><span class="cell-noise"></span></td>
+                                <td id="cell-1-LOST TRACK" class="dread-cell"><span class="dread-name">DREAR</span><span class="dread-pair">LOST TRACK · 1</span><span class="cell-noise"></span></td>
+                                <td id="cell-1-SHADOWBOX" class="dread-cell"><span class="dread-name">FEN</span><span class="dread-pair">SHADOWBOX · 1</span><span class="cell-noise"></span></td>
                             </tr>
                             <tr id="row-2">
                                 <th class="axis-signal">2</th>
-                                <td id="cell-2-HARD LOCK" class="dread-cell"><span class="dread-name">BOLT</span><span class="dread-pair">HARD LOCK · 2</span></td>
-                                <td id="cell-2-RED SHIFT" class="dread-cell"><span class="dread-name">WOLD</span><span class="dread-pair">RED SHIFT · 2</span></td>
-                                <td id="cell-2-LOST TRACK" class="dread-cell"><span class="dread-name">FORLORN</span><span class="dread-pair">LOST TRACK · 2</span></td>
-                                <td id="cell-2-SHADOWBOX" class="dread-cell"><span class="dread-name">GLOOM</span><span class="dread-pair">SHADOWBOX · 2</span></td>
+                                <td id="cell-2-HARD LOCK" class="dread-cell"><span class="dread-name">BOLT</span><span class="dread-pair">HARD LOCK · 2</span><span class="cell-noise"></span></td>
+                                <td id="cell-2-RED SHIFT" class="dread-cell"><span class="dread-name">WOLD</span><span class="dread-pair">RED SHIFT · 2</span><span class="cell-noise"></span></td>
+                                <td id="cell-2-LOST TRACK" class="dread-cell"><span class="dread-name">FORLORN</span><span class="dread-pair">LOST TRACK · 2</span><span class="cell-noise"></span></td>
+                                <td id="cell-2-SHADOWBOX" class="dread-cell"><span class="dread-name">GLOOM</span><span class="dread-pair">SHADOWBOX · 2</span><span class="cell-noise"></span></td>
                             </tr>
                             <tr id="row-3">
                                 <th class="axis-signal">3</th>
-                                <td id="cell-3-HARD LOCK" class="dread-cell"><span class="dread-name">WANE</span><span class="dread-pair">HARD LOCK · 3</span></td>
-                                <td id="cell-3-RED SHIFT" class="dread-cell"><span class="dread-name">WITHER</span><span class="dread-pair">RED SHIFT · 3</span></td>
-                                <td id="cell-3-LOST TRACK" class="dread-cell"><span class="dread-name">ORDEAL</span><span class="dread-pair">LOST TRACK · 3</span></td>
-                                <td id="cell-3-SHADOWBOX" class="dread-cell"><span class="dread-name">GRIM</span><span class="dread-pair">SHADOWBOX · 3</span></td>
+                                <td id="cell-3-HARD LOCK" class="dread-cell"><span class="dread-name">WANE</span><span class="dread-pair">HARD LOCK · 3</span><span class="cell-noise"></span></td>
+                                <td id="cell-3-RED SHIFT" class="dread-cell"><span class="dread-name">WITHER</span><span class="dread-pair">RED SHIFT · 3</span><span class="cell-noise"></span></td>
+                                <td id="cell-3-LOST TRACK" class="dread-cell"><span class="dread-name">ORDEAL</span><span class="dread-pair">LOST TRACK · 3</span><span class="cell-noise"></span></td>
+                                <td id="cell-3-SHADOWBOX" class="dread-cell"><span class="dread-name">GRIM</span><span class="dread-pair">SHADOWBOX · 3</span><span class="cell-noise"></span></td>
                             </tr>
                             <tr id="row-4">
                                 <th class="axis-signal">4</th>
-                                <td id="cell-4-HARD LOCK" class="dread-cell"><span class="dread-name">SUNDER</span><span class="dread-pair">HARD LOCK · 4</span></td>
-                                <td id="cell-4-RED SHIFT" class="dread-cell"><span class="dread-name">RIVEN</span><span class="dread-pair">RED SHIFT · 4</span></td>
-                                <td id="cell-4-LOST TRACK" class="dread-cell"><span class="dread-name">CINDER</span><span class="dread-pair">LOST TRACK · 4</span></td>
-                                <td id="cell-4-SHADOWBOX" class="dread-cell"><span class="dread-name">BLIGHT</span><span class="dread-pair">SHADOWBOX · 4</span></td>
+                                <td id="cell-4-HARD LOCK" class="dread-cell"><span class="dread-name">SUNDER</span><span class="dread-pair">HARD LOCK · 4</span><span class="cell-noise"></span></td>
+                                <td id="cell-4-RED SHIFT" class="dread-cell"><span class="dread-name">RIVEN</span><span class="dread-pair">RED SHIFT · 4</span><span class="cell-noise"></span></td>
+                                <td id="cell-4-LOST TRACK" class="dread-cell"><span class="dread-name">CINDER</span><span class="dread-pair">LOST TRACK · 4</span><span class="cell-noise"></span></td>
+                                <td id="cell-4-SHADOWBOX" class="dread-cell"><span class="dread-name">BLIGHT</span><span class="dread-pair">SHADOWBOX · 4</span><span class="cell-noise"></span></td>
                             </tr>
                         </tbody>
                     </table>
@@ -843,7 +923,8 @@
                 <div class="card-grid" id="baleGrid"></div>
             </section>
 
-            <section class="span-all break-block">
+            <!-- PYRE SECTION – hidden until kindle -->
+            <section class="span-all break-block pyre-section" id="pyreSection">
                 <div class="article-label whitebox">THE PYRE</div>
                 <div class="pyre-wrap" id="pyreWrap">
                     <div class="pyre-content" id="pyreContent"></div>
@@ -878,11 +959,6 @@
     <script>
         // ============================================================
         //  BANNING AND KINDLING — terminal logic
-        //  Terminology:
-        //    - Banning : roll 2d4 on the matrix to produce a Bale
-        //    - Bale    : base card, can be Fixed (spent) then Kindled
-        //    - Kindling: pyre burns a fixed Bale into a Dread
-        //    - Dread   : escalated card, Fix to resolve (pay cost & remove)
         // ============================================================
 
         const CATEGORIES = ["HARD LOCK", "RED SHIFT", "LOST TRACK", "SHADOWBOX"];
@@ -1001,7 +1077,6 @@
             "⠿", "⠶", "⠛", "⠹", "⠭", "⠽", "⠾", "⠷",
             "#", "%", "&", "*", "/", "\\", "~", "^"
         ];
-        const emberChars = ["△", "▲", "♦", "✦", "✧", "*", "'", "\"", "~", "·", "°", "∴", "×", "+"];
 
         let baleCards = [];
         let dreadCards = [];
@@ -1009,6 +1084,7 @@
         let dreadCounter = 0;
         let isBanning = false;
         let isBurning = false;
+        let noiseInterval = null;
 
         // ===== persistence =====
 
@@ -1148,6 +1224,21 @@
             return html;
         }
 
+        // ===== cell noise updater =====
+
+        function updateCellNoise() {
+            const cells = document.querySelectorAll('.dread-cell .cell-noise');
+            cells.forEach(el => {
+                const chars = noiseChars;
+                let text = '';
+                for (let i = 0; i < 40; i++) {
+                    text += chars[Math.floor(Math.random() * chars.length)];
+                    if (i % 8 === 7) text += '\n';
+                }
+                el.textContent = text;
+            });
+        }
+
         // ===== BANNING (2d4 roll) =====
 
         function performBan() {
@@ -1166,12 +1257,15 @@
             const wrapper = document.getElementById('matrixWrapper');
             wrapper.classList.add('awaiting-roll');
 
+            // Start cell noise
+            const noiseInterval = setInterval(updateCellNoise, 80);
+
             let rolls = 0;
             const maxRolls = 8 + Math.floor(Math.random() * 6);
             let interval = setInterval(() => {
                 const randRow = 1 + Math.floor(Math.random() * 4);
                 const randCat = CATEGORIES[Math.floor(Math.random() * CATEGORIES.length)];
-                document.querySelectorAll('#matrixBody td, #matrixBody th').forEach(el => el.classList.remove('highlighted'));
+                document.querySelectorAll('#matrixBody td, #matrixBody th, .overdrive-grid thead th').forEach(el => el.classList.remove('highlighted'));
                 const cell = document.getElementById(`cell-${randRow}-${randCat}`);
                 if (cell) cell.classList.add('highlighted');
                 document.getElementById(`row-${randRow}`).querySelector('th').classList.add('highlighted');
@@ -1180,6 +1274,7 @@
                 rolls++;
                 if (rolls >= maxRolls) {
                     clearInterval(interval);
+                    clearInterval(noiseInterval);
                     // Final roll
                     const finalRow = 1 + Math.floor(Math.random() * 4);
                     const finalCat = CATEGORIES[Math.floor(Math.random() * CATEGORIES.length)];
@@ -1237,28 +1332,35 @@
             if (!card || !card.fixed) return;
 
             isBurning = true;
+
+            // Show the pyre section
+            const pyreSection = document.getElementById("pyreSection");
             const pyreWrap = document.getElementById("pyreWrap");
             const pyreContent = document.getElementById("pyreContent");
+            const pyreStatus = document.getElementById("pyreStatus");
+
+            pyreSection.classList.add("active");
             pyreWrap.classList.add("active");
+            pyreStatus.classList.add("active");
             pyreContent.className = "pyre-content burning";
             pyreContent.textContent = "";
 
-            document.getElementById("pyreStatus").textContent = `STATUS: KINDLING ${card.name} — DRIVING PAST THRESHOLD`;
+            pyreStatus.textContent = `STATUS: KINDLING ${card.name} — DRIVING PAST THRESHOLD`;
             addLog(`KINDLING INITIATED — ${card.name} DRIVEN INTO OVERDRIVE.`);
 
             // Disable kindle buttons
             document.querySelectorAll('[data-act="kindle"]').forEach(b => b.disabled = true);
 
-            // Generate initial noise covering the whole box
-            let lines = 14;
-            let cols = 50;
-            let noiseInterval = setInterval(() => {
+            // Generate noise covering the whole box
+            let lines = 12;
+            let cols = 45;
+            let noiseInt = setInterval(() => {
                 pyreContent.innerHTML = noiseBlock(lines, cols, noiseChars);
-            }, 60);
+            }, 50);
 
-            // After 2 seconds, produce the Dread
+            // After 2.2 seconds, produce the Dread
             setTimeout(() => {
-                clearInterval(noiseInterval);
+                clearInterval(noiseInt);
 
                 const pair = MATRIX[card.row][card.category];
                 dreadCounter++;
@@ -1278,20 +1380,22 @@
                 baleCards = baleCards.filter(c => c.id !== id);
                 saveBales();
 
-                // Show Dread in pyre
+                // Show Dread in pyre – smooth transition
                 pyreContent.className = "pyre-content";
                 pyreContent.innerHTML = `<div class="dread-reveal">${renderDreadCardHTML(dread)}</div>`;
-                document.getElementById("pyreStatus").textContent = `STATUS: KINDLED — ${dread.name} BURNED CLEAR`;
+                pyreStatus.textContent = `STATUS: KINDLED — ${dread.name} BURNED CLEAR`;
                 addLog(`DREAD KINDLED — ${dread.name} (${dread.row} / ${dread.category}). BALE SPENT.`);
 
                 isBurning = false;
                 renderGrids();
 
-                // Auto-close pyre after 4 seconds
+                // After 3.5 seconds, hide the pyre section entirely
                 setTimeout(() => {
+                    pyreSection.classList.remove("active");
                     pyreWrap.classList.remove("active");
+                    pyreStatus.classList.remove("active");
                     pyreContent.innerHTML = "";
-                    document.getElementById("pyreStatus").textContent = "STATUS: IDLE";
+                    pyreContent.className = "pyre-content";
                     document.querySelectorAll('[data-act="kindle"]').forEach(b => b.disabled = false);
                 }, 3500);
             }, 2200);
@@ -1308,6 +1412,8 @@
 
             // Start the matrix shaking immediately (awaiting input)
             document.getElementById('matrixWrapper').classList.add('awaiting-roll');
+            // Initial cell noise
+            updateCellNoise();
 
             console.log("BANNING AND KINDLING TERMINAL ONLINE");
             console.log("ROLL 2D4 AGAINST THE MATRIX. FEED THE PYRE.");
