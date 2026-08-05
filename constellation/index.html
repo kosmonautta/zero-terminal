@@ -126,7 +126,7 @@
     .field-wrap{
         position:relative;
         border:1px solid var(--line);
-        background:#050505;
+        background:#000;
         overflow:hidden;
     }
 
@@ -138,7 +138,7 @@
         inset:0;
         pointer-events:none;
         z-index:2;
-        opacity:0.09;
+        opacity:0.045;
         background-image:
             repeating-linear-gradient(0deg, rgba(255,255,255,0.6) 0px, transparent 1px, transparent 2px),
             repeating-linear-gradient(90deg, rgba(255,255,255,0.3) 0px, transparent 1px, transparent 3px);
@@ -157,8 +157,8 @@
         z-index:3;
         background:repeating-linear-gradient(
             to bottom,
-            rgba(255,255,255,0.07) 0px,
-            rgba(255,255,255,0.07) 1px,
+            rgba(255,255,255,0.035) 0px,
+            rgba(255,255,255,0.035) 1px,
             transparent 1px,
             transparent 3px
         );
@@ -348,6 +348,65 @@
         color:var(--dim);
     }
 
+    /* ===== CHARTED LOG ===== */
+
+    .charted-log{
+        margin-top:14px;
+        min-height:2em;
+    }
+
+    .log-empty{
+        border:1px solid var(--line);
+        padding:16px;
+        text-align:center;
+        font-family:"Courier New", monospace;
+        font-size:11px;
+        letter-spacing:2px;
+        text-transform:uppercase;
+        color:var(--dim);
+    }
+
+    .charted-grid{
+        display:grid;
+        grid-template-columns:repeat(auto-fill, minmax(200px, 1fr));
+        gap:10px;
+    }
+
+    .const-card{
+        border:1px solid var(--line);
+        padding:12px 14px;
+        cursor:pointer;
+        background:var(--bg);
+        transition:background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+    }
+
+    .const-card:hover{
+        border-color:var(--fg);
+    }
+
+    .const-card.active{
+        background:var(--fg);
+        color:var(--bg);
+        border-color:var(--fg);
+    }
+
+    .cc-name{
+        font-family:"Times New Roman", serif;
+        font-size:15px;
+        letter-spacing:0.3px;
+        margin-bottom:4px;
+        color:inherit;
+    }
+
+    .cc-mech{
+        font-family:"Courier New", monospace;
+        font-size:10px;
+        letter-spacing:1.5px;
+        text-transform:uppercase;
+        color:inherit;
+        opacity:0.6;
+    }
+
     /* ===== CATALOG ===== */
 
     .star-grid{
@@ -411,6 +470,7 @@
     @media (max-width: 720px){
         h1{ font-size:42px; }
         .star-grid{ grid-template-columns:repeat(2, 1fr); }
+        .charted-grid{ grid-template-columns:repeat(2, 1fr); }
     }
 </style>
 </head>
@@ -470,6 +530,12 @@
         <button class="btn" id="buildBtn" type="button">PROJECT FROM INPUT</button>
     </div>
     <div class="manual-note">NAMES SEPARATED BY COMMA. UNRECOGNIZED NAMES ARE IGNORED.</div>
+
+    <hr>
+
+    <h2>Charted Constellations</h2>
+    <p class="mono">Click a charted formation to project it back onto the field</p>
+    <div class="charted-log" id="chartedLog"></div>
 
     <hr>
 
