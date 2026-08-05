@@ -1,0 +1,5 @@
+Reverting commits:
+- abdf2fed22c14a914aca21334dec47e8e081d8cc: Update terminal references and script source
+- 3dcd64e1e5a5935cd1e003b55c2f707a09b48459: KINDLING
+
+This file serves as a marker for the revert operation.
