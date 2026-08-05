@@ -635,40 +635,26 @@
             color: rgba(255, 255, 255, 0.8);
         }
 
+        /* Less violent shake – reduced translation and rotation */
         .pyre-field.burning {
-            animation: pyreShakeStrong 0.04s infinite;
+            animation: pyreShakeMild 0.06s infinite;
         }
 
-        @keyframes pyreShakeStrong {
+        @keyframes pyreShakeMild {
             0% {
                 transform: translate(0, 0) rotate(0deg) scale(1);
             }
-            10% {
-                transform: translate(-8px, 6px) rotate(-2deg) scale(1.01);
-            }
             20% {
-                transform: translate(8px, -6px) rotate(2deg) scale(0.99);
-            }
-            30% {
-                transform: translate(-6px, -8px) rotate(-1.5deg) scale(1);
+                transform: translate(-4px, 3px) rotate(-1deg) scale(1.005);
             }
             40% {
-                transform: translate(6px, 8px) rotate(1.5deg) scale(1.01);
-            }
-            50% {
-                transform: translate(-10px, 4px) rotate(-2.5deg) scale(0.99);
+                transform: translate(4px, -3px) rotate(1deg) scale(0.995);
             }
             60% {
-                transform: translate(10px, -4px) rotate(2.5deg) scale(1);
-            }
-            70% {
-                transform: translate(-4px, 10px) rotate(-1deg) scale(1.01);
+                transform: translate(-3px, -4px) rotate(-0.8deg) scale(1);
             }
             80% {
-                transform: translate(4px, -10px) rotate(1deg) scale(0.99);
-            }
-            90% {
-                transform: translate(-6px, 6px) rotate(-1.8deg) scale(1);
+                transform: translate(3px, 4px) rotate(0.8deg) scale(1.005);
             }
             100% {
                 transform: translate(0, 0) rotate(0deg) scale(1);
@@ -1257,7 +1243,7 @@
             return html;
         }
 
-        // ===== KINDLE — the pyre with stronger shake, more noise, and dynamic column sizing =====
+        // ===== KINDLE — the pyre with milder shake, more noise, and dynamic column sizing =====
 
         function startKindle(id) {
             if (kindlingId) return;
@@ -1271,12 +1257,10 @@
             pyre.classList.add("burning");
 
             // Calculate dynamic columns to fill the container width neatly
-            // The noise text uses font-size: 12px in a monospace font
-            // Approximate character width: ~7.2px at 12px for Courier New
             const charWidth = 7.2;
-            const containerWidth = pyre.clientWidth - 32; // subtract padding (16px each side)
+            const containerWidth = pyre.clientWidth - 32;
             const cols = Math.max(20, Math.floor(containerWidth / charWidth));
-            const rows = Math.max(12, Math.floor(260 / 16)); // ~16px per row
+            const rows = Math.max(12, Math.floor(260 / 16));
 
             pyre.innerHTML = noiseBlock(rows, cols, emberChars);
 
