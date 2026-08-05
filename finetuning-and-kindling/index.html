@@ -569,137 +569,63 @@
             }
         }
 
-        /* -------- PYRE (Kindling) -------- */
-        .pyre-section {
+        /* -------- PYRE (Kindling) - exact copy from FINETUNING -------- */
+        .pyre-wrap {
             display: none;
             margin: 20px 0 6px;
-            flex-direction: column;
-            align-items: center;
         }
-
-        .pyre-section.active {
-            display: flex;
-        }
-
-        .pyre-wrap {
-            display: block;
-            width: 70%;
-            max-width: 700px;
-            min-height: 220px;
-            margin: 10px auto 0;
-            border: 1px solid var(--line);
-            background: #010101;
-            position: relative;
-            overflow: hidden;
-            transition: border-color 0.3s, transform 0.1s;
-            text-align: left;
-        }
-
         .pyre-wrap.active {
-            border-color: var(--fg);
+            display: block;
         }
 
-        .pyre-wrap.burning {
-            animation: pyreShake 0.05s infinite;
-            border-color: var(--fg);
-        }
-
-        @keyframes pyreShake {
-            0% {
-                transform: translate(0, 0) rotate(0deg);
-            }
-            20% {
-                transform: translate(-6px, 4px) rotate(-1.5deg);
-            }
-            40% {
-                transform: translate(6px, -4px) rotate(1.5deg);
-            }
-            60% {
-                transform: translate(-4px, -6px) rotate(-0.8deg);
-            }
-            80% {
-                transform: translate(4px, 6px) rotate(0.8deg);
-            }
-            100% {
-                transform: translate(0, 0) rotate(0deg);
-            }
-        }
-
-        .pyre-content {
-            font-family: "Courier New", monospace;
-            font-size: 14px;
-            line-height: 1.2;
-            letter-spacing: 0.5px;
-            color: rgba(255, 255, 255, 0.3);
-            min-height: 220px;
-            padding: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-            background: var(--bg);
+        .pyre-field {
+            position: relative;
             width: 100%;
+            min-height: 240px;
+            border: 1px solid var(--fg);
+            background: #020202;
+            padding: 16px;
             overflow: hidden;
         }
 
-        .pyre-content .noise-row {
-            font-family: "Courier New", monospace;
-            font-size: 14px;
-            line-height: 1.2;
-            letter-spacing: 0.5px;
-            white-space: pre;
-            color: rgba(255, 255, 255, 0.3);
-        }
-
-        .pyre-content.burning {
+        .pyre-field.burning .noise-row {
             color: rgba(255, 255, 255, 0.7);
         }
 
-        /* Dread card inside pyre */
-        .pyre-content .dread-reveal {
-            width: 100%;
-            max-width: 100%;
-            margin: 0;
-            padding: 0;
+        .pyre-field.burning {
+            animation: pyreShake 0.18s infinite;
         }
-
-        .pyre-content .dread-reveal .op-card {
-            white-space: normal;
-            word-break: break-word;
-            overflow-wrap: break-word;
-            font-family: "Times New Roman", Georgia, serif;
-            text-align: left;
-            border-color: var(--fg);
-            background: var(--bg);
-            width: 100%;
-            margin: 0;
-        }
-
-        .pyre-content .dread-reveal .op-card .oc-coord,
-        .pyre-content .dread-reveal .op-card .oc-field .oc-label {
-            font-family: "Courier New", monospace;
-        }
-
-        .pyre-content .dread-reveal .op-card .oc-field {
-            word-break: break-word;
-            overflow-wrap: break-word;
-        }
-
-        .dread-reveal {
-            animation: dreadReveal 0.6s ease-out;
-        }
-
-        @keyframes dreadReveal {
+        @keyframes pyreShake {
             0% {
-                opacity: 0;
-                transform: scale(0.8) rotate(-2deg);
-                filter: blur(4px);
+                transform: translate(0, 0);
+            }
+            25% {
+                transform: translate(-1px, 1px);
+            }
+            50% {
+                transform: translate(1px, -1px);
+            }
+            75% {
+                transform: translate(-1px, -1px);
             }
             100% {
-                opacity: 1;
-                transform: scale(1) rotate(0deg);
-                filter: blur(0);
+                transform: translate(0, 0);
             }
+        }
+
+        .pyre-field.resolved {
+            border-color: var(--fg);
+            animation: none;
+            padding: 0;
+        }
+        .pyre-field.resolved .op-card {
+            border: none;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 24px 22px;
         }
 
         #pyreStatus {
@@ -709,43 +635,6 @@
             letter-spacing: 1.5px;
             text-transform: uppercase;
             color: var(--dim);
-            text-align: center;
-            display: none;
-        }
-
-        #pyreStatus.active {
-            display: block;
-        }
-
-        /* -------- BUTTONS -------- */
-        button.btn {
-            background: var(--bg);
-            color: var(--fg);
-            border: 1px solid var(--fg);
-            font-family: "Courier New", monospace;
-            font-size: 11.5px;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            padding: 10px 16px;
-            cursor: pointer;
-            transition: background 0.2s, color 0.2s;
-        }
-
-        button.btn:hover {
-            background: var(--fg);
-            color: var(--bg);
-        }
-
-        button.btn:disabled {
-            opacity: 0.35;
-            cursor: default;
-            background: var(--bg);
-            color: var(--fg);
-        }
-
-        button.btn.small {
-            padding: 7px 12px;
-            font-size: 10.5px;
         }
 
         /* -------- LOG -------- */
@@ -861,9 +750,8 @@
             .card-grid {
                 grid-template-columns: 1fr;
             }
-            .pyre-wrap {
-                width: 90%;
-                min-height: 200px;
+            .pyre-field {
+                min-height: 180px;
             }
         }
     </style>
@@ -952,13 +840,13 @@
                 <div class="card-grid" id="baleGrid"></div>
             </section>
 
-            <!-- PYRE SECTION – hidden until kindle -->
-            <section class="span-all break-block pyre-section" id="pyreSection">
-                <div class="article-label whitebox">THE PYRE</div>
+            <!-- PYRE SECTION – exact copy from FINETUNING -->
+            <section class="span-all break-block">
                 <div class="pyre-wrap" id="pyreWrap">
-                    <div class="pyre-content" id="pyreContent"></div>
+                    <h2 style="margin-top:28px;">The Pyre</h2>
+                    <div class="pyre-field" id="pyreField"></div>
+                    <div id="pyreStatus">STATUS: IDLE</div>
                 </div>
-                <div id="pyreStatus">STATUS: IDLE</div>
             </section>
 
             <section class="span-all break-block">
@@ -988,6 +876,7 @@
     <script>
         // ============================================================
         //  BANNING AND KINDLING — terminal logic
+        //  Pyre implementation is exactly as in FINETUNING, adapted to Bale/Dread.
         // ============================================================
 
         const CATEGORIES = ["HARD LOCK", "RED SHIFT", "LOST TRACK", "SHADOWBOX"];
@@ -1106,14 +995,13 @@
             "⠿", "⠶", "⠛", "⠹", "⠭", "⠽", "⠾", "⠷",
             "#", "%", "&", "*", "/", "\\", "~", "^"
         ];
+        const emberChars = ["△", "▲", "♦", "✦", "✧", "*", "'", "\"", "~", "·", "°", "∴", "×", "+"];
 
         let baleCards = [];
         let dreadCards = [];
         let cardCounter = 0;
         let dreadCounter = 0;
-        let isBanning = false;
-        let isBurning = false;
-        let noiseInterval = null;
+        let kindlingId = null; // for pyre lock
 
         // ===== persistence =====
 
@@ -1237,23 +1125,91 @@
             renderGrids();
         }
 
-        // ===== noise block for pyre =====
+        // ===== noise helpers (for pyre) =====
+
+        function noiseGlyph(pool) {
+            return pool[Math.floor(Math.random() * pool.length)];
+        }
+
+        function noiseLine(len, pool) {
+            let out = "";
+            for (let i = 0; i < len; i++) {
+                const opacity = (0.2 + Math.random() * 0.8).toFixed(2);
+                out += `<span style="opacity:${opacity}">${noiseGlyph(pool)}</span>`;
+            }
+            return out;
+        }
 
         function noiseBlock(rows, cols, pool) {
             let html = "";
             for (let r = 0; r < rows; r++) {
-                let line = "";
-                for (let c = 0; c < cols; c++) {
-                    const char = pool[Math.floor(Math.random() * pool.length)];
-                    const opacity = (0.2 + Math.random() * 0.8).toFixed(2);
-                    line += `<span style="opacity:${opacity}">${char}</span>`;
-                }
-                html += `<div class="noise-row">${line}</div>`;
+                html += `<div class="noise-row">${noiseLine(cols, pool)}</div>`;
             }
             return html;
         }
 
-        // ===== cell noise updater =====
+        // ===== KINDLE — the pyre (exact copy from FINETUNING, adapted to Bale/Dread) =====
+
+        function startKindle(id) {
+            if (kindlingId) return;
+            const card = baleCards.find(c => c.id === id);
+            if (!card || !card.fixed) return;
+            kindlingId = id;
+
+            const pyre = document.getElementById("pyreField");
+            const pyreWrap = document.getElementById("pyreWrap");
+            pyreWrap.classList.add("active");
+            pyre.classList.add("burning");
+            pyre.innerHTML = noiseBlock(9, 34, emberChars);
+            document.getElementById("pyreStatus").textContent = `STATUS: KINDLING ${card.name} — DRIVING PAST THRESHOLD`;
+            addLog(`KINDLING INITIATED — ${card.name} DRIVEN INTO OVERDRIVE.`);
+
+            let tick = 0;
+            const flicker = setInterval(() => {
+                tick++;
+                pyre.innerHTML = noiseBlock(9, 34, tick % 3 === 0 ? noiseChars : emberChars);
+                pyre.style.filter = `brightness(${0.7 + Math.random() * 0.9}) contrast(${1 + Math.random() * 0.6})`;
+            }, 45);
+
+            setTimeout(() => {
+                clearInterval(flicker);
+                pyre.style.filter = "none";
+
+                const pair = MATRIX[card.row][card.category];
+                dreadCounter++;
+                const dread = {
+                    id: "dread" + Date.now() + "_" + dreadCounter,
+                    row: card.row,
+                    category: card.category,
+                    name: pair.dread.name,
+                    effect: pair.dread.effect,
+                    cost: pair.dread.cost,
+                    fromBaleId: card.id
+                };
+                dreadCards.push(dread);
+                saveDreads();
+
+                baleCards = baleCards.filter(c => c.id !== id);
+                saveBales();
+
+                pyre.classList.remove("burning");
+                pyre.classList.add("resolved");
+                pyre.innerHTML = renderDreadCardHTML(dread);
+                document.getElementById("pyreStatus").textContent = `STATUS: KINDLED — ${dread.name} BURNED CLEAR`;
+                addLog(`DREAD KINDLED — ${dread.name} (${dread.row} / ${dread.category}). BALE SPENT.`);
+
+                kindlingId = null;
+                renderGrids();
+
+                setTimeout(() => {
+                    pyreWrap.classList.remove("active");
+                    pyre.classList.remove("resolved");
+                    pyre.innerHTML = "";
+                }, 2400);
+            }, 1400);
+        }
+
+        // ===== cell noise updater for matrix =====
 
         function updateCellNoise() {
             const cells = document.querySelectorAll('.dread-cell .cell-noise');
@@ -1271,8 +1227,7 @@
         // ===== BANNING (2d4 roll) =====
 
         function performBan() {
-            if (isBanning || isBurning) return;
-            isBanning = true;
+            if (kindlingId) return; // prevent banning while kindling
             const banBtn = document.getElementById("banBtn");
             banBtn.disabled = true;
             document.getElementById("banStatus").textContent = "STATUS: ROLLING...";
@@ -1346,93 +1301,10 @@
                         </div>`;
                     setTimeout(() => { display.innerHTML = ''; }, 4000);
 
-                    isBanning = false;
                     banBtn.disabled = false;
                     renderGrids();
                 }
             }, 120 + Math.random() * 80);
-        }
-
-        // ===== KINDLING (Pyre) =====
-
-        function startKindle(id) {
-            if (isBurning || isBanning) return;
-            const card = baleCards.find(c => c.id === id);
-            if (!card || !card.fixed) return;
-
-            isBurning = true;
-
-            // Show the pyre section
-            const pyreSection = document.getElementById("pyreSection");
-            const pyreWrap = document.getElementById("pyreWrap");
-            const pyreContent = document.getElementById("pyreContent");
-            const pyreStatus = document.getElementById("pyreStatus");
-
-            pyreSection.classList.add("active");
-            pyreWrap.classList.add("active");
-            pyreStatus.classList.add("active");
-            pyreContent.className = "pyre-content burning";
-            pyreContent.textContent = "";
-
-            pyreStatus.textContent = `STATUS: KINDLING ${card.name} — DRIVING PAST THRESHOLD`;
-            addLog(`KINDLING INITIATED — ${card.name} DRIVEN INTO OVERDRIVE.`);
-
-            // Disable kindle buttons
-            document.querySelectorAll('[data-act="kindle"]').forEach(b => b.disabled = true);
-
-            // Start the box shake
-            pyreWrap.classList.add("burning");
-
-            // Generate noise covering the whole box (taller)
-            let lines = 12;
-            let cols = 45;
-            let noiseInt = setInterval(() => {
-                pyreContent.innerHTML = noiseBlock(lines, cols, noiseChars);
-            }, 50);
-
-            // After 2.2 seconds, produce the Dread
-            setTimeout(() => {
-                clearInterval(noiseInt);
-
-                const pair = MATRIX[card.row][card.category];
-                dreadCounter++;
-                const dread = {
-                    id: "dread" + Date.now() + "_" + dreadCounter,
-                    row: card.row,
-                    category: card.category,
-                    name: pair.dread.name,
-                    effect: pair.dread.effect,
-                    cost: pair.dread.cost,
-                    fromBaleId: card.id
-                };
-                dreadCards.push(dread);
-                saveDreads();
-
-                // Remove the Bale
-                baleCards = baleCards.filter(c => c.id !== id);
-                saveBales();
-
-                // Stop the box shake and show the Dread card smoothly
-                pyreWrap.classList.remove("burning");
-                pyreContent.className = "pyre-content";
-                pyreContent.innerHTML = `<div class="dread-reveal">${renderDreadCardHTML(dread)}</div>`;
-                pyreStatus.textContent = `STATUS: KINDLED — ${dread.name} BURNED CLEAR`;
-                addLog(`DREAD KINDLED — ${dread.name} (${dread.row} / ${dread.category}). BALE SPENT.`);
-
-                isBurning = false;
-                renderGrids();
-
-                // After 3.5 seconds, hide the pyre section entirely
-                setTimeout(() => {
-                    pyreSection.classList.remove("active");
-                    pyreWrap.classList.remove("active");
-                    pyreWrap.classList.remove("burning");
-                    pyreStatus.classList.remove("active");
-                    pyreContent.innerHTML = "";
-                    pyreContent.className = "pyre-content";
-                    document.querySelectorAll('[data-act="kindle"]').forEach(b => b.disabled = false);
-                }, 3500);
-            }, 2200);
         }
 
         // ===== INIT =====
