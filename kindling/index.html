@@ -42,7 +42,7 @@
         }
 
         .head-left {
-            max-width: 640px;
+            max-width: 100%;
         }
 
         .eyebrow {
@@ -56,7 +56,7 @@
 
         h1 {
             font-family: "Times New Roman", serif;
-            font-size: 58px;
+            font-size: clamp(28px, 5.4vw, 58px);
             line-height: 0.92;
             margin: 0 0 18px 0;
             font-weight: 550;
@@ -64,16 +64,15 @@
             transform: scaleY(1.15);
             transform-origin: left top;
             max-width: 100%;
-            word-break: break-word;
+            white-space: nowrap;
         }
 
         h1 .title-primary {
-            display: block;
+            display: inline;
         }
 
         h1 .title-secondary {
-            display: block;
-            margin-top: 6px;
+            display: inline;
         }
 
         .whitebox {
@@ -334,7 +333,7 @@
         }
 
         .overdrive-grid td.dread-cell {
-            background: #0a0a0a;
+            background: #000;
             text-align: center;
             padding: 16px 8px;
             vertical-align: middle;
@@ -419,7 +418,7 @@
 
         .awaiting-roll td.dread-cell {
             animation: shakeAwaiting 0.12s infinite alternate;
-            background: #0a0a0a;
+            background: #000;
         }
 
         .overdrive-grid td.highlighted {
@@ -806,9 +805,6 @@
             .columns {
                 column-count: 2;
             }
-            h1 {
-                font-size: 52px;
-            }
             .part-title {
                 font-size: 38px;
             }
@@ -824,9 +820,6 @@
             }
             .columns {
                 column-count: 1;
-            }
-            h1 {
-                font-size: 42px;
             }
             .part-title {
                 font-size: 32px;
@@ -858,7 +851,7 @@
         <div class="page-head">
             <div class="head-left">
                 <p class="eyebrow">NODE // 003</p>
-                <h1><span class="title-primary">BANNING AND</span><span class="title-secondary">KINDLING</span></h1>
+                <h1><span class="title-primary">BANNING AND</span> <span class="title-secondary">KINDLING</span></h1>
                 <div class="whitebox hero-tag">KIND-II OPERATOR — BANNING TERMINAL</div>
             </div>
         </div>
