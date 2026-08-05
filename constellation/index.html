@@ -145,11 +145,33 @@
         animation:flirGrain 0.4s steps(2) infinite;
     }
 
+    /* light white phosphor CRT scanlines — sits on the FIELD PANEL only, not the
+       page background. A fine, static horizontal line texture standing in for the
+       phosphor rows. mix-blend-mode:screen so it brightens the stars/lines under
+       it instead of covering them. No moving band — just the static texture. */
+    .field-wrap::before{
+        content:"";
+        position:absolute;
+        inset:0;
+        pointer-events:none;
+        z-index:3;
+        background:repeating-linear-gradient(
+            to bottom,
+            rgba(255,255,255,0.07) 0px,
+            rgba(255,255,255,0.07) 1px,
+            transparent 1px,
+            transparent 3px
+        );
+        mix-blend-mode:screen;
+    }
+
     #starfield{
         width:100%;
         height:auto;
         aspect-ratio:600/340;
         display:block;
+        position:relative;
+        z-index:1;
     }
 
     .field-empty{
@@ -164,13 +186,13 @@
         text-transform:uppercase;
         color:var(--dim);
         pointer-events:none;
+        z-index:2;
     }
 
-    /* Base look only — the actual jitter/glitch motion is a per-star @keyframes rule
-       generated and injected by JS (see buildStarKeyframeCSS), because a single shared
-       keyframe path scaled by a multiplier still moves every star with the same
-       relative rhythm. Each star gets its own step count, its own displacement at
-       each step, and its own duration/delay, so nothing lines up. */
+    /* Base look only — the actual jitter motion is driven directly from JS
+       (see startJitter/stopJitter in constellation.js) via inline transform/opacity
+       on each star's circle, not CSS keyframes — that's what lets direction,
+       distance, and the interval between hops all re-roll on every single hop. */
     .star-body{
         fill:var(--dim);
         opacity:0.45;
@@ -382,7 +404,7 @@
     .nav-link:hover{ border-bottom-color:var(--fg); }
 
     @media (prefers-reduced-motion: reduce){
-        body::after, .field-wrap::after{ animation:none !important; }
+        body::after, .field-wrap::after, .field-wrap::before{ animation:none !important; }
         .star-body, .star-glow, .field-line, .result-name{ transition:none !important; animation:none !important; }
     }
 
