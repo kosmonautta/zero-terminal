@@ -165,12 +165,12 @@ function stopJitter(code){
 function startJitter(code, body){
     stopJitter(code);
     function hop(){
-        const dx = randRange(-9, 9).toFixed(2);
-        const dy = randRange(-9, 9).toFixed(2);
-        const op = randRange(0.35, 1).toFixed(2);
+        const dx = randRange(-4.8, 4.8).toFixed(2);
+        const dy = randRange(-4.8, 4.8).toFixed(2);
+        const op = randRange(0.45, 1).toFixed(2);
         body.style.transform = `translate(${dx}px,${dy}px)`;
         body.style.opacity = op;
-        jitterTimers[code] = setTimeout(hop, randRange(25, 160)); // random interval every hop
+        jitterTimers[code] = setTimeout(hop, randRange(55, 220)); // random interval every hop
     }
     hop();
 }
