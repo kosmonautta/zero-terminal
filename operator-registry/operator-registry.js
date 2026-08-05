@@ -10,7 +10,7 @@ const KNOT_KEY = "linkKnotCards";
 const ROUTINE_KEY = "routineCards";
 const TELEMETRY_KEY = "afterimageTelemetryCards";
 
-// Bale/Dread keys — these are what the banning-and-kindling page uses
+// Bale/Dread keys — these match what the banning-and-kindling page saves
 const BALE_KEY = "baleCards";
 const DREAD_KEY = "dreadCards";
 
@@ -86,7 +86,13 @@ function saveState(){
 function loadCards(key){
     try{
         const raw = window.localStorage.getItem(key);
-        return raw ? JSON.parse(raw) : [];
+        if (!raw) {
+            console.log(`OPERATOR REGISTRY — No data found for key: ${key}`);
+            return [];
+        }
+        const parsed = JSON.parse(raw);
+        console.log(`OPERATOR REGISTRY — Loaded ${parsed.length} cards from ${key}`);
+        return parsed;
     } catch(err){
         console.error(`Failed to load cards from ${key}`, err);
         return [];
@@ -113,14 +119,6 @@ let state = loadState();
 function pale(reading){
     const n = Number(reading) || 0;
     return Math.ceil(n / 2);
-}
-
-function flash(el){
-    if(!el) return;
-    el.classList.remove("flash");
-    void el.offsetWidth;
-    el.classList.add("flash");
-    setTimeout(() => el.classList.remove("flash"), 350);
 }
 
 function byId(id){
@@ -231,7 +229,12 @@ function renderCapacity(){
 
 function renderInventory(){
     const container = byId("inventoryContainer");
-    if(!container) return;
+    if(!container) {
+        console.warn("OPERATOR REGISTRY — inventoryContainer not found");
+        return;
+    }
+    
+    console.log("OPERATOR REGISTRY — Rendering inventory...");
     
     const hexCards = loadCards(HEX_KEY);
     const knotCards = loadCards(KNOT_KEY);
@@ -239,6 +242,8 @@ function renderInventory(){
     const telemetryCards = loadCards(TELEMETRY_KEY);
     const baleCards = loadCards(BALE_KEY);
     const dreadCards = loadCards(DREAD_KEY);
+    
+    console.log(`OPERATOR REGISTRY — Bales: ${baleCards.length}, Dreads: ${dreadCards.length}`);
     
     let html = '';
     
@@ -338,9 +343,9 @@ function renderInventory(){
         html += `</div></div>`;
     }
     
-    // Bale Cards
+    // ===== BALES =====
     if(baleCards.length > 0){
-        html += `<div class="inventory-section"><h3>Bales (${baleCards.length})</h3><div class="card-grid">`;
+        html += `<div class="inventory-section"><h3>BALES (${baleCards.length})</h3><div class="card-grid">`;
         baleCards.forEach(card => {
             html += `
                 <div class="card-item" data-type="bale" data-id="${card.id}">
@@ -350,7 +355,7 @@ function renderInventory(){
                     </div>
                     <div class="card-details">
                         ${card.row && card.category ? `<div class="card-tag">${card.row} / ${card.category}</div>` : ''}
-                        ${card.fixed ? `<div class="card-tag">FIXED — READY TO KINDLE</div>` : `<div class="card-tag">UNFIXED</div>`}
+                        ${card.fixed ? `<div class="card-tag" style="background:var(--fg);color:var(--bg);">FIXED — READY TO KINDLE</div>` : `<div class="card-tag">UNFIXED</div>`}
                         ${card.effect ? `<div class="card-desc"><strong>Effect:</strong> ${card.effect}</div>` : ''}
                         ${card.cost ? `<div class="card-desc"><strong>Cost:</strong> ${card.cost}</div>` : ''}
                     </div>
@@ -360,9 +365,9 @@ function renderInventory(){
         html += `</div></div>`;
     }
     
-    // Dread Cards
+    // ===== DREADS =====
     if(dreadCards.length > 0){
-        html += `<div class="inventory-section"><h3>Dreads (${dreadCards.length})</h3><div class="card-grid">`;
+        html += `<div class="inventory-section"><h3>DREADS (${dreadCards.length})</h3><div class="card-grid">`;
         dreadCards.forEach(card => {
             html += `
                 <div class="card-item" data-type="dread" data-id="${card.id}">
@@ -581,6 +586,11 @@ document.addEventListener("DOMContentLoaded", function() {
     console.log("OPERATOR REGISTRY ONLINE — BUILD 2026-08-05");
     console.log("READINGS HOLD. PALE ABSORBS. THE FIELD DOES NOT.");
     
+    // Check what's in localStorage
+    console.log("OPERATOR REGISTRY — Checking localStorage keys:");
+    console.log("  baleCards:", window.localStorage.getItem("baleCards"));
+    console.log("  dreadCards:", window.localStorage.getItem("dreadCards"));
+    
     try{
         const nameEl = byId("opName");
         const kindEl = byId("opKind");
@@ -632,6 +642,7 @@ document.addEventListener("DOMContentLoaded", function() {
     window.addEventListener('storage', (e) => {
         const affectedKeys = [HEX_KEY, KNOT_KEY, ROUTINE_KEY, TELEMETRY_KEY, BALE_KEY, DREAD_KEY];
         if(affectedKeys.includes(e.key)){
+            console.log(`OPERATOR REGISTRY — Storage changed: ${e.key}, refreshing...`);
             renderInventory();
             renderCapacity();
         }
@@ -639,3 +650,4 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 
 console.log("OPERATOR REGISTRY LOADED — BUILD 2026-08-05");
+console.log("Looking for keys: baleCards and dreadCards");
