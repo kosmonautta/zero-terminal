@@ -24,25 +24,34 @@ and the matcher all read from these two arrays.
 const CONSTELLATION_KEY = "constellationCards";
 
 const AFTERIMAGES = [
-    { code: "AI-01", name: "Gimbal",            x: 60,  y: 60  },
-    { code: "AI-02", name: "Tic Tac",            x: 140, y: 110 },
-    { code: "AI-03", name: "Ghost Return",       x: 230, y: 50  },
-    { code: "AI-04", name: "False Horizon",      x: 320, y: 140 },
-    { code: "AI-05", name: "GoFast",             x: 410, y: 70  },
-    { code: "AI-06", name: "Fastwalker",         x: 500, y: 130 },
-    { code: "AI-07", name: "Jellyfish",          x: 80,  y: 200 },
-    { code: "AI-08", name: "Cold Core",          x: 170, y: 250 },
-    { code: "AI-09", name: "Negative Parallax",  x: 260, y: 190 },
-    { code: "AI-10", name: "Green Pyramid",      x: 350, y: 240 },
-    { code: "AI-11", name: "Static Memory",      x: 440, y: 200 },
-    { code: "AI-12", name: "Black Triangle",     x: 530, y: 250 },
-    { code: "AI-13", name: "Split Echo",         x: 100, y: 290 },
-    { code: "AI-14", name: "Observer Drift",     x: 200, y: 310 },
-    { code: "AI-15", name: "Missing Frame",      x: 300, y: 300 },
-    { code: "AI-16", name: "Dead Vector",        x: 390, y: 310 },
-    { code: "AI-17", name: "Plasma Wake",        x: 480, y: 290 },
-    { code: "AI-18", name: "Pressure Scar",      x: 30,  y: 150 },
-    { code: "AI-19", name: "Mosul Orb",          x: 560, y: 180 }
+    { code: "AF-01", name: "Gimbal",            x: 60,  y: 60  },
+    { code: "AF-02", name: "Green Pyramid",      x: 350, y: 240 },
+    { code: "AF-03", name: "Jellyfish",          x: 80,  y: 200 },
+    { code: "AF-04", name: "Halo",               x: 510, y: 20  },
+    { code: "AF-05", name: "Tic Tac",            x: 140, y: 110 },
+    { code: "AF-06", name: "Cold Core",          x: 170, y: 250 },
+    { code: "AF-07", name: "White Ember",        x: 20,  y: 30  },
+    { code: "AF-08", name: "Blackbody",          x: 580, y: 100 },
+    { code: "AF-09", name: "Ghost Return",       x: 230, y: 50  },
+    { code: "AF-10", name: "Split Echo",         x: 100, y: 290 },
+    { code: "AF-11", name: "False Horizon",      x: 320, y: 140 },
+    { code: "AF-12", name: "Coast Track",        x: 230, y: 280 },
+    { code: "AF-13", name: "Gofast",             x: 410, y: 70  },
+    { code: "AF-14", name: "Plasma Wake",        x: 480, y: 290 },
+    { code: "AF-15", name: "Pressure Scar",      x: 30,  y: 150 },
+    { code: "AF-16", name: "Shear Front",        x: 150, y: 20  },
+    { code: "AF-17", name: "Fastwalker",         x: 500, y: 130 },
+    { code: "AF-18", name: "Negative Parallax",  x: 260, y: 190 },
+    { code: "AF-19", name: "Dead Vector",        x: 390, y: 310 },
+    { code: "AF-20", name: "Blind Angle",        x: 380, y: 20  },
+    { code: "AF-21", name: "Missing Frame",      x: 300, y: 300 },
+    { code: "AF-22", name: "Observer Drift",     x: 200, y: 310 },
+    { code: "AF-23", name: "Static Memory",      x: 440, y: 200 },
+    { code: "AF-24", name: "Signal Bleed",       x: 30,  y: 320 },
+    { code: "AF-25", name: "Black Triangle",     x: 530, y: 250 },
+    { code: "AF-26", name: "Mosul Orb",          x: 560, y: 180 },
+    { code: "AF-27", name: "Echelon",            x: 580, y: 320 },
+    { code: "AF-28", name: "Angel Flight",       x: 10,  y: 190 }
 ];
 
 const CONSTELLATIONS = [
@@ -54,7 +63,7 @@ const CONSTELLATIONS = [
       mechanicName: "MISIDENTIFICATION",
       mechanicText: "The first attack against you each combat must be rerolled." },
 
-    { name: "Null Vector", requires: ["GoFast", "Fastwalker"],
+    { name: "Null Vector", requires: ["Gofast", "Fastwalker"],
       mechanicName: "IMPOSSIBLE TRANSIT",
       mechanicText: "Once each round, your first movement ignores terrain, obstacles, engagement, and difficult terrain." },
 
@@ -66,7 +75,7 @@ const CONSTELLATIONS = [
       mechanicName: "IMPOSSIBLE GEOMETRY",
       mechanicText: "You may treat adjacent spaces as connected even if separated by walls, gaps, elevation, or other solid barriers." },
 
-    { name: "Nimitz", requires: ["Gimbal", "Tic Tac", "GoFast"],
+    { name: "Nimitz", requires: ["Gimbal", "Tic Tac", "Gofast"],
       mechanicName: "VECTOR LOCK",
       mechanicText: "Whenever you complete a Procedure, you may immediately move up to your full Movement without provoking reactions." },
 
@@ -90,7 +99,7 @@ const CONSTELLATIONS = [
       mechanicName: "RECURSIVE OBSERVATION",
       mechanicText: "Every Procedure you Stamp remains Stamped for the rest of the scene." },
 
-    { name: "Skyhook", requires: ["GoFast", "Dead Vector", "Black Triangle", "Fastwalker"],
+    { name: "Skyhook", requires: ["Gofast", "Dead Vector", "Black Triangle", "Fastwalker"],
       mechanicName: "FIRE CONTROL SOLUTION",
       mechanicText: "Once each combat, designate one visible creature as LOCKED. All your Procedures targeting that creature are Stamped. Attacks against it ignore cover. It cannot benefit from concealment." },
 
@@ -98,7 +107,7 @@ const CONSTELLATIONS = [
       mechanicName: "ZERO INERTIA",
       mechanicText: "You are immune to forced movement. Whenever another creature would move you, you may instead move the same distance in any direction." },
 
-    { name: "Majestic", requires: ["Gimbal", "Tic Tac", "GoFast", "Mosul Orb", "Ghost Return"],
+    { name: "Majestic", requires: ["Gimbal", "Tic Tac", "Gofast", "Mosul Orb", "Ghost Return"],
       mechanicName: "SENSOR FUSION",
       mechanicText: "Every Procedure is treated as Stamped. Whenever you roll two d20, you may reroll one of them." },
 
@@ -106,11 +115,11 @@ const CONSTELLATIONS = [
       mechanicName: "PATTERN COMPLETION",
       mechanicText: "Once each scene, declare that two visible phenomena are manifestations of the same anomaly. The GM must adjudicate them using one shared property for the remainder of the encounter." },
 
-    { name: "Celestial Meridian", requires: ["GoFast", "Fastwalker", "Dead Vector", "Negative Parallax", "Plasma Wake"],
+    { name: "Celestial Meridian", requires: ["Gofast", "Fastwalker", "Dead Vector", "Negative Parallax", "Plasma Wake"],
       mechanicName: "ABSOLUTE POSITION",
       mechanicText: "Your position cannot be altered by any effect except your own movement. You always choose exactly where your movement ends." },
 
-    { name: "Omega Sky", requires: ["Gimbal", "Tic Tac", "GoFast", "Black Triangle", "Ghost Return", "Fastwalker"],
+    { name: "Omega Sky", requires: ["Gimbal", "Tic Tac", "Gofast", "Black Triangle", "Ghost Return", "Fastwalker"],
       mechanicName: "CONTINUOUS SOLUTION",
       mechanicText: "You exist in a permanent LOCK state. Every Procedure is automatically Stamped. Your movement never provokes reactions. The first time each scene you would lose a Reading, prevent that damage and instead lose an equal amount of Pale from any Reading of your choice." }
 ];
@@ -132,12 +141,16 @@ AFTERIMAGES.forEach(a => afterimageByName[a.name] = a);
 const nameByLower = {};
 AFTERIMAGES.forEach(a => nameByLower[a.name.toLowerCase()] = a.name);
 
-// Per-star jitter/glitch keyframes — generated once at load, not per render, so a
+// Per-star jitter keyframes — generated once at load, not per render, so a
 // star's motion stays consistent while you're looking at it. Each star gets its own
 // @keyframes rule with its own step count and its own random displacement at each
 // step (not a shared path just scaled by a multiplier), plus its own duration and a
-// negative delay so nothing starts in phase. That's what actually makes them read as
-// independent and glitchy instead of a synchronized group wobble.
+// negative delay so nothing starts in phase. That's what actually makes the erratic
+// drift read as independent and glitchy instead of a synchronized group wobble.
+//
+// This jitter only ever plays on a star AFTER it has been clicked onto the field
+// (lit) and BEFORE its current selection resolves into a known formation (settled).
+// Unselected stars sit completely still — no animation at all — until chosen.
 function randRange(min, max){
     return min + Math.random() * (max - min);
 }
@@ -159,37 +172,15 @@ function buildJitterKeyframe(name){
     return `@keyframes ${name}{ ${body} }`;
 }
 
-function buildGlitchKeyframe(name){
-    const stops = 6 + Math.floor(Math.random() * 5); // 6–10 stops: choppier than jitter
-    let body = "";
-    for(let s = 0; s <= stops; s++){
-        const pct = Math.round((s / stops) * 100);
-        if(s === 0 || s === stops){
-            body += `${pct}%{ transform:translate(0px,0px); opacity:0.92; }`;
-        } else {
-            const dx = randRange(-3.6, 3.6).toFixed(2);
-            const dy = randRange(-3.6, 3.6).toFixed(2);
-            const op = randRange(0.28, 1).toFixed(2);
-            body += `${pct}%{ transform:translate(${dx}px,${dy}px); opacity:${op}; }`;
-        }
-    }
-    return `@keyframes ${name}{ ${body} }`;
-}
-
 const jitterParams = {};
 let starKeyframeCSS = "";
 AFTERIMAGES.forEach(a => {
     const jitterName = `jitter_${a.code}`;
-    const glitchName = `glitch_${a.code}`;
     starKeyframeCSS += buildJitterKeyframe(jitterName);
-    starKeyframeCSS += buildGlitchKeyframe(glitchName);
     jitterParams[a.code] = {
         jitterName,
-        glitchName,
         jdur: randRange(2.2, 5.4).toFixed(2),
-        jdelay: -randRange(0, 5).toFixed(2),
-        gdur: randRange(0.9, 2.4).toFixed(2),
-        gdelay: -randRange(0, 2.4).toFixed(2)
+        jdelay: -randRange(0, 5).toFixed(2)
     };
 });
 
@@ -264,7 +255,7 @@ function drawStar(container, star, lit, settled){
     g.setAttribute("transform", `translate(${star.x},${star.y})`);
 
     const title = ns("title");
-    title.textContent = star.name;
+    title.textContent = `${star.code} — ${star.name}`;
     g.appendChild(title);
 
     if(settled){
@@ -284,9 +275,12 @@ function drawStar(container, star, lit, settled){
             // shared calm animation, driven by the .field-star.settled CSS rule —
             // no need for per-star variety once it's no longer erratic
         } else if(lit){
-            body.style.animation = `${jp.glitchName} ${jp.gdur}s steps(1, end) ${jp.gdelay}s infinite`;
-        } else {
+            // clicked onto the field but not yet part of a resolved formation:
+            // erratic per-star jitter
             body.style.animation = `${jp.jitterName} ${jp.jdur}s ease-in-out ${jp.jdelay}s infinite`;
+        } else {
+            // not yet clicked: perfectly static
+            body.style.animation = "none";
         }
     }
     g.appendChild(body);
@@ -296,7 +290,7 @@ function drawStar(container, star, lit, settled){
         label.setAttribute("class", "star-label");
         label.setAttribute("y", -12);
         label.setAttribute("text-anchor", "middle");
-        label.textContent = star.name;
+        label.textContent = `${star.code} ${star.name}`;
         g.appendChild(label);
     }
 
