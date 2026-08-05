@@ -569,7 +569,39 @@
             }
         }
 
-        /* -------- PYRE (Kindling) - exact copy from FINETUNING -------- */
+        /* -------- BUTTONS - clean, proper styling -------- */
+        button.btn {
+            background: var(--bg);
+            color: var(--fg);
+            border: 1px solid var(--fg);
+            font-family: "Courier New", monospace;
+            font-size: 11.5px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            padding: 10px 16px;
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s;
+            font-weight: 700;
+        }
+
+        button.btn:hover {
+            background: var(--fg);
+            color: var(--bg);
+        }
+
+        button.btn:disabled {
+            opacity: 0.35;
+            cursor: default;
+            background: var(--bg);
+            color: var(--fg);
+        }
+
+        button.btn.small {
+            padding: 7px 12px;
+            font-size: 10.5px;
+        }
+
+        /* -------- PYRE (Kindling) - stronger shake, more noise -------- */
         .pyre-wrap {
             display: none;
             margin: 20px 0 6px;
@@ -581,7 +613,7 @@
         .pyre-field {
             position: relative;
             width: 100%;
-            min-height: 240px;
+            min-height: 260px;
             border: 1px solid var(--fg);
             background: #020202;
             padding: 16px;
@@ -589,34 +621,109 @@
         }
 
         .pyre-field.burning .noise-row {
-            color: rgba(255, 255, 255, 0.7);
+            color: rgba(255, 255, 255, 0.8);
         }
 
+        /* Stronger shake - more translation, faster */
         .pyre-field.burning {
-            animation: pyreShake 0.18s infinite;
+            animation: pyreShakeStrong 0.04s infinite;
         }
-        @keyframes pyreShake {
+        @keyframes pyreShakeStrong {
             0% {
-                transform: translate(0, 0);
+                transform: translate(0, 0) rotate(0deg) scale(1);
             }
-            25% {
-                transform: translate(-1px, 1px);
+            10% {
+                transform: translate(-8px, 6px) rotate(-2deg) scale(1.01);
+            }
+            20% {
+                transform: translate(8px, -6px) rotate(2deg) scale(0.99);
+            }
+            30% {
+                transform: translate(-6px, -8px) rotate(-1.5deg) scale(1);
+            }
+            40% {
+                transform: translate(6px, 8px) rotate(1.5deg) scale(1.01);
             }
             50% {
-                transform: translate(1px, -1px);
+                transform: translate(-10px, 4px) rotate(-2.5deg) scale(0.99);
             }
-            75% {
-                transform: translate(-1px, -1px);
+            60% {
+                transform: translate(10px, -4px) rotate(2.5deg) scale(1);
+            }
+            70% {
+                transform: translate(-4px, 10px) rotate(-1deg) scale(1.01);
+            }
+            80% {
+                transform: translate(4px, -10px) rotate(1deg) scale(0.99);
+            }
+            90% {
+                transform: translate(-6px, 6px) rotate(-1.8deg) scale(1);
             }
             100% {
-                transform: translate(0, 0);
+                transform: translate(0, 0) rotate(0deg) scale(1);
             }
+        }
+
+        /* Additional glitch overlay for pyre */
+        .pyre-field.burning::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            z-index: 5;
+            pointer-events: none;
+            background: repeating-linear-gradient(0deg,
+                    transparent 0px,
+                    transparent 2px,
+                    rgba(255, 255, 255, 0.03) 2px,
+                    rgba(255, 255, 255, 0.03) 3px);
+            animation: glitchScan 0.08s linear infinite;
+        }
+
+        @keyframes glitchScan {
+            0% {
+                transform: translateY(0);
+            }
+            100% {
+                transform: translateY(100%);
+            }
+        }
+
+        .pyre-field.burning::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            z-index: 4;
+            pointer-events: none;
+            background: radial-gradient(ellipse at center, transparent 30%, rgba(0, 0, 0, 0.3) 100%);
+            animation: pulseGlow 0.15s ease-in-out infinite alternate;
+        }
+
+        @keyframes pulseGlow {
+            0% {
+                opacity: 0.3;
+            }
+            100% {
+                opacity: 0.8;
+            }
+        }
+
+        .pyre-field .noise-row {
+            font-family: "Courier New", monospace;
+            font-size: 12px;
+            line-height: 1.3;
+            letter-spacing: 0.5px;
+            white-space: pre;
+            color: rgba(255, 255, 255, 0.4);
         }
 
         .pyre-field.resolved {
             border-color: var(--fg);
             animation: none;
             padding: 0;
+        }
+        .pyre-field.resolved::before,
+        .pyre-field.resolved::after {
+            display: none;
         }
         .pyre-field.resolved .op-card {
             border: none;
@@ -751,7 +858,7 @@
                 grid-template-columns: 1fr;
             }
             .pyre-field {
-                min-height: 180px;
+                min-height: 200px;
             }
         }
     </style>
@@ -840,7 +947,7 @@
                 <div class="card-grid" id="baleGrid"></div>
             </section>
 
-            <!-- PYRE SECTION – exact copy from FINETUNING -->
+            <!-- PYRE SECTION -->
             <section class="span-all break-block">
                 <div class="pyre-wrap" id="pyreWrap">
                     <h2 style="margin-top:28px;">The Pyre</h2>
@@ -876,7 +983,6 @@
     <script>
         // ============================================================
         //  BANNING AND KINDLING — terminal logic
-        //  Pyre implementation is exactly as in FINETUNING, adapted to Bale/Dread.
         // ============================================================
 
         const CATEGORIES = ["HARD LOCK", "RED SHIFT", "LOST TRACK", "SHADOWBOX"];
@@ -1001,7 +1107,7 @@
         let dreadCards = [];
         let cardCounter = 0;
         let dreadCounter = 0;
-        let kindlingId = null; // for pyre lock
+        let kindlingId = null;
 
         // ===== persistence =====
 
@@ -1148,7 +1254,7 @@
             return html;
         }
 
-        // ===== KINDLE — the pyre (exact copy from FINETUNING, adapted to Bale/Dread) =====
+        // ===== KINDLE — the pyre with stronger shake and more noise =====
 
         function startKindle(id) {
             if (kindlingId) return;
@@ -1160,20 +1266,32 @@
             const pyreWrap = document.getElementById("pyreWrap");
             pyreWrap.classList.add("active");
             pyre.classList.add("burning");
-            pyre.innerHTML = noiseBlock(9, 34, emberChars);
+
+            // More columns and rows = more noise filling the box
+            const rows = 15;
+            const cols = 55;
+            pyre.innerHTML = noiseBlock(rows, cols, emberChars);
+
             document.getElementById("pyreStatus").textContent = `STATUS: KINDLING ${card.name} — DRIVING PAST THRESHOLD`;
             addLog(`KINDLING INITIATED — ${card.name} DRIVEN INTO OVERDRIVE.`);
 
             let tick = 0;
             const flicker = setInterval(() => {
                 tick++;
-                pyre.innerHTML = noiseBlock(9, 34, tick % 3 === 0 ? noiseChars : emberChars);
-                pyre.style.filter = `brightness(${0.7 + Math.random() * 0.9}) contrast(${1 + Math.random() * 0.6})`;
-            }, 45);
+                // Use noiseChars mixed with emberChars for varied glitch
+                const pool = tick % 4 === 0 ? emberChars : noiseChars;
+                pyre.innerHTML = noiseBlock(rows, cols, pool);
+                pyre.style.filter = `brightness(${0.5 + Math.random() * 1.1}) contrast(${0.8 + Math.random() * 0.8})`;
+                // Random glitch flash
+                if (tick % 3 === 0) {
+                    pyre.style.boxShadow = `inset 0 0 ${20 + Math.random() * 60}px rgba(255,255,255,${0.05 + Math.random() * 0.15})`;
+                }
+            }, 35);
 
             setTimeout(() => {
                 clearInterval(flicker);
                 pyre.style.filter = "none";
+                pyre.style.boxShadow = "none";
 
                 const pair = MATRIX[card.row][card.category];
                 dreadCounter++;
@@ -1227,21 +1345,18 @@
         // ===== BANNING (2d4 roll) =====
 
         function performBan() {
-            if (kindlingId) return; // prevent banning while kindling
+            if (kindlingId) return;
             const banBtn = document.getElementById("banBtn");
             banBtn.disabled = true;
             document.getElementById("banStatus").textContent = "STATUS: ROLLING...";
 
-            // Reset highlights
             document.querySelectorAll('#matrixBody td, #matrixBody th, .overdrive-grid thead th').forEach(el => {
                 el.classList.remove('highlighted');
             });
 
-            // Start shake
             const wrapper = document.getElementById('matrixWrapper');
             wrapper.classList.add('awaiting-roll');
 
-            // Start cell noise
             const noiseInterval = setInterval(updateCellNoise, 80);
 
             let rolls = 0;
@@ -1259,7 +1374,6 @@
                 if (rolls >= maxRolls) {
                     clearInterval(interval);
                     clearInterval(noiseInterval);
-                    // Final roll
                     const finalRow = 1 + Math.floor(Math.random() * 4);
                     const finalCat = CATEGORIES[Math.floor(Math.random() * CATEGORIES.length)];
 
@@ -1273,7 +1387,6 @@
                     document.getElementById(`row-${finalRow}`).querySelector('th').classList.add('highlighted');
                     document.getElementById(`th-${finalCat}`).classList.add('highlighted');
 
-                    // Generate Bale
                     const pair = MATRIX[finalRow][finalCat];
                     cardCounter++;
                     const bale = {
@@ -1291,7 +1404,6 @@
                     addLog(`BALE BANNED — ${bale.name} (${bale.row} / ${bale.category}).`);
                     document.getElementById("banStatus").textContent = `STATUS: BALE BANNED — ${bale.name}`;
 
-                    // Show the banned Bale briefly
                     const display = document.getElementById("chosenBaleDisplay");
                     display.innerHTML = `<div class="op-card bale-card just-banned" style="max-width:400px;margin:0 auto;border-color:var(--fg);">
                             <div class="oc-coord">${bale.row} / ${bale.category}</div>
@@ -1316,9 +1428,7 @@
 
             document.getElementById("banBtn").addEventListener("click", performBan);
 
-            // Start the matrix shaking immediately (awaiting input)
             document.getElementById('matrixWrapper').classList.add('awaiting-roll');
-            // Initial cell noise
             updateCellNoise();
 
             console.log("BANNING AND KINDLING TERMINAL ONLINE");
