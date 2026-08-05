@@ -141,67 +141,39 @@ AFTERIMAGES.forEach(a => afterimageByName[a.name] = a);
 const nameByLower = {};
 AFTERIMAGES.forEach(a => nameByLower[a.name.toLowerCase()] = a.name);
 
-// Per-star jitter keyframes — generated once at load, not per render, so a
-// star's motion stays consistent while you're looking at it. Each star gets its own
-// @keyframes rule with its own random number of stops, its own random hold points
-// in time (not evenly spaced — that's what makes the interval between jumps feel
-// random instead of metronomic), and its own random displacement at each stop, in a
-// random direction. A hard "steps(1,end)" timing function means each jump is an
-// instant snap rather than an eased glide, plus its own duration and a negative
-// delay so nothing starts in phase. That's what makes it read as fast and erratic
-// rather than a smooth drift.
-//
-// This jitter only ever plays on a star AFTER it has been clicked onto the field
-// (lit) and BEFORE its current selection resolves into a known formation (settled).
-// Unselected stars sit completely still — no animation at all — until chosen.
+// Per-star jitter — driven directly from JS with a recursive setTimeout instead
+// of a CSS @keyframes loop. A keyframe animation still has to interpolate through
+// a fixed, repeating timeline, which is exactly what was reading as a sway no
+// matter how the stops were randomized. This instead just picks a new random
+// direction and distance, snaps the star straight there with NO transition, then
+// waits a fresh random amount of time before doing it again — so both the
+// distance/direction AND the interval between hops are re-rolled every single
+// hop, forever, with no repeating pattern at all.
 function randRange(min, max){
     return min + Math.random() * (max - min);
 }
 
-function buildJitterKeyframe(name){
-    const stops = 7 + Math.floor(Math.random() * 6); // 7–12 hops per cycle
+const jitterTimers = {}; // star code -> setTimeout id, for stars currently jittering
 
-    // random, non-uniform hold points along the timeline (sorted, deduped) —
-    // this is what gives random INTERVALS between jumps, not just random
-    // positions at evenly-divided ticks
-    const pcts = new Set([0, 100]);
-    while(pcts.size < stops){
-        pcts.add(Math.floor(randRange(4, 97)));
+function stopJitter(code){
+    if(jitterTimers[code]){
+        clearTimeout(jitterTimers[code]);
+        delete jitterTimers[code];
     }
-    const sorted = [...pcts].sort((a, b) => a - b);
-
-    let body = "";
-    sorted.forEach(pct => {
-        if(pct === 0 || pct === 100){
-            body += `${pct}%{ transform:translate(0px,0px); opacity:0.45; }`;
-        } else {
-            // random direction + random distance every hop
-            const dx = randRange(-5.5, 5.5).toFixed(2);
-            const dy = randRange(-5.5, 5.5).toFixed(2);
-            const op = randRange(0.25, 0.95).toFixed(2);
-            body += `${pct}%{ transform:translate(${dx}px,${dy}px); opacity:${op}; }`;
-        }
-    });
-    return `@keyframes ${name}{ ${body} }`;
 }
 
-const jitterParams = {};
-let starKeyframeCSS = "";
-AFTERIMAGES.forEach(a => {
-    const jitterName = `jitter_${a.code}`;
-    starKeyframeCSS += buildJitterKeyframe(jitterName);
-    jitterParams[a.code] = {
-        jitterName,
-        jdur: randRange(0.5, 1.6).toFixed(2), // fast full cycle
-        jdelay: -randRange(0, 1.6).toFixed(2)
-    };
-});
-
-(function injectStarKeyframes(){
-    const styleEl = document.createElement("style");
-    styleEl.textContent = starKeyframeCSS;
-    document.head.appendChild(styleEl);
-})();
+function startJitter(code, body){
+    stopJitter(code);
+    function hop(){
+        const dx = randRange(-9, 9).toFixed(2);
+        const dy = randRange(-9, 9).toFixed(2);
+        const op = randRange(0.35, 1).toFixed(2);
+        body.style.transform = `translate(${dx}px,${dy}px)`;
+        body.style.opacity = op;
+        jitterTimers[code] = setTimeout(hop, randRange(25, 160)); // random interval every hop
+    }
+    hop();
+}
 
 let selected = []; // names, in the order they were added
 
@@ -282,19 +254,17 @@ function drawStar(container, star, lit, settled){
     body.setAttribute("r", 6.5);
     body.setAttribute("class", "star-body");
     body.setAttribute("filter", "url(#starGrain)");
-    const jp = jitterParams[star.code];
-    if(jp){
-        if(settled){
-            // shared calm animation, driven by the .field-star.settled CSS rule —
-            // no need for per-star variety once it's no longer erratic
-        } else if(lit){
-            // clicked onto the field but not yet part of a resolved formation:
-            // erratic per-star jitter
-            body.style.animation = `${jp.jitterName} ${jp.jdur}s steps(1, end) ${jp.jdelay}s infinite`;
-        } else {
-            // not yet clicked: perfectly static
-            body.style.animation = "none";
-        }
+    if(settled){
+        // shared calm animation, driven by the .field-star.settled CSS rule —
+        // no jitter once it's resolved into a formation
+        stopJitter(star.code);
+    } else if(lit){
+        // clicked onto the field but not yet part of a resolved formation:
+        // fast, erratic, random-direction/random-distance/random-interval jitter
+        startJitter(star.code, body);
+    } else {
+        // not yet clicked: perfectly static
+        stopJitter(star.code);
     }
     g.appendChild(body);
 
