@@ -11,6 +11,8 @@ const HEX_KEY = "hexGraveCards";
 const KNOT_KEY = "linkKnotCards";
 const ROUTINE_KEY = "routineCards";
 const TELEMETRY_KEY = "afterimageTelemetryCards";
+const YOKE_KEY = "yokeCards";
+const FLARE_KEY = "flareCards";
 const READING_MIN = 8;
 const READING_MAX = 16;
 const READING_BUDGET = 36;
@@ -193,7 +195,10 @@ function renderCapacity(){
         const knotCards = loadCards(KNOT_KEY);
         const routineCards = loadCards(ROUTINE_KEY);
         const telemetryCards = loadCards(TELEMETRY_KEY);
-        const totalSlots = hexCards.length + knotCards.length + routineCards.length + telemetryCards.length;
+        const yokeCards = loadCards(YOKE_KEY);
+        // Flares are trace residue burned off a spent Yoke, not held inventory —
+        // they don't occupy a slot of their own, so FLARE_KEY is excluded here.
+        const totalSlots = hexCards.length + knotCards.length + routineCards.length + telemetryCards.length + yokeCards.length;
         state.capacity.used = totalSlots;
         
         if(baseEl) baseEl.value = state.capacity.baseline;
@@ -226,6 +231,8 @@ function renderInventory(){
     const knotCards = loadCards(KNOT_KEY);
     const routineCards = loadCards(ROUTINE_KEY);
     const telemetryCards = loadCards(TELEMETRY_KEY);
+    const yokeCards = loadCards(YOKE_KEY);
+    const flareCards = loadCards(FLARE_KEY);
     
     let html = '';
     
@@ -325,7 +332,50 @@ function renderInventory(){
         html += `</div></div>`;
     }
     
-    if(!hexCards.length && !knotCards.length && !routineCards.length && !telemetryCards.length){
+    // Yoke Cards
+    if(yokeCards.length > 0){
+        html += `<div class="inventory-section"><h3>Yoke Cards (${yokeCards.length})</h3><div class="card-grid">`;
+        yokeCards.forEach(card => {
+            html += `
+                <div class="card-item" data-type="yoke" data-id="${card.id}">
+                    <div class="card-header">
+                        <span class="card-name">${card.name || 'Unnamed Yoke'}</span>
+                        <button class="remove-card-btn" data-type="yoke" data-id="${card.id}">✕</button>
+                    </div>
+                    <div class="card-details">
+                        ${card.row && card.category ? `<div class="card-tag">${card.row} / ${card.category}</div>` : ''}
+                        ${card.fixed ? `<div class="card-tag">FIXED — READY TO KINDLE</div>` : ''}
+                        ${card.effect ? `<div class="card-desc"><strong>Effect:</strong> ${card.effect}</div>` : ''}
+                        ${card.cost ? `<div class="card-desc"><strong>Cost:</strong> ${card.cost}</div>` : ''}
+                    </div>
+                </div>
+            `;
+        });
+        html += `</div></div>`;
+    }
+
+    // Flare Cards
+    if(flareCards.length > 0){
+        html += `<div class="inventory-section"><h3>Flare Cards (${flareCards.length})</h3><div class="card-grid">`;
+        flareCards.forEach(card => {
+            html += `
+                <div class="card-item" data-type="flare" data-id="${card.id}">
+                    <div class="card-header">
+                        <span class="card-name">${card.name || 'Unnamed Flare'}</span>
+                        <button class="remove-card-btn" data-type="flare" data-id="${card.id}">✕</button>
+                    </div>
+                    <div class="card-details">
+                        ${card.row && card.category ? `<div class="card-tag">${card.row} / ${card.category}</div>` : ''}
+                        ${card.effect ? `<div class="card-desc"><strong>Effect:</strong> ${card.effect}</div>` : ''}
+                        ${card.cost ? `<div class="card-desc"><strong>Cost:</strong> ${card.cost}</div>` : ''}
+                    </div>
+                </div>
+            `;
+        });
+        html += `</div></div>`;
+    }
+
+    if(!hexCards.length && !knotCards.length && !routineCards.length && !telemetryCards.length && !yokeCards.length && !flareCards.length){
         html = `<div class="empty-inventory">No cards in inventory. Create cards on their respective pages.</div>`;
     }
     
@@ -342,6 +392,8 @@ function renderInventory(){
                 case 'knot': key = KNOT_KEY; break;
                 case 'routine': key = ROUTINE_KEY; break;
                 case 'telemetry': key = TELEMETRY_KEY; break;
+                case 'yoke': key = YOKE_KEY; break;
+                case 'flare': key = FLARE_KEY; break;
                 default: return;
             }
             if(confirm(`Remove this ${type} card from inventory?`)){
@@ -569,7 +621,7 @@ document.addEventListener("DOMContentLoaded", function() {
     renderProcedures();
     
     window.addEventListener('storage', (e) => {
-        if(e.key === HEX_KEY || e.key === KNOT_KEY || e.key === ROUTINE_KEY || e.key === TELEMETRY_KEY){
+        if(e.key === HEX_KEY || e.key === KNOT_KEY || e.key === ROUTINE_KEY || e.key === TELEMETRY_KEY || e.key === YOKE_KEY || e.key === FLARE_KEY){
             renderInventory();
             renderCapacity();
         }
