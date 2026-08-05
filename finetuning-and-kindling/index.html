@@ -204,6 +204,7 @@
             text-transform: uppercase;
             line-height: 1.9;
             color: var(--fg);
+            column-span: all;
         }
 
         hr {
@@ -247,9 +248,6 @@
             letter-spacing: 1.5px;
             text-transform: uppercase;
             font-weight: 700;
-            background: var(--fg);
-            color: var(--bg);
-            border-color: var(--bg);
         }
 
         .table-scroll {
@@ -304,11 +302,13 @@
             -webkit-column-break-inside: avoid;
         }
 
-        /* Overdrive crosstab */
+        /* -------- OSSUARY MATRIX -------- */
         .overdrive-grid {
             width: 100%;
             margin: 18px 0 20px;
             min-width: 600px;
+            overflow: hidden;
+            /* Prevents shake scroll */;
         }
 
         .overdrive-grid table {
@@ -317,22 +317,13 @@
             font-size: 13px;
         }
 
-        .overdrive-grid th {
-            background: var(--fg);
-            color: var(--bg);
-        }
-
-        .overdrive-grid th.corner {
-            background: var(--bg);
-            color: var(--fg);
-            border-color: var(--line);
-        }
-
-        .overdrive-grid th.axis-signal {
-            background: var(--bg);
-            color: var(--fg);
-            border-color: var(--line);
-            text-align: left;
+        /* Make all headers black (consistent with .corner and .axis-signal) */
+        .overdrive-grid th,
+        .overdrive-grid .corner,
+        .overdrive-grid .axis-signal {
+            background: var(--bg) !important;
+            color: var(--fg) !important;
+            border-color: var(--line) !important;
         }
 
         .overdrive-grid td.dread-cell {
@@ -365,27 +356,24 @@
         /* Shaking cells awaiting input */
         @keyframes shakeAwaiting {
             0% {
-                transform: translate(0, 0);
+                transform: translate(0, 0) scale(1);
             }
-            20% {
-                transform: translate(-1px, 1px);
+            25% {
+                transform: translate(-1px, 1px) scale(0.99);
             }
-            40% {
-                transform: translate(1px, -1px);
+            50% {
+                transform: translate(1px, -1px) scale(1);
             }
-            60% {
-                transform: translate(-1px, -1px);
-            }
-            80% {
-                transform: translate(1px, 1px);
+            75% {
+                transform: translate(-1px, -1px) scale(1.01);
             }
             100% {
-                transform: translate(0, 0);
+                transform: translate(0, 0) scale(1);
             }
         }
 
         .awaiting-roll td.dread-cell {
-            animation: shakeAwaiting 0.15s infinite alternate;
+            animation: shakeAwaiting 0.12s infinite alternate;
             background: #0a0a0a;
         }
 
@@ -403,8 +391,8 @@
         }
 
         .overdrive-grid th.highlighted {
-            background: var(--fg);
-            color: var(--bg);
+            background: var(--fg) !important;
+            color: var(--bg) !important;
         }
 
         .overdrive-dossier {
@@ -415,7 +403,7 @@
             font-size: 10.5px;
         }
 
-        /* Cards */
+        /* -------- CARDS (Bale / Dread) -------- */
         .card-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -478,6 +466,7 @@
             margin-top: 12px;
         }
 
+        /* Fixed Bale = spent, inverted black-on-white */
         .op-card.bale-card.fixed {
             background: var(--fg);
             color: var(--bg);
@@ -533,13 +522,13 @@
             }
         }
 
-        /* Pyre */
+        /* -------- PYRE (Kindling) -------- */
         .pyre-wrap {
             display: none;
             margin: 20px 0 6px;
             border: 1px solid var(--line);
             background: #010101;
-            min-height: 200px;
+            min-height: 220px;
             position: relative;
             overflow: hidden;
             transition: border-color 0.3s;
@@ -557,7 +546,7 @@
             letter-spacing: 0.5px;
             white-space: pre;
             color: rgba(255, 255, 255, 0.3);
-            min-height: 200px;
+            min-height: 220px;
             padding: 16px;
             display: flex;
             align-items: center;
@@ -565,6 +554,16 @@
             flex-direction: column;
             transition: all 0.1s;
             background: var(--bg);
+            width: 100%;
+        }
+
+        .pyre-content .noise-row {
+            font-family: "Courier New", monospace;
+            font-size: 14px;
+            line-height: 1.2;
+            letter-spacing: 0.5px;
+            white-space: pre;
+            color: rgba(255, 255, 255, 0.3);
         }
 
         .pyre-content.burning {
@@ -614,7 +613,7 @@
             color: var(--dim);
         }
 
-        /* Buttons */
+        /* -------- BUTTONS -------- */
         button.btn {
             background: var(--bg);
             color: var(--fg);
@@ -644,7 +643,7 @@
             font-size: 10.5px;
         }
 
-        /* Log */
+        /* -------- LOG -------- */
         .log-panel {
             margin-top: 16px;
             border: 1px solid var(--line);
@@ -679,7 +678,7 @@
             margin-right: 8px;
         }
 
-        /* Nav */
+        /* -------- NAV -------- */
         .nav-link {
             display: block;
             margin-top: 18px;
@@ -695,23 +694,6 @@
 
         .nav-link:hover {
             border-bottom-color: var(--fg);
-        }
-
-        /* Glitch overlay for pyre */
-        .glitch-char {
-            display: inline-block;
-            animation: glitchPulse 0.1s infinite alternate;
-        }
-
-        @keyframes glitchPulse {
-            0% {
-                opacity: 0.3;
-                transform: translate(0, 0);
-            }
-            100% {
-                opacity: 1;
-                transform: translate(1px, -1px);
-            }
         }
 
         .ban-controls {
@@ -792,7 +774,7 @@
 
             <section class="span-all">
                 <div class="terminal-note">
-                    BAN A BALE — ROLL 2D4. THE MATRIX WILL CHOOSE YOUR BALE.<br>
+                    BAN A BALE — ROLL 2D4 AGAINST THE MATRIX. THE STATIC WILL YIELD.<br>
                     FIX A BALE TO SPEND IT — IT GOES BLACK AND BECOMES AVAILABLE FOR KINDLING.<br>
                     KINDLE A FIXED BALE — THE PYRE BURNS IT INTO A DREAD. THE BALE IS SPENT; THE DREAD REMAINS.<br>
                     FIX THE DREAD TO RESOLVE IT — THE COST IS PAID. NOTHING IS LEFT ON FILE.
@@ -803,7 +785,7 @@
                 <div class="article-label whitebox">THE OSSUARY — BALE BANNING</div>
                 <p class="mono">Force the static to yield. Roll 2d4 against the matrix.</p>
 
-                <div class="table-scroll overdrive-grid">
+                <div class="table-scroll overdrive-grid" id="matrixWrapper">
                     <table>
                         <thead>
                             <tr>
@@ -905,7 +887,6 @@
 
         const CATEGORIES = ["HARD LOCK", "RED SHIFT", "LOST TRACK", "SHADOWBOX"];
 
-        // Matrix data matching the HTML table
         const MATRIX = {
             1: {
                 "HARD LOCK": {
@@ -1020,6 +1001,7 @@
             "⠿", "⠶", "⠛", "⠹", "⠭", "⠽", "⠾", "⠷",
             "#", "%", "&", "*", "/", "\\", "~", "^"
         ];
+        const emberChars = ["△", "▲", "♦", "✦", "✧", "*", "'", "\"", "~", "·", "°", "∴", "×", "+"];
 
         let baleCards = [];
         let dreadCards = [];
@@ -1064,7 +1046,7 @@
             panel.prepend(entry);
         }
 
-        // ===== stats / grid rendering =====
+        // ===== grid rendering =====
 
         function renderGrids() {
             const baleGrid = document.getElementById("baleGrid");
@@ -1150,6 +1132,22 @@
             renderGrids();
         }
 
+        // ===== noise block for pyre =====
+
+        function noiseBlock(rows, cols, pool) {
+            let html = "";
+            for (let r = 0; r < rows; r++) {
+                let line = "";
+                for (let c = 0; c < cols; c++) {
+                    const char = pool[Math.floor(Math.random() * pool.length)];
+                    const opacity = (0.2 + Math.random() * 0.8).toFixed(2);
+                    line += `<span style="opacity:${opacity}">${char}</span>`;
+                }
+                html += `<div class="noise-row">${line}</div>`;
+            }
+            return html;
+        }
+
         // ===== BANNING (2d4 roll) =====
 
         function performBan() {
@@ -1160,23 +1158,19 @@
             document.getElementById("banStatus").textContent = "STATUS: ROLLING...";
 
             // Reset highlights
-            document.querySelectorAll('#matrixBody td, #matrixBody th, #matrixBody tr th').forEach(el => {
-                el.classList.remove('highlighted');
-            });
-            document.querySelectorAll('.overdrive-grid thead th').forEach(el => {
+            document.querySelectorAll('#matrixBody td, #matrixBody th, .overdrive-grid thead th').forEach(el => {
                 el.classList.remove('highlighted');
             });
 
-            // Shake the matrix
-            document.getElementById('matrixBody').parentElement.parentElement.classList.add('awaiting-roll');
+            // Start shake
+            const wrapper = document.getElementById('matrixWrapper');
+            wrapper.classList.add('awaiting-roll');
 
-            // Simulate 2d4 roll with visual feedback
             let rolls = 0;
             const maxRolls = 8 + Math.floor(Math.random() * 6);
             let interval = setInterval(() => {
                 const randRow = 1 + Math.floor(Math.random() * 4);
                 const randCat = CATEGORIES[Math.floor(Math.random() * CATEGORIES.length)];
-                // Highlight random cells to simulate scrolling
                 document.querySelectorAll('#matrixBody td, #matrixBody th').forEach(el => el.classList.remove('highlighted'));
                 const cell = document.getElementById(`cell-${randRow}-${randCat}`);
                 if (cell) cell.classList.add('highlighted');
@@ -1190,11 +1184,10 @@
                     const finalRow = 1 + Math.floor(Math.random() * 4);
                     const finalCat = CATEGORIES[Math.floor(Math.random() * CATEGORIES.length)];
 
-                    // Clear all highlights and set final
                     document.querySelectorAll('#matrixBody td, #matrixBody th, .overdrive-grid thead th').forEach(el => {
                         el.classList.remove('highlighted');
                     });
-                    document.getElementById('matrixBody').parentElement.parentElement.classList.remove('awaiting-roll');
+                    wrapper.classList.remove('awaiting-roll');
 
                     const finalCell = document.getElementById(`cell-${finalRow}-${finalCat}`);
                     if (finalCell) finalCell.classList.add('highlighted');
@@ -1256,22 +1249,12 @@
             // Disable kindle buttons
             document.querySelectorAll('[data-act="kindle"]').forEach(b => b.disabled = true);
 
-            // Generate noise characters covering the whole box
-            let lines = 12;
+            // Generate initial noise covering the whole box
+            let lines = 14;
             let cols = 50;
             let noiseInterval = setInterval(() => {
-                let html = "";
-                for (let i = 0; i < lines; i++) {
-                    let line = "";
-                    for (let j = 0; j < cols; j++) {
-                        const char = noiseChars[Math.floor(Math.random() * noiseChars.length)];
-                        const opacity = 0.3 + Math.random() * 0.7;
-                        line += `<span style="opacity:${opacity.toFixed(2)}">${char}</span>`;
-                    }
-                    html += `<div>${line}</div>`;
-                }
-                pyreContent.innerHTML = html;
-            }, 50);
+                pyreContent.innerHTML = noiseBlock(lines, cols, noiseChars);
+            }, 60);
 
             // After 2 seconds, produce the Dread
             setTimeout(() => {
@@ -1324,7 +1307,7 @@
             document.getElementById("banBtn").addEventListener("click", performBan);
 
             // Start the matrix shaking immediately (awaiting input)
-            document.getElementById('matrixBody').parentElement.parentElement.classList.add('awaiting-roll');
+            document.getElementById('matrixWrapper').classList.add('awaiting-roll');
 
             console.log("BANNING AND KINDLING TERMINAL ONLINE");
             console.log("ROLL 2D4 AGAINST THE MATRIX. FEED THE PYRE.");
