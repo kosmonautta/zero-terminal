@@ -179,6 +179,16 @@ let selected = []; // names, in the order they were added
 
 // ===== CARD SAVING =====
 
+// chartedCards is the in-memory source of truth for the current session.
+// localStorage is a best-effort persistence layer on top of it: we load
+// into chartedCards once at startup, and write back to storage on every
+// change — but the UI always reads from chartedCards directly, never by
+// reading storage back. That way, if localStorage is blocked or restricted
+// (common inside sandboxed previews), charted formations still show up
+// immediately in the log for the rest of the session; only cross-session
+// persistence is lost, silently, which is the best that's possible there.
+let chartedCards = [];
+
 function loadCharted(){
     try{
         const raw = window.localStorage.getItem(CONSTELLATION_KEY);
@@ -189,11 +199,11 @@ function loadCharted(){
     }
 }
 
-function saveCharted(cards){
+function persistCharted(){
     try{
-        window.localStorage.setItem(CONSTELLATION_KEY, JSON.stringify(cards));
+        window.localStorage.setItem(CONSTELLATION_KEY, JSON.stringify(chartedCards));
     } catch(err){
-        console.error("Failed to save charted formations", err);
+        console.error("Failed to save charted formations (session log is unaffected)", err);
     }
 }
 
@@ -345,9 +355,8 @@ function projectCharted(card){
 function renderChartedLog(){
     const root = document.getElementById("chartedLog");
     if(!root) return;
-    const cards = loadCharted();
 
-    if(cards.length === 0){
+    if(chartedCards.length === 0){
         root.innerHTML = '<div class="log-empty">NO FORMATIONS CHARTED YET</div>';
         return;
     }
@@ -356,7 +365,7 @@ function renderChartedLog(){
     const grid = document.createElement("div");
     grid.className = "charted-grid";
 
-    cards.forEach(card => {
+    chartedCards.forEach(card => {
         const isActive = Array.isArray(card.requires) &&
             card.requires.length === currentSet.size &&
             card.requires.every(name => currentSet.has(name));
@@ -403,9 +412,8 @@ function updateResultPanel(){
         revealResult(match.name.toUpperCase());
         subEl.textContent = `${match.mechanicName} — ${match.mechanicText}`;
 
-        const cards = loadCharted();
-        if(!cards.find(c => c.name === match.name)){
-            cards.push({
+        if(!chartedCards.find(c => c.name === match.name)){
+            chartedCards.push({
                 name: match.name,
                 mechanicName: match.mechanicName,
                 mechanicText: match.mechanicText,
@@ -413,7 +421,7 @@ function updateResultPanel(){
                 // Zero has none, so it keeps whatever set charted it here.
                 requires: Array.isArray(match.requires) ? [...match.requires] : [...selected]
             });
-            saveCharted(cards);
+            persistCharted();
         }
     } else {
         statusEl.textContent = "STATUS: PATTERN UNRESOLVED";
@@ -429,7 +437,7 @@ function update(){
     renderCatalog();
     document.getElementById("statPoints").textContent = selected.length;
     updateResultPanel();
-    document.getElementById("statCharted").textContent = loadCharted().length + " / " + TOTAL_FORMATIONS;
+    document.getElementById("statCharted").textContent = chartedCards.length + " / " + TOTAL_FORMATIONS;
     renderChartedLog();
 }
 
@@ -445,6 +453,7 @@ function parseManualInput(raw){
 // ===== INIT =====
 
 document.addEventListener("DOMContentLoaded", () => {
+    chartedCards = loadCharted();
     update();
 
     document.getElementById("clearBtn").addEventListener("click", () => {
