@@ -143,10 +143,13 @@ AFTERIMAGES.forEach(a => nameByLower[a.name.toLowerCase()] = a.name);
 
 // Per-star jitter keyframes — generated once at load, not per render, so a
 // star's motion stays consistent while you're looking at it. Each star gets its own
-// @keyframes rule with its own step count and its own random displacement at each
-// step (not a shared path just scaled by a multiplier), plus its own duration and a
-// negative delay so nothing starts in phase. That's what actually makes the erratic
-// drift read as independent and glitchy instead of a synchronized group wobble.
+// @keyframes rule with its own random number of stops, its own random hold points
+// in time (not evenly spaced — that's what makes the interval between jumps feel
+// random instead of metronomic), and its own random displacement at each stop, in a
+// random direction. A hard "steps(1,end)" timing function means each jump is an
+// instant snap rather than an eased glide, plus its own duration and a negative
+// delay so nothing starts in phase. That's what makes it read as fast and erratic
+// rather than a smooth drift.
 //
 // This jitter only ever plays on a star AFTER it has been clicked onto the field
 // (lit) and BEFORE its current selection resolves into a known formation (settled).
@@ -156,19 +159,29 @@ function randRange(min, max){
 }
 
 function buildJitterKeyframe(name){
-    const stops = 5 + Math.floor(Math.random() * 4); // 5–8 stops: varied "frequency"
+    const stops = 7 + Math.floor(Math.random() * 6); // 7–12 hops per cycle
+
+    // random, non-uniform hold points along the timeline (sorted, deduped) —
+    // this is what gives random INTERVALS between jumps, not just random
+    // positions at evenly-divided ticks
+    const pcts = new Set([0, 100]);
+    while(pcts.size < stops){
+        pcts.add(Math.floor(randRange(4, 97)));
+    }
+    const sorted = [...pcts].sort((a, b) => a - b);
+
     let body = "";
-    for(let s = 0; s <= stops; s++){
-        const pct = Math.round((s / stops) * 100);
-        if(s === 0 || s === stops){
-            body += `${pct}%{ transform:translate(0px,0px); opacity:0.4; }`;
+    sorted.forEach(pct => {
+        if(pct === 0 || pct === 100){
+            body += `${pct}%{ transform:translate(0px,0px); opacity:0.45; }`;
         } else {
-            const dx = randRange(-2.6, 2.6).toFixed(2);
-            const dy = randRange(-2.6, 2.6).toFixed(2);
-            const op = randRange(0.22, 0.62).toFixed(2);
+            // random direction + random distance every hop
+            const dx = randRange(-5.5, 5.5).toFixed(2);
+            const dy = randRange(-5.5, 5.5).toFixed(2);
+            const op = randRange(0.25, 0.95).toFixed(2);
             body += `${pct}%{ transform:translate(${dx}px,${dy}px); opacity:${op}; }`;
         }
-    }
+    });
     return `@keyframes ${name}{ ${body} }`;
 }
 
@@ -179,8 +192,8 @@ AFTERIMAGES.forEach(a => {
     starKeyframeCSS += buildJitterKeyframe(jitterName);
     jitterParams[a.code] = {
         jitterName,
-        jdur: randRange(2.2, 5.4).toFixed(2),
-        jdelay: -randRange(0, 5).toFixed(2)
+        jdur: randRange(0.5, 1.6).toFixed(2), // fast full cycle
+        jdelay: -randRange(0, 1.6).toFixed(2)
     };
 });
 
@@ -277,7 +290,7 @@ function drawStar(container, star, lit, settled){
         } else if(lit){
             // clicked onto the field but not yet part of a resolved formation:
             // erratic per-star jitter
-            body.style.animation = `${jp.jitterName} ${jp.jdur}s ease-in-out ${jp.jdelay}s infinite`;
+            body.style.animation = `${jp.jitterName} ${jp.jdur}s steps(1, end) ${jp.jdelay}s infinite`;
         } else {
             // not yet clicked: perfectly static
             body.style.animation = "none";
