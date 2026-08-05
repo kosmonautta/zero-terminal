@@ -969,6 +969,462 @@
 
     </main>
 
-    <script src="script.js"></script>
+    <script>
+        // ============================================================
+        //  BANNING AND KINDLING — terminal logic
+        // ============================================================
+
+        const CATEGORIES = ["HARD LOCK", "RED SHIFT", "LOST TRACK", "SHADOWBOX"];
+
+        const MATRIX = {
+            1: {
+                "HARD LOCK": {
+                    bale: { name: "FALLOW", effect: "Choose an area nearby. Everyone inside takes a HEAVY FRM Hit and is hurled to just outside its edge.",
+                        cost: "HAZE FRM Hit to you, or knocked prone — the Lock doesn't spare the hand that pulled it." },
+                    dread: { name: "BLACK FALLOW", effect: "The chosen area is erased outright; everyone inside takes a HYPER FRM Hit instead.",
+                        cost: "HEAVY FRM Hit to you, no save." }
+                },
+                "RED SHIFT": {
+                    bale: { name: "KERN", effect: "Blink to a point you can see, no reaction provoked. Everything nearby is dragged toward it; anyone caught in the pull takes a HEAVY FRM Hit.",
+                        cost: "HAZE NRV Hit — the pull spends your next reaction." },
+                    dread: { name: "BLACK KERN", effect: "Everything nearby collapses toward the point, HYPER FRM Hit on collision.",
+                        cost: "HEAVY NRV Hit — you're at the center same as everyone." }
+                },
+                "LOST TRACK": {
+                    bale: { name: "DREAR", effect: "A pressure wave rolls out from you — every enemy nearby takes a HAZE NRV Hit and is pushed directly away, no traceable source.",
+                        cost: "HAZE NRV Hit to you — you don't remember casting it until someone tells you." },
+                    dread: { name: "DEEP DREAR", effect: "HEAVY NRV Hit, everyone thrown well clear of you, still no visible cause.",
+                        cost: "HEAVY NRV Hit — you lose the whole exchange, not just the cast." }
+                },
+                "SHADOWBOX": {
+                    bale: { name: "FEN", effect: "Split off a shade double of a target in sight. Anyone who strikes it lands the Hit — HAZE FRM — on the real target instead, wherever they are.",
+                        cost: "HAZE FRM Hit to you when the binding is cut, by time or by force." },
+                    dread: { name: "BLACK FEN", effect: "The shade holds for the rest of the scene; anyone can strike it to land a HEAVY FRM Hit on the real target from anywhere.",
+                        cost: "HEAVY FRM Hit to you if it's ever destroyed early." }
+                }
+            },
+            2: {
+                "HARD LOCK": {
+                    bale: { name: "BOLT", effect: "Accelerate your own mass, close the distance to any visible enemy instantly, and slam into them for a HEAVY FRM Hit; they're hurled clear.",
+                        cost: "HAZE FRM Hit to you on landing — you're still the thing that just got fired." },
+                    dread: { name: "DEAD BOLT", effect: "Ram every visible enemy in sequence, one HEAVY FRM Hit each, before the round ends.",
+                        cost: "HEAVY FRM Hit to you once the sequence stops." }
+                },
+                "RED SHIFT": {
+                    bale: { name: "WOLD", effect: "Swap positions with any creature in sight, any distance, no reaction provoked either way.",
+                        cost: "HAZE NRV Hit — you're the one who has to reassemble first." },
+                    dread: { name: "DEAD WOLD", effect: "Place every creature anywhere you choose within sight, no reactions provoked anywhere.",
+                        cost: "HEAVY NRV Hit — your own landing spot isn't yours to pick." }
+                },
+                "LOST TRACK": {
+                    bale: { name: "FORLORN", effect: "Remove a target entirely until the start of their next turn, then place them anywhere you choose.",
+                        cost: "HAZE NRV Hit — allies can't reach you for aid during that span." },
+                    dread: { name: "LAST FORLORN", effect: "Every enemy banished until the end of the scene, then redistributed by the Static.",
+                        cost: "HEAVY NRV Hit — you're off the grid the same span." }
+                },
+                "SHADOWBOX": {
+                    bale: { name: "GLOOM", effect: "Split off a shade double where you stand; you may immediately move anywhere nearby. Attacks against \u201cyou\u201d this exchange strike the double.",
+                        cost: "HAZE NRV Hit if the double is destroyed before your next turn." },
+                    dread: { name: "TOTAL GLOOM", effect: "Every ally gets a shade for the round; the field fills with echoes enemies can't sort from real.",
+                        cost: "HEAVY NRV Hit to you if your own double falls." }
+                }
+            },
+            3: {
+                "HARD LOCK": {
+                    bale: { name: "WANE", effect: "Reach into a target's near future and detonate it early — their next HAZE Hit lands as HEAVY, or their next HEAVY Hit lands as HYPER.",
+                        cost: "The same escalation is loaded on you — your next Hit taken escalates one step, whenever it lands." },
+                    dread: { name: "FINAL WANE", effect: "Every Hit, from anyone, escalates one tier for the rest of the scene. Once this scene, rewrite a Hit that already landed a tier worse.",
+                        cost: "The escalation applies to you too, permanently, and the rewrite can be turned back on a Hit you already took." }
+                },
+                "RED SHIFT": {
+                    bale: { name: "WITHER", effect: "Blink to touch or target a creature, no reaction provoked, then mark them: every Hit they take before your next turn is increased one tier.",
+                        cost: "HAZE NRV Hit to you the instant the mark lands." },
+                    dread: { name: "TRUE WITHER", effect: "Every Hit inflicted for the rest of the scene is upgraded one tier.",
+                        cost: "HEAVY NRV Hit, permanently in effect on you too." }
+                },
+                "LOST TRACK": {
+                    bale: { name: "ORDEAL", effect: "Force BRN, NRV, and FRM tests on a target. Each failure is a HAZE Hit to the matching Attribute.",
+                        cost: "You take the same three tests, hidden from you until they resolve." },
+                    dread: { name: "FINAL ORDEAL", effect: "Every enemy takes all three HAZE tests before further tests can escalate them.",
+                        cost: "You take them too, unwarned." }
+                },
+                "SHADOWBOX": {
+                    bale: { name: "GRIM", effect: "Bind a target to a shade double only you can see and strike. Your next Hit against the double lands on them instead, undefended.",
+                        cost: "HAZE Hit (BRN) — your next attack roll against anyone else suffers." },
+                    dread: { name: "GRIM HOUR", effect: "The bound double takes every Hit you land for the rest of the scene, all undefended.",
+                        cost: "The link is permanent this fight — whatever finally destroys the double reaches back to you too, full severity." }
+                }
+            },
+            4: {
+                "HARD LOCK": {
+                    bale: { name: "SUNDER", effect: "A line cuts through everyone standing between two points you choose. Everything it crosses takes a HEAVY Hit (Attribute of your choice) and is knocked aside.",
+                        cost: "HAZE Hit, same Attribute, to you." },
+                    dread: { name: "GREAT SUNDER", effect: "The fault becomes a wall for the rest of the scene; crossing it costs a HYPER Hit.",
+                        cost: "You don't choose which side you're on when it closes." }
+                },
+                "RED SHIFT": {
+                    bale: { name: "RIVEN", effect: "Open two linked fractures that stay open for the rest of the scene. Anything entering one exits the other at full speed, no reaction provoked.",
+                        cost: "HAZE FRM Hit to you the first time each scene it's used." },
+                    dread: { name: "OPEN RIVEN", effect: "Anyone crossing the breach can be redirected anywhere visible, any time, for the rest of the scene.",
+                        cost: "HEAVY FRM Hit if the Static redirects you through it instead." }
+                },
+                "LOST TRACK": {
+                    bale: { name: "CINDER", effect: "Detonate every anomaly or hazard clinging near a target — everyone close to them takes a HEAVY FRM Hit, no identifiable epicenter.",
+                        cost: "HAZE FRM Hit to you, untraceable for the rest of the scene." },
+                    dread: { name: "CINDER RAIN", effect: "The area around every combatant becomes hazardous for the rest of the scene; ending a turn anywhere costs a HAZE FRM Hit.",
+                        cost: "Including wherever you're standing, always." }
+                },
+                "SHADOWBOX": {
+                    bale: { name: "BLIGHT", effect: "Seed shade motes on everyone you choose. Your next offensive working relays through their mote onto them too.",
+                        cost: "You're wearing a mote too — there's a real chance your own next casting relays back onto you." },
+                    dread: { name: "DEEP BLIGHT", effect: "Every casting for the rest of the scene relays through a mote onto another bound target automatically.",
+                        cost: "Permanent exposure — your own mote is always live too." }
+                }
+            }
+        };
+
+        const noiseChars = [
+            "░", "▒", "▓", "█", "▀", "▄", "▌", "▐", "▖", "▗", "▘", "▝", "▚", "▞",
+            "■", "□", "▪", "▫", "◆", "◇", "▲", "△", "▼", "▽", "●", "○",
+            "─", "│", "┼", "┤", "├", "┬", "┴", "╬", "╫", "╪",
+            "⠿", "⠶", "⠛", "⠹", "⠭", "⠽", "⠾", "⠷",
+            "#", "%", "&", "*", "/", "\\", "~", "^"
+        ];
+        const emberChars = ["△", "▲", "♦", "✦", "✧", "*", "'", "\"", "~", "·", "°", "∴", "×", "+"];
+
+        let baleCards = [];
+        let dreadCards = [];
+        let cardCounter = 0;
+        let dreadCounter = 0;
+        let kindlingId = null;
+
+        // ===== persistence =====
+
+        function loadCards(key) {
+            try {
+                const raw = window.localStorage.getItem(key);
+                return raw ? JSON.parse(raw) : [];
+            } catch (err) {
+                console.error("Failed to load " + key, err);
+                return [];
+            }
+        }
+
+        function saveCards(key, cards) {
+            try {
+                window.localStorage.setItem(key, JSON.stringify(cards));
+            } catch (err) {
+                console.error("Failed to save " + key, err);
+            }
+        }
+
+        function saveBales() { saveCards("baleCards", baleCards); }
+
+        function saveDreads() { saveCards("dreadCards", dreadCards); }
+
+        // ===== log =====
+
+        function addLog(text) {
+            const panel = document.getElementById("logPanel");
+            const empty = panel.querySelector(".log-empty");
+            if (empty) empty.remove();
+            const entry = document.createElement("div");
+            entry.className = "log-entry";
+            entry.innerHTML = `<span class="le-tag">&gt;&gt;</span>${text}`;
+            panel.prepend(entry);
+        }
+
+        // ===== grid rendering =====
+
+        function renderGrids() {
+            const baleGrid = document.getElementById("baleGrid");
+            const dreadGrid = document.getElementById("dreadGrid");
+
+            if (baleCards.length === 0) {
+                baleGrid.innerHTML = '<div class="grid-empty">NO BALES ON FILE — BAN ONE FROM THE OSSUARY</div>';
+            } else {
+                baleGrid.innerHTML = baleCards.map(c => renderBaleCardHTML(c)).join("");
+            }
+
+            if (dreadCards.length === 0) {
+                dreadGrid.innerHTML = '<div class="grid-empty">NO DREADS KINDLED YET</div>';
+            } else {
+                dreadGrid.innerHTML = dreadCards.map(c => renderDreadCardHTML(c)).join("");
+            }
+
+            bindCardEvents();
+        }
+
+        function renderBaleCardHTML(card) {
+            const fixedClass = card.fixed ? " fixed" : "";
+            return `
+                <div class="op-card bale-card${fixedClass}" data-id="${card.id}">
+                    <div class="oc-coord">${card.row} / ${card.category}</div>
+                    <div class="oc-name">${card.name}</div>
+                    <div class="oc-field"><span class="oc-label">Effect</span>${card.effect}</div>
+                    <div class="oc-field"><span class="oc-label">Cost</span>${card.cost}</div>
+                    <div class="oc-controls">
+                        ${card.fixed
+                            ? `<button class="btn small" data-act="kindle" data-id="${card.id}">KINDLE</button>`
+                            : `<button class="btn small" data-act="fix-bale" data-id="${card.id}">FIX</button>`}
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderDreadCardHTML(card) {
+            return `
+                <div class="op-card dread-card" data-id="${card.id}">
+                    <div class="oc-coord">${card.row} / ${card.category}</div>
+                    <div class="oc-name">${card.name}</div>
+                    <div class="oc-field"><span class="oc-label">Effect</span>${card.effect}</div>
+                    <div class="oc-field"><span class="oc-label">Cost</span>${card.cost}</div>
+                    <div class="oc-controls">
+                        <button class="btn small" data-act="fix-dread" data-id="${card.id}">FIX DREAD</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function bindCardEvents() {
+            document.querySelectorAll('[data-act="fix-bale"]').forEach(btn => {
+                btn.addEventListener("click", () => fixBale(btn.dataset.id));
+            });
+            document.querySelectorAll('[data-act="kindle"]').forEach(btn => {
+                btn.addEventListener("click", () => startKindle(btn.dataset.id));
+            });
+            document.querySelectorAll('[data-act="fix-dread"]').forEach(btn => {
+                btn.addEventListener("click", () => fixDread(btn.dataset.id));
+            });
+        }
+
+        // ===== FIX Bale =====
+
+        function fixBale(id) {
+            const card = baleCards.find(c => c.id === id);
+            if (!card || card.fixed) return;
+            card.fixed = true;
+            saveBales();
+            addLog(`BALE FIXED — ${card.name} SPENT. AVAILABLE TO KINDLE.`);
+            renderGrids();
+        }
+
+        // ===== FIX Dread =====
+
+        function fixDread(id) {
+            const card = dreadCards.find(c => c.id === id);
+            if (!card) return;
+            dreadCards = dreadCards.filter(c => c.id !== id);
+            saveDreads();
+            addLog(`DREAD FIXED — ${card.name} RESOLVED. COST PAID IN FULL. NOTHING REMAINS.`);
+            renderGrids();
+        }
+
+        // ===== noise helpers (for pyre) =====
+
+        function noiseGlyph(pool) {
+            return pool[Math.floor(Math.random() * pool.length)];
+        }
+
+        function noiseLine(len, pool) {
+            let out = "";
+            for (let i = 0; i < len; i++) {
+                const opacity = (0.2 + Math.random() * 0.8).toFixed(2);
+                out += `<span style="opacity:${opacity}">${noiseGlyph(pool)}</span>`;
+            }
+            return out;
+        }
+
+        function noiseBlock(rows, cols, pool) {
+            let html = "";
+            for (let r = 0; r < rows; r++) {
+                html += `<div class="noise-row">${noiseLine(cols, pool)}</div>`;
+            }
+            return html;
+        }
+
+        // ===== KINDLE — the pyre with milder shake, more noise, and dynamic column sizing =====
+
+        function startKindle(id) {
+            if (kindlingId) return;
+            const card = baleCards.find(c => c.id === id);
+            if (!card || !card.fixed) return;
+            kindlingId = id;
+
+            const pyre = document.getElementById("pyreField");
+            const pyreWrap = document.getElementById("pyreWrap");
+            pyreWrap.classList.add("active");
+            pyre.classList.add("burning");
+
+            // Calculate dynamic columns to fill the container width neatly
+            const charWidth = 7.2;
+            const containerWidth = pyre.clientWidth - 32;
+            const cols = Math.max(20, Math.floor(containerWidth / charWidth));
+            const rows = Math.max(12, Math.floor(260 / 16));
+
+            pyre.innerHTML = noiseBlock(rows, cols, emberChars);
+
+            document.getElementById("pyreStatus").textContent = `STATUS: KINDLING ${card.name} — DRIVING PAST THRESHOLD`;
+            addLog(`KINDLING INITIATED — ${card.name} DRIVEN INTO OVERDRIVE.`);
+
+            let tick = 0;
+            const flicker = setInterval(() => {
+                tick++;
+                const pool = tick % 4 === 0 ? emberChars : noiseChars;
+                pyre.innerHTML = noiseBlock(rows, cols, pool);
+                pyre.style.filter = `brightness(${0.5 + Math.random() * 1.1}) contrast(${0.8 + Math.random() * 0.8})`;
+                if (tick % 3 === 0) {
+                    pyre.style.boxShadow = `inset 0 0 ${20 + Math.random() * 60}px rgba(255,255,255,${0.05 + Math.random() * 0.15})`;
+                }
+            }, 35);
+
+            setTimeout(() => {
+                clearInterval(flicker);
+                pyre.style.filter = "none";
+                pyre.style.boxShadow = "none";
+
+                const pair = MATRIX[card.row][card.category];
+                dreadCounter++;
+                const dread = {
+                    id: "dread" + Date.now() + "_" + dreadCounter,
+                    row: card.row,
+                    category: card.category,
+                    name: pair.dread.name,
+                    effect: pair.dread.effect,
+                    cost: pair.dread.cost,
+                    fromBaleId: card.id
+                };
+                dreadCards.push(dread);
+                saveDreads();
+
+                baleCards = baleCards.filter(c => c.id !== id);
+                saveBales();
+
+                pyre.classList.remove("burning");
+                pyre.classList.add("resolved");
+                pyre.innerHTML = renderDreadCardHTML(dread);
+                document.getElementById("pyreStatus").textContent = `STATUS: KINDLED — ${dread.name} BURNED CLEAR`;
+                addLog(`DREAD KINDLED — ${dread.name} (${dread.row} / ${dread.category}). BALE SPENT.`);
+
+                kindlingId = null;
+                renderGrids();
+
+                setTimeout(() => {
+                    pyreWrap.classList.remove("active");
+                    pyre.classList.remove("resolved");
+                    pyre.innerHTML = "";
+                }, 2400);
+            }, 1400);
+        }
+
+        // ===== cell noise updater for matrix =====
+
+        function updateCellNoise() {
+            const cells = document.querySelectorAll('.dread-cell .cell-noise');
+            cells.forEach(el => {
+                const chars = noiseChars;
+                let text = '';
+                for (let i = 0; i < 40; i++) {
+                    text += chars[Math.floor(Math.random() * chars.length)];
+                    if (i % 8 === 7) text += '\n';
+                }
+                el.textContent = text;
+            });
+        }
+
+        // ===== BANNING (2d4 roll) =====
+
+        function performBan() {
+            if (kindlingId) return;
+            const banBtn = document.getElementById("banBtn");
+            banBtn.disabled = true;
+            document.getElementById("banStatus").textContent = "STATUS: ROLLING...";
+
+            document.querySelectorAll('#matrixBody td, #matrixBody th, .overdrive-grid thead th').forEach(el => {
+                el.classList.remove('highlighted');
+            });
+
+            const wrapper = document.getElementById('matrixWrapper');
+            wrapper.classList.add('awaiting-roll');
+
+            const noiseInterval = setInterval(updateCellNoise, 80);
+
+            let rolls = 0;
+            const maxRolls = 8 + Math.floor(Math.random() * 6);
+            let interval = setInterval(() => {
+                const randRow = 1 + Math.floor(Math.random() * 4);
+                const randCat = CATEGORIES[Math.floor(Math.random() * CATEGORIES.length)];
+                document.querySelectorAll('#matrixBody td, #matrixBody th, .overdrive-grid thead th').forEach(el => el.classList.remove('highlighted'));
+                const cell = document.getElementById(`cell-${randRow}-${randCat}`);
+                if (cell) cell.classList.add('highlighted');
+                document.getElementById(`row-${randRow}`).querySelector('th').classList.add('highlighted');
+                document.getElementById(`th-${randCat}`).classList.add('highlighted');
+
+                rolls++;
+                if (rolls >= maxRolls) {
+                    clearInterval(interval);
+                    clearInterval(noiseInterval);
+                    const finalRow = 1 + Math.floor(Math.random() * 4);
+                    const finalCat = CATEGORIES[Math.floor(Math.random() * CATEGORIES.length)];
+
+                    document.querySelectorAll('#matrixBody td, #matrixBody th, .overdrive-grid thead th').forEach(el => {
+                        el.classList.remove('highlighted');
+                    });
+                    wrapper.classList.remove('awaiting-roll');
+
+                    const finalCell = document.getElementById(`cell-${finalRow}-${finalCat}`);
+                    if (finalCell) finalCell.classList.add('highlighted');
+                    document.getElementById(`row-${finalRow}`).querySelector('th').classList.add('highlighted');
+                    document.getElementById(`th-${finalCat}`).classList.add('highlighted');
+
+                    const pair = MATRIX[finalRow][finalCat];
+                    cardCounter++;
+                    const bale = {
+                        id: "bale" + Date.now() + "_" + cardCounter,
+                        row: finalRow,
+                        category: finalCat,
+                        name: pair.bale.name,
+                        effect: pair.bale.effect,
+                        cost: pair.bale.cost,
+                        fixed: false
+                    };
+                    baleCards.push(bale);
+                    saveBales();
+
+                    addLog(`BALE BANNED — ${bale.name} (${bale.row} / ${bale.category}).`);
+                    document.getElementById("banStatus").textContent = `STATUS: BALE BANNED — ${bale.name}`;
+
+                    const display = document.getElementById("chosenBaleDisplay");
+                    display.innerHTML = `<div class="op-card bale-card just-banned" style="max-width:400px;margin:0 auto;border-color:var(--fg);">
+                            <div class="oc-coord">${bale.row} / ${bale.category}</div>
+                            <div class="oc-name">${bale.name}</div>
+                            <div class="oc-field"><span class="oc-label">Effect</span>${bale.effect}</div>
+                            <div class="oc-field"><span class="oc-label">Cost</span>${bale.cost}</div>
+                        </div>`;
+                    setTimeout(() => { display.innerHTML = ''; }, 4000);
+
+                    banBtn.disabled = false;
+                    renderGrids();
+                }
+            }, 120 + Math.random() * 80);
+        }
+
+        // ===== INIT =====
+
+        document.addEventListener("DOMContentLoaded", () => {
+            baleCards = loadCards("baleCards");
+            dreadCards = loadCards("dreadCards");
+            renderGrids();
+
+            document.getElementById("banBtn").addEventListener("click", performBan);
+
+            document.getElementById('matrixWrapper').classList.add('awaiting-roll');
+            updateCellNoise();
+
+            console.log("BANNING AND KINDLING TERMINAL ONLINE");
+            console.log("ROLL 2D4 AGAINST THE MATRIX. FEED THE PYRE.");
+        });
+    </script>
+
 </body>
 </html>
