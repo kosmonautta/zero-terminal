@@ -125,6 +125,9 @@ let cardCounter = 0;
 let flareCounter = 0;
 let cutting = false;
 let kindlingId = null;
+let fieldResolved = false;
+let ambientTimer = null;
+const CUT_THRESHOLD = 10; // blade gap %, at or below which the signal cuts
 
 // ===== persistence =====
 
@@ -192,22 +195,67 @@ function updateStats(){
     document.getElementById("statFlares").textContent = flareCards.length;
 }
 
-// ===== FINETUNE — cut a Yoke out of the noise =====
+// ===== ambient noise — the field is never quiet =====
 
-function startFinetune(){
-    if(cutting) return;
+function startAmbientNoise(){
+    if(ambientTimer) return;
+    ambientTimer = setInterval(() => {
+        if(fieldResolved || cutting) return;
+        const layer = document.getElementById("noiseLayer");
+        if(layer) layer.innerHTML = noiseBlock(9, 34, noiseChars);
+    }, 130);
+}
+
+// ===== blade pair — drag them together to cut the signal =====
+
+function updateBladeVisual(){
+    if(fieldResolved || cutting) return;
+    const leftEl = document.getElementById("bladeLeft");
+    const rightEl = document.getElementById("bladeRight");
+    const left = Number(leftEl.value);
+    const right = Number(rightEl.value);
+
+    // keep the blades from crossing outright
+    if(right < left + 2){
+        rightEl.value = Math.min(100, left + 2);
+    }
+
+    const l = Number(leftEl.value);
+    const r = Number(rightEl.value);
+    document.getElementById("bladeLineLeft").style.left = l + "%";
+    document.getElementById("bladeLineRight").style.left = r + "%";
+    const gap = r - l;
+
+    document.getElementById("signalStatus").textContent = gap <= CUT_THRESHOLD
+        ? "STATUS: BLADES CLOSING — SIGNAL ABOUT TO CUT"
+        : `STATUS: DRIFTING — GAP ${Math.max(gap, 0).toFixed(0)}%`;
+
+    if(gap <= CUT_THRESHOLD){
+        resolveCut();
+    }
+}
+
+// ===== resolve — cut a Yoke out of the field =====
+
+function resolveCut(){
+    if(cutting || fieldResolved) return;
     cutting = true;
     document.getElementById("finetuneBtn").disabled = true;
-    const field = document.getElementById("signalField");
-    field.classList.remove("resolved");
-    field.classList.add("live");
-    field.innerHTML = noiseBlock(7, 30, noiseChars);
+    document.getElementById("bladeLeft").disabled = true;
+    document.getElementById("bladeRight").disabled = true;
     document.getElementById("signalStatus").textContent = "STATUS: CUTTING SIGNAL — ROW / CATEGORY UNRESOLVED";
     addLog("FINETUNING INITIATED — FORCING ROW AND CATEGORY AGAINST THE STATIC.");
 
+    const field = document.getElementById("signalField");
+    field.classList.add("live");
+
+    // one last burst of noise, faster, before it commits
+    let burst = 0;
     const flicker = setInterval(() => {
-        field.innerHTML = noiseBlock(7, 30, noiseChars);
-    }, 60);
+        burst++;
+        const layer = document.getElementById("noiseLayer");
+        if(layer) layer.innerHTML = noiseBlock(9, 34, noiseChars);
+    }, 40);
 
     setTimeout(() => {
         clearInterval(flicker);
@@ -227,16 +275,38 @@ function startFinetune(){
         yokeCards.push(card);
         saveYokes();
 
+        fieldResolved = true;
         field.classList.remove("live");
         field.classList.add("resolved");
-        field.innerHTML = renderYokeCardHTML(card, true);
+        document.getElementById("noiseLayer").innerHTML = "";
+        document.getElementById("bladeLineLeft").style.display = "none";
+        document.getElementById("bladeLineRight").style.display = "none";
+        document.getElementById("resolvedLayer").innerHTML = renderYokeCardHTML(card, true);
         document.getElementById("signalStatus").textContent = `STATUS: SIGNAL CUT — ${card.row} / ${card.category}`;
+        document.getElementById("resetSignalBtn").style.display = "inline-block";
         addLog(`YOKE NICKED — ${card.name} (${card.row} / ${card.category}).`);
 
         cutting = false;
-        document.getElementById("finetuneBtn").disabled = false;
         renderGrids();
-    }, 1050);
+    }, 550);
+}
+
+function resetSignalField(){
+    fieldResolved = false;
+    cutting = false;
+    const field = document.getElementById("signalField");
+    field.classList.remove("resolved", "live");
+    document.getElementById("resolvedLayer").innerHTML = "";
+    document.getElementById("bladeLineLeft").style.display = "block";
+    document.getElementById("bladeLineRight").style.display = "block";
+    document.getElementById("bladeLeft").disabled = false;
+    document.getElementById("bladeRight").disabled = false;
+    document.getElementById("bladeLeft").value = 8;
+    document.getElementById("bladeRight").value = 92;
+    document.getElementById("finetuneBtn").disabled = false;
+    document.getElementById("resetSignalBtn").style.display = "none";
+    document.getElementById("signalStatus").textContent = "STATUS: DRIFTING — AWAITING BLADES";
+    updateBladeVisual();
 }
 
 // ===== card markup =====
@@ -396,7 +466,14 @@ document.addEventListener("DOMContentLoaded", () => {
     yokeCards = loadCards(YOKE_KEY);
     flareCards = loadCards(FLARE_KEY);
     renderGrids();
-    document.getElementById("finetuneBtn").addEventListener("click", startFinetune);
+
+    startAmbientNoise();
+    document.getElementById("bladeLeft").addEventListener("input", updateBladeVisual);
+    document.getElementById("bladeRight").addEventListener("input", updateBladeVisual);
+    updateBladeVisual();
+
+    document.getElementById("finetuneBtn").addEventListener("click", resolveCut);
+    document.getElementById("resetSignalBtn").addEventListener("click", resetSignalField);
 });
 
 console.log("FINETUNING AND KINDLING TERMINAL ONLINE");
