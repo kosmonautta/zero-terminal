@@ -165,8 +165,8 @@ function stopJitter(code){
 function startJitter(code, body){
     stopJitter(code);
     function hop(){
-        const dx = randRange(-4.8, 4.8).toFixed(2);
-        const dy = randRange(-4.8, 4.8).toFixed(2);
+        const dx = randRange(-3, 3).toFixed(2);
+        const dy = randRange(-3, 3).toFixed(2);
         const op = randRange(0.45, 1).toFixed(2);
         body.style.transform = `translate(${dx}px,${dy}px)`;
         body.style.opacity = op;
@@ -329,6 +329,52 @@ function renderCatalog(){
     root.appendChild(grid);
 }
 
+// ===== RENDERING: CHARTED LOG =====
+
+// Each charted card remembers the exact set of afterimage names that
+// triggered it (`requires`), not just a lookup into CONSTELLATIONS — that
+// way Constellation Zero, which has no fixed requirement, can still be
+// re-projected onto the field from the log using whatever set charted it
+// the first time.
+function projectCharted(card){
+    if(!card || !Array.isArray(card.requires)) return;
+    selected = [...card.requires];
+    update();
+}
+
+function renderChartedLog(){
+    const root = document.getElementById("chartedLog");
+    if(!root) return;
+    const cards = loadCharted();
+
+    if(cards.length === 0){
+        root.innerHTML = '<div class="log-empty">NO FORMATIONS CHARTED YET</div>';
+        return;
+    }
+
+    const currentSet = new Set(selected);
+    const grid = document.createElement("div");
+    grid.className = "charted-grid";
+
+    cards.forEach(card => {
+        const isActive = Array.isArray(card.requires) &&
+            card.requires.length === currentSet.size &&
+            card.requires.every(name => currentSet.has(name));
+
+        const el = document.createElement("div");
+        el.className = "const-card" + (isActive ? " active" : "");
+        el.innerHTML = `
+            <div class="cc-name">${card.name}</div>
+            <div class="cc-mech">${card.mechanicName}</div>
+        `;
+        el.addEventListener("click", () => projectCharted(card));
+        grid.appendChild(el);
+    });
+
+    root.innerHTML = "";
+    root.appendChild(grid);
+}
+
 // ===== RESULT PANEL =====
 
 function revealResult(text){
@@ -359,7 +405,14 @@ function updateResultPanel(){
 
         const cards = loadCharted();
         if(!cards.find(c => c.name === match.name)){
-            cards.push({ name: match.name, mechanicName: match.mechanicName });
+            cards.push({
+                name: match.name,
+                mechanicName: match.mechanicName,
+                mechanicText: match.mechanicText,
+                // Named formations keep their fixed requirement; Constellation
+                // Zero has none, so it keeps whatever set charted it here.
+                requires: Array.isArray(match.requires) ? [...match.requires] : [...selected]
+            });
             saveCharted(cards);
         }
     } else {
@@ -375,8 +428,9 @@ function update(){
     renderField();
     renderCatalog();
     document.getElementById("statPoints").textContent = selected.length;
-    document.getElementById("statCharted").textContent = loadCharted().length + " / " + TOTAL_FORMATIONS;
     updateResultPanel();
+    document.getElementById("statCharted").textContent = loadCharted().length + " / " + TOTAL_FORMATIONS;
+    renderChartedLog();
 }
 
 // ===== MANUAL INPUT =====
