@@ -1,480 +1,1441 @@
-/*
-
-FINETUNING AND KINDLING — NICKING / KINDLING TERMINAL
-
-MATRIX mirrors the Doomer dossier: four rows (1-4) crossed with
-four categories (HARD LOCK, RED SHIFT, LOST TRACK, SHADOWBOX).
-Each cell holds a Yoke (name, effect, cost) and the Flare it
-Kindles into (name, effect, cost) — the pairing is fixed the
-moment a Yoke is Nicked, same as the printed page.
-
-FINETUNE rolls 1d4 for Row and 1d4 for Category, but the roll
-itself is never shown as a bare number — the terminal reads it
-back as noise collapsing across a signal field until one Yoke
-cuts through clean. That resolved card is the only thing that
-ever appears; there is no intermediate gallery of near-misses.
-
-Cards persist to localStorage under YOKE_KEY / FLARE_KEY so
-operator-registry.js can read an operator's held Yokes and Flares
-independently of this page.
-
-Lifecycle:
-  Nicked   -> FINETUNE cuts a Yoke card. Stored in YOKE_KEY.
-  Fixed    -> "FIX" flips the Yoke card to its spent (black) face.
-              Still in YOKE_KEY, still occupies its slot.
-  Kindled  -> "KINDLE" on a Fixed Yoke burns it through the pyre
-              interface. The Yoke card is removed from YOKE_KEY;
-              a Flare card is added to FLARE_KEY.
-  Fixed    -> "FIX" on a Flare card pays its cost and the card is
-              removed from FLARE_KEY outright. Nothing is left.
-
-*/
-
-const YOKE_KEY = "yokeCards";
-const FLARE_KEY = "flareCards";
-
-const CATEGORIES = ["HARD LOCK", "RED SHIFT", "LOST TRACK", "SHADOWBOX"];
-
-const MATRIX = {
-    1: {
-        "HARD LOCK": {
-            yoke: { name: "FALLOW", effect: "Choose an area nearby. Everyone inside takes a HEAVY FRM Hit and is hurled to just outside its edge.", cost: "HAZE FRM Hit to you, or knocked prone — the Lock doesn't spare the hand that pulled it." },
-            flare: { name: "BLACK FALLOW", effect: "The chosen area is erased outright; everyone inside takes a HYPER FRM Hit instead.", cost: "HEAVY FRM Hit to you, no save." }
-        },
-        "RED SHIFT": {
-            yoke: { name: "KERN", effect: "Blink to a point you can see, no reaction provoked. Everything nearby is dragged toward it; anyone caught in the pull takes a HEAVY FRM Hit.", cost: "HAZE NRV Hit — the pull spends your next reaction." },
-            flare: { name: "BLACK KERN", effect: "Everything nearby collapses toward the point, HYPER FRM Hit on collision.", cost: "HEAVY NRV Hit — you're at the center same as everyone." }
-        },
-        "LOST TRACK": {
-            yoke: { name: "DREAR", effect: "A pressure wave rolls out from you — every enemy nearby takes a HAZE NRV Hit and is pushed directly away, no traceable source.", cost: "HAZE NRV Hit to you — you don't remember casting it until someone tells you." },
-            flare: { name: "DEEP DREAR", effect: "HEAVY NRV Hit, everyone thrown well clear of you, still no visible cause.", cost: "HEAVY NRV Hit — you lose the whole exchange, not just the cast." }
-        },
-        "SHADOWBOX": {
-            yoke: { name: "FEN", effect: "Split off a shade double of a target in sight. Anyone who strikes it lands the Hit — HAZE FRM — on the real target instead, wherever they are.", cost: "HAZE FRM Hit to you when the binding is cut, by time or by force." },
-            flare: { name: "BLACK FEN", effect: "The shade holds for the rest of the scene; anyone can strike it to land a HEAVY FRM Hit on the real target from anywhere.", cost: "HEAVY FRM Hit to you if it's ever destroyed early." }
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BANNING AND KINDLING</title>
+    <style>
+        :root {
+            --bg: #000;
+            --fg: #fff;
+            --dim: rgba(255,255,255,0.55);
+            --line: rgba(255,255,255,0.22);
         }
-    },
-    2: {
-        "HARD LOCK": {
-            yoke: { name: "BOLT", effect: "Accelerate your own mass, close the distance to any visible enemy instantly, and slam into them for a HEAVY FRM Hit; they're hurled clear.", cost: "HAZE FRM Hit to you on landing — you're still the thing that just got fired." },
-            flare: { name: "DEAD BOLT", effect: "Ram every visible enemy in sequence, one HEAVY FRM Hit each, before the round ends.", cost: "HEAVY FRM Hit to you once the sequence stops." }
-        },
-        "RED SHIFT": {
-            yoke: { name: "WOLD", effect: "Swap positions with any creature in sight, any distance, no reaction provoked either way.", cost: "HAZE NRV Hit — you're the one who has to reassemble first." },
-            flare: { name: "DEAD WOLD", effect: "Place every creature anywhere you choose within sight, no reactions provoked anywhere.", cost: "HEAVY NRV Hit — your own landing spot isn't yours to pick." }
-        },
-        "LOST TRACK": {
-            yoke: { name: "FORLORN", effect: "Remove a target entirely until the start of their next turn, then place them anywhere you choose.", cost: "HAZE NRV Hit — allies can't reach you for aid during that span." },
-            flare: { name: "LAST FORLORN", effect: "Every enemy banished until the end of the scene, then redistributed by the Static.", cost: "HEAVY NRV Hit — you're off the grid the same span." }
-        },
-        "SHADOWBOX": {
-            yoke: { name: "GLOOM", effect: "Split off a shade double where you stand; you may immediately move anywhere nearby. Attacks against \u201cyou\u201d this exchange strike the double.", cost: "HAZE NRV Hit if the double is destroyed before your next turn." },
-            flare: { name: "TOTAL GLOOM", effect: "Every ally gets a shade for the round; the field fills with echoes enemies can't sort from real.", cost: "HEAVY NRV Hit to you if your own double falls." }
+
+        * {
+            box-sizing: border-box;
         }
-    },
-    3: {
-        "HARD LOCK": {
-            yoke: { name: "WANE", effect: "Reach into a target's near future and detonate it early — their next HAZE Hit lands as HEAVY, or their next HEAVY Hit lands as HYPER.", cost: "The same escalation is loaded on you — your next Hit taken escalates one step, whenever it lands." },
-            flare: { name: "FINAL WANE", effect: "Every Hit, from anyone, escalates one tier for the rest of the scene. Once this scene, rewrite a Hit that already landed a tier worse.", cost: "The escalation applies to you too, permanently, and the rewrite can be turned back on a Hit you already took." }
-        },
-        "RED SHIFT": {
-            yoke: { name: "WITHER", effect: "Blink to touch or target a creature, no reaction provoked, then mark them: every Hit they take before your next turn is increased one tier.", cost: "HAZE NRV Hit to you the instant the mark lands." },
-            flare: { name: "TRUE WITHER", effect: "Every Hit inflicted for the rest of the scene is upgraded one tier.", cost: "HEAVY NRV Hit, permanently in effect on you too." }
-        },
-        "LOST TRACK": {
-            yoke: { name: "ORDEAL", effect: "Force BRN, NRV, and FRM tests on a target. Each failure is a HAZE Hit to the matching Attribute.", cost: "You take the same three tests, hidden from you until they resolve." },
-            flare: { name: "FINAL ORDEAL", effect: "Every enemy takes all three HAZE tests before further tests can escalate them.", cost: "You take them too, unwarned." }
-        },
-        "SHADOWBOX": {
-            yoke: { name: "GRIM", effect: "Bind a target to a shade double only you can see and strike. Your next Hit against the double lands on them instead, undefended.", cost: "HAZE Hit (BRN) — your next attack roll against anyone else suffers." },
-            flare: { name: "GRIM HOUR", effect: "The bound double takes every Hit you land for the rest of the scene, all undefended.", cost: "The link is permanent this fight — whatever finally destroys the double reaches back to you too, full severity." }
+
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            background: var(--bg);
+            color: var(--fg);
+            font-family: "Times New Roman", Georgia, serif;
+            font-size: 18px;
+            line-height: 1.7;
+            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
         }
-    },
-    4: {
-        "HARD LOCK": {
-            yoke: { name: "SUNDER", effect: "A line cuts through everyone standing between two points you choose. Everything it crosses takes a HEAVY Hit (Attribute of your choice) and is knocked aside.", cost: "HAZE Hit, same Attribute, to you." },
-            flare: { name: "GREAT SUNDER", effect: "The fault becomes a wall for the rest of the scene; crossing it costs a HYPER Hit.", cost: "You don't choose which side you're on when it closes." }
-        },
-        "RED SHIFT": {
-            yoke: { name: "RIVEN", effect: "Open two linked fractures that stay open for the rest of the scene. Anything entering one exits the other at full speed, no reaction provoked.", cost: "HAZE FRM Hit to you the first time each scene it's used." },
-            flare: { name: "OPEN RIVEN", effect: "Anyone crossing the breach can be redirected anywhere visible, any time, for the rest of the scene.", cost: "HEAVY FRM Hit if the Static redirects you through it instead." }
-        },
-        "LOST TRACK": {
-            yoke: { name: "CINDER", effect: "Detonate every anomaly or hazard clinging near a target — everyone close to them takes a HEAVY FRM Hit, no identifiable epicenter.", cost: "HAZE FRM Hit to you, untraceable for the rest of the scene." },
-            flare: { name: "CINDER RAIN", effect: "The area around every combatant becomes hazardous for the rest of the scene; ending a turn anywhere costs a HAZE FRM Hit.", cost: "Including wherever you're standing, always." }
-        },
-        "SHADOWBOX": {
-            yoke: { name: "BLIGHT", effect: "Seed shade motes on everyone you choose. Your next offensive working relays through their mote onto them too.", cost: "You're wearing a mote too — there's a real chance your own next casting relays back onto you." },
-            flare: { name: "DEEP BLIGHT", effect: "Every casting for the rest of the scene relays through a mote onto another bound target automatically.", cost: "Permanent exposure — your own mote is always live too." }
+
+        body {
+            padding-bottom: 80px;
         }
-    }
-};
 
-const noiseChars = [
-    "░","▒","▓","█","▀","▄","▌","▐","▖","▗","▘","▝","▚","▞",
-    "■","□","▪","▫","◆","◇","▲","△","▼","▽","●","○",
-    "─","│","┼","┤","├","┬","┴","╬","╫","╪",
-    "⠿","⠶","⠛","⠹","⠭","⠽","⠾","⠷",
-    "#","%","&","*","/","\\","~","^"
-];
-const emberChars = ["△","▲","♦","✦","✧","*","'","\"","~","·","°","∴","×","+"];
+        main {
+            width: min(980px, 92vw);
+            margin: 80px auto 60px;
+        }
 
-let yokeCards = [];
-let flareCards = [];
-let cardCounter = 0;
-let flareCounter = 0;
-let cutting = false;
-let kindlingId = null;
-let fieldResolved = false;
-let ambientTimer = null;
-const CUT_THRESHOLD = 10; // blade gap %, at or below which the signal cuts
+        .eyebrow {
+            font-family: "Courier New", monospace;
+            font-size: 12px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--dim);
+            margin: 0 0 8px 0;
+        }
 
-// ===== persistence =====
+        h1 {
+            font-family: "Times New Roman", serif;
+            font-size: 52px;
+            line-height: 0.95;
+            margin: 0 0 18px 0;
+            font-weight: 550;
+            letter-spacing: 0.5px;
+            transform: scaleY(1.12);
+            transform-origin: left top;
+        }
 
-function loadCards(key){
-    try{
-        const raw = window.localStorage.getItem(key);
-        return raw ? JSON.parse(raw) : [];
-    } catch(err){
-        console.error("Failed to load " + key, err);
-        return [];
-    }
-}
+        .whitebox {
+            background: var(--fg);
+            color: var(--bg);
+            display: inline-block;
+            padding: 5px 10px;
+            font-family: "Courier New", monospace;
+            font-size: 12px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            font-weight: 700;
+        }
 
-function saveCards(key, cards){
-    try{
-        window.localStorage.setItem(key, JSON.stringify(cards));
-    } catch(err){
-        console.error("Failed to save " + key, err);
-    }
-}
+        hr {
+            border: none;
+            border-top: 1px solid var(--line);
+            margin: 30px 0;
+        }
 
-function saveYokes(){ saveCards(YOKE_KEY, yokeCards); }
-function saveFlares(){ saveCards(FLARE_KEY, flareCards); }
+        h2 {
+            font-size: 19px;
+            margin: 0 0 10px 0;
+            font-weight: 500;
+            font-style: italic;
+            color: var(--fg);
+        }
 
-// ===== noise helpers =====
+        p {
+            margin: 0 0 14px 0;
+        }
 
-function noiseGlyph(pool){
-    return pool[Math.floor(Math.random() * pool.length)];
-}
+        .mono {
+            font-family: "Courier New", monospace;
+            font-size: 12px;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: var(--dim);
+            line-height: 1.8;
+        }
 
-function noiseLine(len, pool){
-    let out = "";
-    for(let i = 0; i < len; i++){
-        const opacity = (0.2 + Math.random() * 0.8).toFixed(2);
-        out += `<span style="opacity:${opacity}">${noiseGlyph(pool)}</span>`;
-    }
-    return out;
-}
+        .terminal-note {
+            margin: 14px 0 0;
+            padding: 12px 14px;
+            border: 1px solid var(--line);
+            font-family: "Courier New", monospace;
+            font-size: 12px;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            line-height: 1.9;
+            color: var(--fg);
+        }
 
-function noiseBlock(rows, cols, pool){
-    let html = "";
-    for(let r = 0; r < rows; r++){
-        html += `<div class="noise-row">${noiseLine(cols, pool)}</div>`;
-    }
-    return html;
-}
+        .stat-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 24px;
+            margin: 20px 0 0;
+            font-family: "Courier New", monospace;
+            font-size: 12px;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: var(--dim);
+        }
+        .stat-row strong {
+            color: var(--fg);
+        }
 
-// ===== log =====
+        /* ===== BANNING PANEL ===== */
 
-function addLog(text){
-    const panel = document.getElementById("logPanel");
-    const empty = panel.querySelector(".log-empty");
-    if(empty) empty.remove();
-    const entry = document.createElement("div");
-    entry.className = "log-entry";
-    entry.innerHTML = `<span class="le-tag">&gt;&gt;</span>${text}`;
-    panel.prepend(entry);
-}
+        .banning-wrap {
+            margin: 20px 0 6px;
+        }
 
-// ===== stats =====
+        .banning-panel {
+            position: relative;
+            width: 100%;
+            min-height: 360px;
+            border: 1px solid var(--line);
+            background: #010101;
+            overflow: hidden;
+            cursor: default;
+            transition: border-color 0.3s;
+        }
+        .banning-panel.banned {
+            border-color: var(--fg);
+        }
+        .banning-panel.banned .banning-noise {
+            display: none;
+        }
 
-function updateStats(){
-    document.getElementById("statNicked").textContent = yokeCards.length;
-    document.getElementById("statFixed").textContent = yokeCards.filter(c => c.fixed).length;
-    document.getElementById("statFlares").textContent = flareCards.length;
-}
+        .banning-noise {
+            position: absolute;
+            inset: 0;
+            padding: 16px;
+            font-family: "Courier New", monospace;
+            font-size: 10px;
+            line-height: 1.2;
+            letter-spacing: 0.5px;
+            white-space: pre;
+            color: rgba(255, 255, 255, 0.2);
+            pointer-events: none;
+            z-index: 1;
+            overflow: hidden;
+        }
+        .banning-noise .noise-line {
+            opacity: 0.6;
+        }
 
-// ===== ambient noise — the field is never quiet =====
+        /* Glitch overlay */
+        .glitch-overlay {
+            position: absolute;
+            inset: 0;
+            z-index: 5;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.1s;
+        }
+        .glitch-overlay.active {
+            opacity: 1;
+        }
+        .glitch-overlay .scanline {
+            position: absolute;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.8);
+            mix-blend-mode: screen;
+            animation: scanlineMove 0.1s linear infinite;
+        }
+        @keyframes scanlineMove {
+            0% {
+                top: -10%;
+            }
+            100% {
+                top: 110%;
+            }
+        }
+        .glitch-overlay .vhs-line {
+            position: absolute;
+            height: 100%;
+            width: 1px;
+            background: rgba(255, 255, 255, 0.4);
+            animation: vhsWobble 0.05s ease-in-out infinite alternate;
+        }
+        @keyframes vhsWobble {
+            0% {
+                transform: translateX(0);
+            }
+            100% {
+                transform: translateX(10px);
+            }
+        }
 
-function startAmbientNoise(){
-    if(ambientTimer) return;
-    ambientTimer = setInterval(() => {
-        if(fieldResolved || cutting) return;
-        const layer = document.getElementById("noiseLayer");
-        if(layer) layer.innerHTML = noiseBlock(9, 34, noiseChars);
-    }, 130);
-}
+        /* Circles (Eclipses) */
+        .eclipse-layer {
+            position: absolute;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            will-change: transform, left, top;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.05) 0%, transparent 70%);
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.05), inset 0 0 20px rgba(255, 255, 255, 0.02);
+            pointer-events: auto;
+            cursor: grab;
+            z-index: 2;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        .eclipse-layer.dragging {
+            cursor: grabbing;
+            z-index: 10;
+            border-color: var(--fg) !important;
+            box-shadow: 0 0 40px rgba(255, 255, 255, 0.4), inset 0 0 40px rgba(255, 255, 255, 0.1);
+        }
+        .eclipse-layer.aligned {
+            border-color: #ff5500 !important;
+            box-shadow: 0 0 50px #ff5500, inset 0 0 50px #ff5500 !important;
+        }
+        .eclipse-layer .inner-ring {
+            position: absolute;
+            inset: 10%;
+            border-radius: 50%;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            animation: pulseRing 2s ease-in-out infinite alternate;
+        }
+        @keyframes pulseRing {
+            0% {
+                transform: scale(1);
+                opacity: 0.2;
+            }
+            100% {
+                transform: scale(1.3);
+                opacity: 0.8;
+            }
+        }
 
-// ===== blade pair — drag them together to cut the signal =====
+        /* Bale reveal */
+        .bale-reveal {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            z-index: 3;
+            display: none;
+            padding: 20px;
+            align-items: center;
+            justify-content: center;
+            min-height: 360px;
+        }
+        .bale-reveal.active {
+            display: flex;
+        }
+        .bale-reveal .op-card {
+            width: 100%;
+            max-width: 540px;
+            margin: auto;
+        }
 
-function updateBladeVisual(){
-    if(fieldResolved || cutting) return;
-    const leftEl = document.getElementById("bladeLeft");
-    const rightEl = document.getElementById("bladeRight");
-    const left = Number(leftEl.value);
-    const right = Number(rightEl.value);
+        #banStatus {
+            margin-top: 10px;
+            font-family: "Courier New", monospace;
+            font-size: 11px;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: var(--dim);
+        }
 
-    // keep the blades from crossing outright
-    if(right < left + 2){
-        rightEl.value = Math.min(100, left + 2);
-    }
+        /* ===== CARDS ===== */
 
-    const l = Number(leftEl.value);
-    const r = Number(rightEl.value);
-    document.getElementById("bladeLineLeft").style.left = l + "%";
-    document.getElementById("bladeLineRight").style.left = r + "%";
-    const gap = r - l;
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 14px;
+            margin-top: 14px;
+        }
 
-    document.getElementById("signalStatus").textContent = gap <= CUT_THRESHOLD
-        ? "STATUS: BLADES CLOSING — SIGNAL ABOUT TO CUT"
-        : `STATUS: DRIFTING — GAP ${Math.max(gap, 0).toFixed(0)}%`;
+        .grid-empty {
+            grid-column: 1 / -1;
+            border: 1px solid var(--line);
+            padding: 20px;
+            text-align: center;
+            font-family: "Courier New", monospace;
+            font-size: 11px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--dim);
+        }
 
-    if(gap <= CUT_THRESHOLD){
-        resolveCut();
-    }
-}
+        .op-card {
+            border: 1px solid var(--line);
+            padding: 16px 16px 14px;
+            background: var(--bg);
+            transition: background 0.2s, color 0.2s, border-color 0.2s;
+        }
 
-// ===== resolve — cut a Yoke out of the field =====
+        .op-card .oc-coord {
+            font-family: "Courier New", monospace;
+            font-size: 10.5px;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: var(--dim);
+            margin-bottom: 6px;
+        }
 
-function resolveCut(){
-    if(cutting || fieldResolved) return;
-    cutting = true;
-    document.getElementById("finetuneBtn").disabled = true;
-    document.getElementById("bladeLeft").disabled = true;
-    document.getElementById("bladeRight").disabled = true;
-    document.getElementById("signalStatus").textContent = "STATUS: CUTTING SIGNAL — ROW / CATEGORY UNRESOLVED";
-    addLog("FINETUNING INITIATED — FORCING ROW AND CATEGORY AGAINST THE STATIC.");
+        .op-card .oc-name {
+            font-family: "Times New Roman", serif;
+            font-size: 22px;
+            letter-spacing: 0.5px;
+            margin-bottom: 10px;
+        }
 
-    const field = document.getElementById("signalField");
-    field.classList.add("live");
+        .op-card .oc-field {
+            font-size: 13.5px;
+            line-height: 1.55;
+            margin-bottom: 8px;
+        }
 
-    // one last burst of noise, faster, before it commits
-    let burst = 0;
-    const flicker = setInterval(() => {
-        burst++;
-        const layer = document.getElementById("noiseLayer");
-        if(layer) layer.innerHTML = noiseBlock(9, 34, noiseChars);
-    }, 40);
+        .op-card .oc-field .oc-label {
+            display: block;
+            font-family: "Courier New", monospace;
+            font-size: 10px;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: var(--dim);
+            margin-bottom: 2px;
+        }
 
-    setTimeout(() => {
-        clearInterval(flicker);
-        const row = 1 + Math.floor(Math.random() * 4);
-        const category = CATEGORIES[Math.floor(Math.random() * CATEGORIES.length)];
-        const pair = MATRIX[row][category];
+        .op-card .oc-controls {
+            margin-top: 12px;
+        }
 
-        cardCounter++;
-        const card = {
-            id: "yoke" + Date.now() + "_" + cardCounter,
-            row, category,
-            name: pair.yoke.name,
-            effect: pair.yoke.effect,
-            cost: pair.yoke.cost,
-            fixed: false
-        };
-        yokeCards.push(card);
-        saveYokes();
+        /* Fixed Bale = spent, inverted black-on-white */
+        .op-card.bale-card.fixed {
+            background: var(--fg);
+            color: var(--bg);
+            border-color: var(--fg);
+        }
+        .op-card.bale-card.fixed .oc-coord {
+            color: rgba(0, 0, 0, 0.55);
+        }
+        .op-card.bale-card.fixed .oc-name {
+            color: var(--bg);
+        }
+        .op-card.bale-card.fixed .oc-field .oc-label {
+            color: rgba(0, 0, 0, 0.55);
+        }
+        .op-card.bale-card.fixed .oc-field {
+            color: var(--bg);
+        }
+        .op-card.bale-card.fixed button.btn {
+            background: var(--bg);
+            color: var(--fg);
+            border-color: var(--bg);
+        }
+        .op-card.bale-card.fixed button.btn:hover {
+            background: var(--fg);
+            color: var(--bg);
+            border-color: var(--bg);
+        }
 
-        fieldResolved = true;
-        field.classList.remove("live");
-        field.classList.add("resolved");
-        document.getElementById("noiseLayer").innerHTML = "";
-        document.getElementById("bladeLineLeft").style.display = "none";
-        document.getElementById("bladeLineRight").style.display = "none";
-        document.getElementById("resolvedLayer").innerHTML = renderYokeCardHTML(card, true);
-        document.getElementById("signalStatus").textContent = `STATUS: SIGNAL CUT — ${card.row} / ${card.category}`;
-        document.getElementById("resetSignalBtn").style.display = "inline-block";
-        addLog(`YOKE NICKED — ${card.name} (${card.row} / ${card.category}).`);
+        .op-card.dread-card {
+            border-color: var(--fg);
+        }
+        .op-card.dread-card .oc-name {
+            color: var(--fg);
+        }
 
-        cutting = false;
-        renderGrids();
-    }, 550);
-}
+        .op-card.just-banned {
+            animation: banFlash 0.4s ease-out;
+        }
+        @keyframes banFlash {
+            0% {
+                filter: brightness(2.2) contrast(1.4);
+            }
+            100% {
+                filter: brightness(1) contrast(1);
+            }
+        }
 
-function resetSignalField(){
-    fieldResolved = false;
-    cutting = false;
-    const field = document.getElementById("signalField");
-    field.classList.remove("resolved", "live");
-    document.getElementById("resolvedLayer").innerHTML = "";
-    document.getElementById("bladeLineLeft").style.display = "block";
-    document.getElementById("bladeLineRight").style.display = "block";
-    document.getElementById("bladeLeft").disabled = false;
-    document.getElementById("bladeRight").disabled = false;
-    document.getElementById("bladeLeft").value = 8;
-    document.getElementById("bladeRight").value = 92;
-    document.getElementById("finetuneBtn").disabled = false;
-    document.getElementById("resetSignalBtn").style.display = "none";
-    document.getElementById("signalStatus").textContent = "STATUS: DRIFTING — AWAITING BLADES";
-    updateBladeVisual();
-}
+        @media (max-width: 640px) {
+            .card-grid {
+                grid-template-columns: 1fr;
+            }
+        }
 
-// ===== card markup =====
+        /* ===== PYRE ===== */
 
-function renderYokeCardHTML(card, justCut){
-    const fixedClass = card.fixed ? " fixed" : "";
-    const cutClass = justCut ? " just-cut" : "";
-    return `
-        <div class="op-card yoke-card${fixedClass}${cutClass}" data-id="${card.id}">
-            <div class="oc-coord">${card.row} / ${card.category}</div>
-            <div class="oc-name">${card.name}</div>
-            <div class="oc-field"><span class="oc-label">Effect</span>${card.effect}</div>
-            <div class="oc-field"><span class="oc-label">Cost</span>${card.cost}</div>
-            <div class="oc-controls">
-                ${card.fixed
-                    ? `<button class="btn small" data-act="kindle" data-id="${card.id}">KINDLE</button>`
-                    : `<button class="btn small" data-act="fix-yoke" data-id="${card.id}">FIX</button>`}
-            </div>
+        .pyre-wrap {
+            display: none;
+            margin: 20px 0 6px;
+            border: 1px solid var(--fg);
+            background: #010101;
+            min-height: 240px;
+            position: relative;
+            overflow: hidden;
+            transition: border-color 0.3s;
+        }
+        .pyre-wrap.active {
+            display: block;
+        }
+
+        .pyre-content {
+            padding: 16px;
+            font-family: "Courier New", monospace;
+            font-size: 11px;
+            line-height: 1.4;
+            letter-spacing: 1px;
+            white-space: pre;
+            color: rgba(255, 255, 255, 0.4);
+            min-height: 220px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            transition: all 0.1s;
+        }
+
+        .pyre-content.burning {
+            animation: pyreShake 0.06s infinite;
+            color: rgba(255, 200, 100, 0.9);
+        }
+        @keyframes pyreShake {
+            0% {
+                transform: translate(0, 0) rotate(0deg);
+            }
+            20% {
+                transform: translate(-3px, 2px) rotate(-1deg);
+            }
+            40% {
+                transform: translate(3px, -2px) rotate(1deg);
+            }
+            60% {
+                transform: translate(-2px, -3px) rotate(-0.5deg);
+            }
+            80% {
+                transform: translate(2px, 3px) rotate(0.5deg);
+            }
+            100% {
+                transform: translate(0, 0) rotate(0deg);
+            }
+        }
+
+        .pyre-content .dread-reveal {
+            width: 100%;
+            max-width: 540px;
+            margin: auto;
+        }
+
+        .pyre-content .dread-reveal .op-card {
+            border-color: var(--fg);
+            background: var(--bg);
+        }
+
+        #pyreStatus {
+            margin-top: 10px;
+            font-family: "Courier New", monospace;
+            font-size: 11px;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: var(--dim);
+        }
+
+        /* ===== BUTTONS ===== */
+
+        button.btn {
+            background: var(--bg);
+            color: var(--fg);
+            border: 1px solid var(--fg);
+            font-family: "Courier New", monospace;
+            font-size: 11.5px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            padding: 10px 16px;
+            cursor: pointer;
+        }
+        button.btn:hover {
+            background: var(--fg);
+            color: var(--bg);
+        }
+        button.btn:disabled {
+            opacity: 0.35;
+            cursor: default;
+        }
+        button.btn.small {
+            padding: 7px 12px;
+            font-size: 10.5px;
+        }
+
+        /* ===== LOG ===== */
+
+        .log-panel {
+            margin-top: 16px;
+            border: 1px solid var(--line);
+            max-height: 220px;
+            overflow-y: auto;
+            font-family: "Courier New", monospace;
+            font-size: 11.5px;
+            letter-spacing: 0.5px;
+            line-height: 1.9;
+        }
+        .log-empty {
+            padding: 16px;
+            color: var(--dim);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-size: 11px;
+        }
+        .log-entry {
+            padding: 9px 14px;
+            border-bottom: 1px solid var(--line);
+            color: var(--dim);
+        }
+        .log-entry:last-child {
+            border-bottom: none;
+        }
+        .log-entry .le-tag {
+            color: var(--fg);
+            margin-right: 8px;
+        }
+
+        /* ===== NAV ===== */
+
+        .nav-link {
+            display: block;
+            margin-top: 18px;
+            font-family: "Courier New", monospace;
+            font-size: 13px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            border-bottom: 1px solid var(--line);
+            color: var(--fg);
+            text-decoration: none;
+            width: max-content;
+        }
+        .nav-link:hover {
+            border-bottom-color: var(--fg);
+        }
+
+        /* ===== GLITCH ANIMATIONS ===== */
+
+        @keyframes glitchStripe {
+            0% {
+                opacity: 0.6;
+                height: 2px;
+            }
+            100% {
+                opacity: 0;
+                height: 20px;
+            }
+        }
+
+        .glitch-stripe {
+            position: absolute;
+            left: 0;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.6);
+            z-index: 6;
+            pointer-events: none;
+            mix-blend-mode: screen;
+            animation: glitchStripe 0.15s ease-out forwards;
+        }
+    </style>
+</head>
+<body>
+    <main>
+
+        <p class="eyebrow">NODE // 003</p>
+        <h1>BANNING AND KINDLING</h1>
+        <div class="whitebox">KIND-II OPERATOR — BANNING TERMINAL</div>
+
+        <div class="terminal-note">
+            BAN A BALE — DRAG THE ECLIPSES TOWARD THE CENTER. THE STATIC FIGHTS BACK.<br>
+            FIX A BALE TO SPEND IT — IT GOES BLACK AND BECOMES AVAILABLE FOR KINDLING.<br>
+            KINDLE A FIXED BALE — THE PYRE BURNS IT INTO A DREAD. THE BALE IS SPENT; THE DREAD REMAINS.<br>
+            FIX THE DREAD TO RESOLVE IT — THE COST IS PAID. NOTHING IS LEFT ON FILE.
         </div>
-    `;
-}
 
-function renderFlareCardHTML(card){
-    return `
-        <div class="op-card flare-card" data-id="${card.id}">
-            <div class="oc-coord">${card.row} / ${card.category}</div>
-            <div class="oc-name">${card.name}</div>
-            <div class="oc-field"><span class="oc-label">Effect</span>${card.effect}</div>
-            <div class="oc-field"><span class="oc-label">Cost</span>${card.cost}</div>
-            <div class="oc-controls">
-                <button class="btn small" data-act="fix-flare" data-id="${card.id}">FIX</button>
-            </div>
+        <div class="stat-row">
+            <span>BALES BANNED: <strong id="statBanned">0</strong></span>
+            <span>BALES FIXED: <strong id="statFixed">0</strong></span>
+            <span>DREADS HELD: <strong id="statDreads">0</strong></span>
         </div>
-    `;
-}
 
-// ===== grids =====
+        <h2 style="margin-top:28px;">The Ossuary — Bale Banning</h2>
+        <div class="banning-wrap">
+            <div class="banning-panel" id="banningPanel">
+                <div class="banning-noise" id="banningNoise"></div>
 
-function renderGrids(){
-    const yokeGrid = document.getElementById("yokeGrid");
-    const flareGrid = document.getElementById("flareGrid");
+                <!-- Glitch Overlay -->
+                <div class="glitch-overlay" id="glitchOverlay"></div>
 
-    if(yokeCards.length === 0){
-        yokeGrid.innerHTML = '<div class="grid-empty">NO YOKES ON FILE — FINETUNE TO NICK ONE</div>';
-    } else {
-        yokeGrid.innerHTML = yokeCards.map(c => renderYokeCardHTML(c, false)).join("");
-    }
+                <!-- Eclipse layers will be injected here by JS -->
 
-    if(flareCards.length === 0){
-        flareGrid.innerHTML = '<div class="grid-empty">NO FLARES BURNED YET</div>';
-    } else {
-        flareGrid.innerHTML = flareCards.map(c => renderFlareCardHTML(c)).join("");
-    }
+                <!-- Reveal area for Bale card -->
+                <div class="bale-reveal" id="baleReveal"></div>
+            </div>
+            <div id="banStatus">STATUS: DRAG THE ECLIPSES — FORCE THE STATIC TO YIELD</div>
+        </div>
 
-    updateStats();
-    bindCardEvents();
-}
+        <hr>
 
-function bindCardEvents(){
-    document.querySelectorAll('[data-act="fix-yoke"]').forEach(btn => {
-        btn.addEventListener("click", () => fixYoke(btn.dataset.id));
-    });
-    document.querySelectorAll('[data-act="kindle"]').forEach(btn => {
-        btn.addEventListener("click", () => startKindle(btn.dataset.id));
-    });
-    document.querySelectorAll('[data-act="fix-flare"]').forEach(btn => {
-        btn.addEventListener("click", () => fixFlare(btn.dataset.id));
-    });
-}
+        <h2>Held Bales</h2>
+        <p class="mono">Banned and awaiting use. Fix to spend one — it goes black and can be Kindled.</p>
+        <div class="card-grid" id="baleGrid"></div>
 
-// ===== FIX (yoke) =====
+        <div class="pyre-wrap" id="pyreWrap">
+            <h2 style="margin-top:28px;">The Pyre</h2>
+            <div class="pyre-content" id="pyreContent"></div>
+            <div id="pyreStatus">STATUS: IDLE</div>
+        </div>
 
-function fixYoke(id){
-    const card = yokeCards.find(c => c.id === id);
-    if(!card || card.fixed) return;
-    card.fixed = true;
-    saveYokes();
-    addLog(`YOKE FIXED — ${card.name} SPENT. AVAILABLE TO KINDLE.`);
-    renderGrids();
-}
+        <hr>
 
-// ===== KINDLE — the pyre =====
+        <h2>Held Dreads</h2>
+        <p class="mono">Kindled from spent Bales. Fix to resolve one — the cost is paid and nothing remains.</p>
+        <div class="card-grid" id="dreadGrid"></div>
 
-function startKindle(id){
-    if(kindlingId) return;
-    const card = yokeCards.find(c => c.id === id);
-    if(!card || !card.fixed) return;
-    kindlingId = id;
+        <hr>
 
-    const pyre = document.getElementById("pyreField");
-    const pyreWrap = document.getElementById("pyreWrap");
-    pyreWrap.classList.add("active");
-    pyre.classList.add("burning");
-    pyre.innerHTML = noiseBlock(9, 34, emberChars);
-    document.getElementById("pyreStatus").textContent = `STATUS: KINDLING ${card.name} — DRIVING PAST THRESHOLD`;
-    addLog(`KINDLING INITIATED — ${card.name} DRIVEN INTO OVERDRIVE.`);
+        <h2>Terminal Log</h2>
+        <div class="log-panel" id="logPanel">
+            <div class="log-empty">NO ACTIVITY LOGGED</div>
+        </div>
 
-    let tick = 0;
-    const flicker = setInterval(() => {
-        tick++;
-        pyre.innerHTML = noiseBlock(9, 34, tick % 3 === 0 ? noiseChars : emberChars);
-        pyre.style.filter = `brightness(${0.7 + Math.random() * 0.9}) contrast(${1 + Math.random() * 0.6})`;
-    }, 45);
+        <hr>
+        <a class="nav-link" href="../doomer/">→ DOOMER</a>
+        <a class="nav-link" href="../operator-registry/">→ OPERATOR REGISTRY</a>
+        <a class="nav-link" href="../spiritbox/">→ SPIRITBOX</a>
+        <a class="nav-link" href="../">→ KERNEL</a>
 
-    setTimeout(() => {
-        clearInterval(flicker);
-        pyre.style.filter = "none";
+    </main>
 
-        const pair = MATRIX[card.row][card.category];
-        flareCounter++;
-        const flare = {
-            id: "flare" + Date.now() + "_" + flareCounter,
-            row: card.row,
-            category: card.category,
-            name: pair.flare.name,
-            effect: pair.flare.effect,
-            cost: pair.flare.cost,
-            fromYokeId: card.id
+    <script>
+        // ============================================================
+        //  BANNING AND KINDLING — full interactive terminal
+        //  Terminology:
+        //    - Banning : align eclipses to produce a Bale
+        //    - Bale    : base card, can be Fixed (spent) then Kindled
+        //    - Kindling: pyre burns a fixed Bale into a Dread
+        //    - Dread   : escalated card, Fix to resolve (pay cost & remove)
+        // ============================================================
+
+        const BALE_KEY = "baleCards";
+        const DREAD_KEY = "dreadCards";
+
+        const CATEGORIES = ["HARD LOCK", "RED SHIFT", "LOST TRACK", "SHADOWBOX"];
+
+        // The matrix data
+        const MATRIX = {
+            1: {
+                "HARD LOCK": {
+                    bale: { name: "FALLOW", effect: "Choose an area nearby. Everyone inside takes a HEAVY FRM Hit and is hurled to just outside its edge.",
+                        cost: "HAZE FRM Hit to you, or knocked prone — the Lock doesn't spare the hand that pulled it." },
+                    dread: { name: "BLACK FALLOW", effect: "The chosen area is erased outright; everyone inside takes a HYPER FRM Hit instead.",
+                        cost: "HEAVY FRM Hit to you, no save." }
+                },
+                "RED SHIFT": {
+                    bale: { name: "KERN", effect: "Blink to a point you can see, no reaction provoked. Everything nearby is dragged toward it; anyone caught in the pull takes a HEAVY FRM Hit.",
+                        cost: "HAZE NRV Hit — the pull spends your next reaction." },
+                    dread: { name: "BLACK KERN", effect: "Everything nearby collapses toward the point, HYPER FRM Hit on collision.",
+                        cost: "HEAVY NRV Hit — you're at the center same as everyone." }
+                },
+                "LOST TRACK": {
+                    bale: { name: "DREAR", effect: "A pressure wave rolls out from you — every enemy nearby takes a HAZE NRV Hit and is pushed directly away, no traceable source.",
+                        cost: "HAZE NRV Hit to you — you don't remember casting it until someone tells you." },
+                    dread: { name: "DEEP DREAR", effect: "HEAVY NRV Hit, everyone thrown well clear of you, still no visible cause.",
+                        cost: "HEAVY NRV Hit — you lose the whole exchange, not just the cast." }
+                },
+                "SHADOWBOX": {
+                    bale: { name: "FEN", effect: "Split off a shade double of a target in sight. Anyone who strikes it lands the Hit — HAZE FRM — on the real target instead, wherever they are.",
+                        cost: "HAZE FRM Hit to you when the binding is cut, by time or by force." },
+                    dread: { name: "BLACK FEN", effect: "The shade holds for the rest of the scene; anyone can strike it to land a HEAVY FRM Hit on the real target from anywhere.",
+                        cost: "HEAVY FRM Hit to you if it's ever destroyed early." }
+                }
+            },
+            2: {
+                "HARD LOCK": {
+                    bale: { name: "BOLT", effect: "Accelerate your own mass, close the distance to any visible enemy instantly, and slam into them for a HEAVY FRM Hit; they're hurled clear.",
+                        cost: "HAZE FRM Hit to you on landing — you're still the thing that just got fired." },
+                    dread: { name: "DEAD BOLT", effect: "Ram every visible enemy in sequence, one HEAVY FRM Hit each, before the round ends.",
+                        cost: "HEAVY FRM Hit to you once the sequence stops." }
+                },
+                "RED SHIFT": {
+                    bale: { name: "WOLD", effect: "Swap positions with any creature in sight, any distance, no reaction provoked either way.",
+                        cost: "HAZE NRV Hit — you're the one who has to reassemble first." },
+                    dread: { name: "DEAD WOLD", effect: "Place every creature anywhere you choose within sight, no reactions provoked anywhere.",
+                        cost: "HEAVY NRV Hit — your own landing spot isn't yours to pick." }
+                },
+                "LOST TRACK": {
+                    bale: { name: "FORLORN", effect: "Remove a target entirely until the start of their next turn, then place them anywhere you choose.",
+                        cost: "HAZE NRV Hit — allies can't reach you for aid during that span." },
+                    dread: { name: "LAST FORLORN", effect: "Every enemy banished until the end of the scene, then redistributed by the Static.",
+                        cost: "HEAVY NRV Hit — you're off the grid the same span." }
+                },
+                "SHADOWBOX": {
+                    bale: { name: "GLOOM", effect: "Split off a shade double where you stand; you may immediately move anywhere nearby. Attacks against \u201cyou\u201d this exchange strike the double.",
+                        cost: "HAZE NRV Hit if the double is destroyed before your next turn." },
+                    dread: { name: "TOTAL GLOOM", effect: "Every ally gets a shade for the round; the field fills with echoes enemies can't sort from real.",
+                        cost: "HEAVY NRV Hit to you if your own double falls." }
+                }
+            },
+            3: {
+                "HARD LOCK": {
+                    bale: { name: "WANE", effect: "Reach into a target's near future and detonate it early — their next HAZE Hit lands as HEAVY, or their next HEAVY Hit lands as HYPER.",
+                        cost: "The same escalation is loaded on you — your next Hit taken escalates one step, whenever it lands." },
+                    dread: { name: "FINAL WANE", effect: "Every Hit, from anyone, escalates one tier for the rest of the scene. Once this scene, rewrite a Hit that already landed a tier worse.",
+                        cost: "The escalation applies to you too, permanently, and the rewrite can be turned back on a Hit you already took." }
+                },
+                "RED SHIFT": {
+                    bale: { name: "WITHER", effect: "Blink to touch or target a creature, no reaction provoked, then mark them: every Hit they take before your next turn is increased one tier.",
+                        cost: "HAZE NRV Hit to you the instant the mark lands." },
+                    dread: { name: "TRUE WITHER", effect: "Every Hit inflicted for the rest of the scene is upgraded one tier.",
+                        cost: "HEAVY NRV Hit, permanently in effect on you too." }
+                },
+                "LOST TRACK": {
+                    bale: { name: "ORDEAL", effect: "Force BRN, NRV, and FRM tests on a target. Each failure is a HAZE Hit to the matching Attribute.",
+                        cost: "You take the same three tests, hidden from you until they resolve." },
+                    dread: { name: "FINAL ORDEAL", effect: "Every enemy takes all three HAZE tests before further tests can escalate them.",
+                        cost: "You take them too, unwarned." }
+                },
+                "SHADOWBOX": {
+                    bale: { name: "GRIM", effect: "Bind a target to a shade double only you can see and strike. Your next Hit against the double lands on them instead, undefended.",
+                        cost: "HAZE Hit (BRN) — your next attack roll against anyone else suffers." },
+                    dread: { name: "GRIM HOUR", effect: "The bound double takes every Hit you land for the rest of the scene, all undefended.",
+                        cost: "The link is permanent this fight — whatever finally destroys the double reaches back to you too, full severity." }
+                }
+            },
+            4: {
+                "HARD LOCK": {
+                    bale: { name: "SUNDER", effect: "A line cuts through everyone standing between two points you choose. Everything it crosses takes a HEAVY Hit (Attribute of your choice) and is knocked aside.",
+                        cost: "HAZE Hit, same Attribute, to you." },
+                    dread: { name: "GREAT SUNDER", effect: "The fault becomes a wall for the rest of the scene; crossing it costs a HYPER Hit.",
+                        cost: "You don't choose which side you're on when it closes." }
+                },
+                "RED SHIFT": {
+                    bale: { name: "RIVEN", effect: "Open two linked fractures that stay open for the rest of the scene. Anything entering one exits the other at full speed, no reaction provoked.",
+                        cost: "HAZE FRM Hit to you the first time each scene it's used." },
+                    dread: { name: "OPEN RIVEN", effect: "Anyone crossing the breach can be redirected anywhere visible, any time, for the rest of the scene.",
+                        cost: "HEAVY FRM Hit if the Static redirects you through it instead." }
+                },
+                "LOST TRACK": {
+                    bale: { name: "CINDER", effect: "Detonate every anomaly or hazard clinging near a target — everyone close to them takes a HEAVY FRM Hit, no identifiable epicenter.",
+                        cost: "HAZE FRM Hit to you, untraceable for the rest of the scene." },
+                    dread: { name: "CINDER RAIN", effect: "The area around every combatant becomes hazardous for the rest of the scene; ending a turn anywhere costs a HAZE FRM Hit.",
+                        cost: "Including wherever you're standing, always." }
+                },
+                "SHADOWBOX": {
+                    bale: { name: "BLIGHT", effect: "Seed shade motes on everyone you choose. Your next offensive working relays through their mote onto them too.",
+                        cost: "You're wearing a mote too — there's a real chance your own next casting relays back onto you." },
+                    dread: { name: "DEEP BLIGHT", effect: "Every casting for the rest of the scene relays through a mote onto another bound target automatically.",
+                        cost: "Permanent exposure — your own mote is always live too." }
+                }
+            }
         };
-        flareCards.push(flare);
-        saveFlares();
 
-        yokeCards = yokeCards.filter(c => c.id !== id);
-        saveYokes();
+        const noiseChars = [
+            "░", "▒", "▓", "█", "▀", "▄", "▌", "▐", "▖", "▗", "▘", "▝", "▚", "▞",
+            "■", "□", "▪", "▫", "◆", "◇", "▲", "△", "▼", "▽", "●", "○",
+            "─", "│", "┼", "┤", "├", "┬", "┴", "╬", "╫", "╪",
+            "⠿", "⠶", "⠛", "⠹", "⠭", "⠽", "⠾", "⠷",
+            "#", "%", "&", "*", "/", "\\", "~", "^"
+        ];
+        const emberChars = ["△", "▲", "♦", "✦", "✧", "*", "'", "\"", "~", "·", "°", "∴", "×", "+"];
 
-        pyre.classList.remove("burning");
-        pyre.classList.add("resolved");
-        pyre.innerHTML = renderFlareCardHTML(flare);
-        document.getElementById("pyreStatus").textContent = `STATUS: KINDLED — ${flare.name} BURNED CLEAR`;
-        addLog(`FLARE KINDLED — ${flare.name} (${flare.row} / ${flare.category}). YOKE SPENT.`);
+        let baleCards = [];
+        let dreadCards = [];
+        let cardCounter = 0;
+        let dreadCounter = 0;
+        let banTriggered = false;
+        let kindlingActive = false;
+        let alignCounter = 0;
+        const ALIGN_THRESHOLD = 55;
+        const ALIGN_REQUIRED_FRAMES = 15;
 
-        kindlingId = null;
-        renderGrids();
+        // ===== persistence =====
 
-        setTimeout(() => {
-            pyreWrap.classList.remove("active");
-            pyre.classList.remove("resolved");
-            pyre.innerHTML = "";
-        }, 2400);
-    }, 1400);
-}
+        function loadCards(key) {
+            try {
+                const raw = window.localStorage.getItem(key);
+                return raw ? JSON.parse(raw) : [];
+            } catch (err) {
+                console.error("Failed to load " + key, err);
+                return [];
+            }
+        }
 
-// ===== FIX (flare) — pays cost, card is gone =====
+        function saveCards(key, cards) {
+            try {
+                window.localStorage.setItem(key, JSON.stringify(cards));
+            } catch (err) {
+                console.error("Failed to save " + key, err);
+            }
+        }
 
-function fixFlare(id){
-    const card = flareCards.find(c => c.id === id);
-    if(!card) return;
-    flareCards = flareCards.filter(c => c.id !== id);
-    saveFlares();
-    addLog(`FLARE FIXED — ${card.name} RESOLVED. COST PAID IN FULL. NOTHING REMAINS.`);
-    renderGrids();
-}
+        function saveBales() { saveCards(BALE_KEY, baleCards); }
 
-// ===== init =====
+        function saveDreads() { saveCards(DREAD_KEY, dreadCards); }
 
-document.addEventListener("DOMContentLoaded", () => {
-    yokeCards = loadCards(YOKE_KEY);
-    flareCards = loadCards(FLARE_KEY);
-    renderGrids();
+        // ===== log =====
 
-    startAmbientNoise();
-    document.getElementById("bladeLeft").addEventListener("input", updateBladeVisual);
-    document.getElementById("bladeRight").addEventListener("input", updateBladeVisual);
-    updateBladeVisual();
+        function addLog(text) {
+            const panel = document.getElementById("logPanel");
+            const empty = panel.querySelector(".log-empty");
+            if (empty) empty.remove();
+            const entry = document.createElement("div");
+            entry.className = "log-entry";
+            entry.innerHTML = `<span class="le-tag">&gt;&gt;</span>${text}`;
+            panel.prepend(entry);
+        }
 
-    document.getElementById("finetuneBtn").addEventListener("click", resolveCut);
-    document.getElementById("resetSignalBtn").addEventListener("click", resetSignalField);
-});
+        // ===== stats =====
 
-console.log("FINETUNING AND KINDLING TERMINAL ONLINE");
-console.log("CUT THE SIGNAL. FEED THE PYRE.");
+        function updateStats() {
+            document.getElementById("statBanned").textContent = baleCards.length;
+            document.getElementById("statFixed").textContent = baleCards.filter(c => c.fixed).length;
+            document.getElementById("statDreads").textContent = dreadCards.length;
+        }
+
+        // ===== noise generation =====
+
+        function generateNoise(lines = 14, cols = 50) {
+            let html = "";
+            for (let i = 0; i < lines; i++) {
+                let line = "";
+                for (let j = 0; j < cols; j++) {
+                    const char = noiseChars[Math.floor(Math.random() * noiseChars.length)];
+                    const opacity = 0.2 + Math.random() * 0.8;
+                    line += `<span style="opacity:${opacity.toFixed(2)}">${char}</span>`;
+                }
+                html += `<div class="noise-line">${line}</div>`;
+            }
+            return html;
+        }
+
+        function updateBanningNoise() {
+            const el = document.getElementById("banningNoise");
+            if (el && !document.getElementById("banningPanel").classList.contains("banned")) {
+                el.innerHTML = generateNoise(16, 55);
+            }
+        }
+
+        // ===== Glitch effects =====
+
+        function triggerGlitch(intensity = 1) {
+            const overlay = document.getElementById("glitchOverlay");
+            overlay.innerHTML = "";
+            overlay.classList.add("active");
+
+            // Scanlines
+            for (let i = 0; i < 3 * intensity; i++) {
+                const line = document.createElement("div");
+                line.className = "scanline";
+                line.style.left = Math.random() * 100 + "%";
+                line.style.width = (10 + Math.random() * 90) + "%";
+                line.style.animationDuration = (0.05 + Math.random() * 0.1) + "s";
+                line.style.animationDelay = (Math.random() * 0.5) + "s";
+                overlay.appendChild(line);
+            }
+
+            // Vertical glitch lines
+            for (let i = 0; i < 5 * intensity; i++) {
+                const line = document.createElement("div");
+                line.className = "vhs-line";
+                line.style.left = Math.random() * 100 + "%";
+                line.style.height = (2 + Math.random() * 8) + "%";
+                line.style.top = Math.random() * 100 + "%";
+                line.style.background = `rgba(255, 255, 255, ${0.2 + Math.random() * 0.6})`;
+                overlay.appendChild(line);
+            }
+
+            // Random flash stripes
+            for (let i = 0; i < 4 * intensity; i++) {
+                const stripe = document.createElement("div");
+                stripe.className = "glitch-stripe";
+                stripe.style.top = Math.random() * 100 + "%";
+                stripe.style.height = (1 + Math.random() * 8) + "px";
+                stripe.style.background = `rgba(255, 255, 255, ${0.3 + Math.random() * 0.7})`;
+                stripe.style.animationDuration = (0.1 + Math.random() * 0.2) + "s";
+                stripe.style.animationDelay = (Math.random() * 0.3) + "s";
+                overlay.appendChild(stripe);
+            }
+
+            setTimeout(() => {
+                overlay.classList.remove("active");
+                overlay.innerHTML = "";
+            }, 300 + 200 * intensity);
+        }
+
+        // ===== Circles (Eclipses) =====
+
+        const NUM_CIRCLES = 7;
+        const BASE_RADIUS = 130;
+        let circles = [];
+        let dragIndex = -1;
+        let dragOffsetX = 0,
+            dragOffsetY = 0;
+        let animationFrame = null;
+        let startTime = Date.now();
+        let isPanelReady = false;
+
+        function initCircles() {
+            const panel = document.getElementById("banningPanel");
+            const rect = panel.getBoundingClientRect();
+            const centerX = rect.width / 2;
+            const centerY = rect.height / 2;
+
+            circles = [];
+
+            for (let i = 0; i < NUM_CIRCLES; i++) {
+                const angle = (i / NUM_CIRCLES) * 2 * Math.PI - Math.PI / 2;
+                const x = centerX + BASE_RADIUS * Math.cos(angle);
+                const y = centerY + BASE_RADIUS * Math.sin(angle);
+
+                const el = document.createElement("div");
+                el.className = "eclipse-layer";
+                el.dataset.index = i;
+
+                const size = 30 + Math.random() * 70;
+                el.style.width = size + "px";
+                el.style.height = size + "px";
+
+                const inner = document.createElement("div");
+                inner.className = "inner-ring";
+                el.appendChild(inner);
+
+                const offsetX = (Math.random() - 0.5) * 60;
+                const offsetY = (Math.random() - 0.5) * 60;
+                el.style.left = (x + offsetX) + "px";
+                el.style.top = (y + offsetY) + "px";
+
+                const jitter = {
+                    baseX: x + offsetX,
+                    baseY: y + offsetY,
+                    ampX: 8 + Math.random() * 35,
+                    ampY: 8 + Math.random() * 35,
+                    speedX: 0.3 + Math.random() * 2.5,
+                    speedY: 0.3 + Math.random() * 2.5,
+                    phaseX: Math.random() * 20,
+                    phaseY: Math.random() * 20,
+                    isDragging: false
+                };
+
+                if (i === 0) {
+                    jitter.ampX = 2;
+                    jitter.ampY = 2;
+                    jitter.speedX = 0.5;
+                    jitter.speedY = 0.5;
+                    el.style.borderColor = "rgba(255,255,255,0.8)";
+                    el.style.boxShadow = "0 0 40px rgba(255,255,255,0.2), inset 0 0 40px rgba(255,255,255,0.05)";
+                }
+
+                const circleData = { el, jitter };
+                circles.push(circleData);
+                panel.appendChild(el);
+
+                el.addEventListener("mousedown", (e) => startDrag(e, i));
+            }
+
+            isPanelReady = true;
+            startJitter();
+            startAlignmentCheck();
+        }
+
+        // ===== Jitter Loop =====
+
+        function startJitter() {
+            if (animationFrame) cancelAnimationFrame(animationFrame);
+            let lastTime = performance.now();
+
+            function loop(time) {
+                const delta = (time - lastTime) / 1000;
+                lastTime = time;
+
+                for (let i = 0; i < circles.length; i++) {
+                    const { el, jitter } = circles[i];
+                    if (jitter.isDragging) continue;
+
+                    const t = (Date.now() - startTime) / 1000;
+                    const dx = jitter.ampX * Math.sin(t * jitter.speedX + jitter.phaseX);
+                    const dy = jitter.ampY * Math.sin(t * jitter.speedY + jitter.phaseY);
+
+                    el.style.left = (jitter.baseX + dx) + "px";
+                    el.style.top = (jitter.baseY + dy) + "px";
+                }
+
+                animationFrame = requestAnimationFrame(loop);
+            }
+            animationFrame = requestAnimationFrame(loop);
+        }
+
+        // ===== Alignment Check =====
+
+        function startAlignmentCheck() {
+            setInterval(() => {
+                if (banTriggered) return;
+                const center = circles[0];
+                if (!center) return;
+
+                const cx = parseFloat(center.el.style.left) + center.el.offsetWidth / 2;
+                const cy = parseFloat(center.el.style.top) + center.el.offsetHeight / 2;
+
+                let allAligned = true;
+                let maxDist = 0;
+                for (let i = 1; i < circles.length; i++) {
+                    const el = circles[i].el;
+                    const x = parseFloat(el.style.left) + el.offsetWidth / 2;
+                    const y = parseFloat(el.style.top) + el.offsetHeight / 2;
+                    const dist = Math.sqrt((x - cx) ** 2 + (y - cy) ** 2);
+                    maxDist = Math.max(maxDist, dist);
+                    if (dist > ALIGN_THRESHOLD) {
+                        allAligned = false;
+                        break;
+                    }
+                }
+
+                for (let i = 0; i < circles.length; i++) {
+                    const el = circles[i].el;
+                    const x = parseFloat(el.style.left) + el.offsetWidth / 2;
+                    const y = parseFloat(el.style.top) + el.offsetHeight / 2;
+                    const dist = Math.sqrt((x - cx) ** 2 + (y - cy) ** 2);
+                    if (dist < ALIGN_THRESHOLD + 20) {
+                        el.classList.add("aligned");
+                    } else {
+                        el.classList.remove("aligned");
+                    }
+                }
+
+                if (allAligned) {
+                    alignCounter++;
+                    if (alignCounter >= ALIGN_REQUIRED_FRAMES) {
+                        triggerBan();
+                    }
+                    const intensity = Math.floor(maxDist / 15) + 1;
+                    if (alignCounter % 3 === 0) {
+                        triggerGlitch(Math.min(intensity, 4));
+                    }
+                    document.getElementById("banStatus").textContent =
+                        `STATUS: ALIGNMENT HOLDING... ${Math.round((alignCounter / ALIGN_REQUIRED_FRAMES) * 100)}%`;
+                } else {
+                    alignCounter = 0;
+                    document.getElementById("banStatus").textContent = "STATUS: DRAG THE ECLIPSES — FORCE THE STATIC TO YIELD";
+                }
+            }, 50);
+        }
+
+        // ===== Drag Handling =====
+
+        function startDrag(e, index) {
+            if (banTriggered) return;
+            const circle = circles[index];
+            if (!circle) return;
+            dragIndex = index;
+            const el = circle.el;
+            const rect = el.getBoundingClientRect();
+            const panelRect = document.getElementById("banningPanel").getBoundingClientRect();
+            dragOffsetX = e.clientX - rect.left - rect.width / 2;
+            dragOffsetY = e.clientY - rect.top - rect.height / 2;
+            circle.jitter.isDragging = true;
+            el.classList.add("dragging");
+
+            document.addEventListener("mousemove", onDragMove);
+            document.addEventListener("mouseup", onDragEnd);
+            e.preventDefault();
+        }
+
+        function onDragMove(e) {
+            if (dragIndex === -1) return;
+            const panel = document.getElementById("banningPanel");
+            const rect = panel.getBoundingClientRect();
+            const circle = circles[dragIndex];
+            if (!circle) return;
+            const el = circle.el;
+
+            let x = e.clientX - rect.left - dragOffsetX - el.offsetWidth / 2;
+            let y = e.clientY - rect.top - dragOffsetY - el.offsetHeight / 2;
+
+            x = Math.max(0, Math.min(rect.width - el.offsetWidth, x));
+            y = Math.max(0, Math.min(rect.height - el.offsetHeight, y));
+
+            el.style.left = x + "px";
+            el.style.top = y + "px";
+
+            circle.jitter.baseX = x + el.offsetWidth / 2;
+            circle.jitter.baseY = y + el.offsetHeight / 2;
+        }
+
+        function onDragEnd(e) {
+            if (dragIndex === -1) return;
+            const circle = circles[dragIndex];
+            if (circle) {
+                circle.jitter.isDragging = false;
+                circle.el.classList.remove("dragging");
+            }
+            dragIndex = -1;
+            document.removeEventListener("mousemove", onDragMove);
+            document.removeEventListener("mouseup", onDragEnd);
+        }
+
+        // ===== Banning trigger =====
+
+        function triggerBan() {
+            if (banTriggered) return;
+            banTriggered = true;
+
+            for (let c of circles) {
+                c.el.style.pointerEvents = "none";
+                c.el.style.opacity = "0.2";
+            }
+
+            const panel = document.getElementById("banningPanel");
+            panel.classList.add("banned");
+            document.getElementById("banStatus").textContent = "STATUS: STATIC CUT — BALE BANNED";
+
+            triggerGlitch(5);
+            setTimeout(() => triggerGlitch(3), 200);
+            setTimeout(() => triggerGlitch(2), 400);
+
+            addLog("BANNING COMPLETE — STATIC YIELDED A BALE.");
+
+            const row = 1 + Math.floor(Math.random() * 4);
+            const category = CATEGORIES[Math.floor(Math.random() * CATEGORIES.length)];
+            const pair = MATRIX[row][category];
+
+            cardCounter++;
+            const bale = {
+                id: "bale" + Date.now() + "_" + cardCounter,
+                row,
+                category,
+                name: pair.bale.name,
+                effect: pair.bale.effect,
+                cost: pair.bale.cost,
+                fixed: false
+            };
+            baleCards.push(bale);
+            saveBales();
+
+            const reveal = document.getElementById("baleReveal");
+            reveal.classList.add("active");
+            reveal.innerHTML = renderBaleCardHTML(bale, true);
+
+            addLog(`BALE BANNED — ${bale.name} (${bale.row} / ${bale.category}).`);
+
+            setTimeout(() => {
+                const status = document.getElementById("banStatus");
+                status.innerHTML =
+                    `BALE BANNED — <button class="btn small" id="resetBanBtn">BAN ANOTHER</button>`;
+                document.getElementById("resetBanBtn").addEventListener("click", resetBanningPanel);
+            }, 800);
+
+            renderGrids();
+        }
+
+        function resetBanningPanel() {
+            const panel = document.getElementById("banningPanel");
+            panel.classList.remove("banned");
+            document.getElementById("baleReveal").classList.remove("active");
+            document.getElementById("baleReveal").innerHTML = "";
+            document.getElementById("banStatus").textContent = "STATUS: DRAG THE ECLIPSES — FORCE THE STATIC TO YIELD";
+            banTriggered = false;
+            alignCounter = 0;
+
+            for (let c of circles) {
+                c.el.style.pointerEvents = "auto";
+                c.el.style.opacity = "1";
+                c.el.classList.remove("aligned");
+            }
+
+            const panelRect = panel.getBoundingClientRect();
+            const centerX = panelRect.width / 2;
+            const centerY = panelRect.height / 2;
+            for (let i = 0; i < circles.length; i++) {
+                const angle = (i / circles.length) * 2 * Math.PI - Math.PI / 2;
+                const x = centerX + BASE_RADIUS * Math.cos(angle) + (Math.random() - 0.5) * 80;
+                const y = centerY + BASE_RADIUS * Math.sin(angle) + (Math.random() - 0.5) * 80;
+                const c = circles[i];
+                c.jitter.baseX = x;
+                c.jitter.baseY = y;
+                c.el.style.left = x + "px";
+                c.el.style.top = y + "px";
+            }
+
+            updateBanningNoise();
+            renderGrids();
+        }
+
+        // ===== card rendering =====
+
+        function renderBaleCardHTML(card, justBanned) {
+            const fixedClass = card.fixed ? " fixed" : "";
+            const banClass = justBanned ? " just-banned" : "";
+            return `
+                <div class="op-card bale-card${fixedClass}${banClass}" data-id="${card.id}">
+                    <div class="oc-coord">${card.row} / ${card.category}</div>
+                    <div class="oc-name">${card.name}</div>
+                    <div class="oc-field"><span class="oc-label">Effect</span>${card.effect}</div>
+                    <div class="oc-field"><span class="oc-label">Cost</span>${card.cost}</div>
+                    <div class="oc-controls">
+                        ${card.fixed
+                            ? `<button class="btn small" data-act="kindle" data-id="${card.id}">KINDLE</button>`
+                            : `<button class="btn small" data-act="fix-bale" data-id="${card.id}">FIX</button>`}
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderDreadCardHTML(card) {
+            return `
+                <div class="op-card dread-card" data-id="${card.id}">
+                    <div class="oc-coord">${card.row} / ${card.category}</div>
+                    <div class="oc-name">${card.name}</div>
+                    <div class="oc-field"><span class="oc-label">Effect</span>${card.effect}</div>
+                    <div class="oc-field"><span class="oc-label">Cost</span>${card.cost}</div>
+                    <div class="oc-controls">
+                        <button class="btn small" data-act="fix-dread" data-id="${card.id}">FIX DREAD</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        // ===== grids =====
+
+        function renderGrids() {
+            const baleGrid = document.getElementById("baleGrid");
+            const dreadGrid = document.getElementById("dreadGrid");
+
+            if (baleCards.length === 0) {
+                baleGrid.innerHTML = '<div class="grid-empty">NO BALES ON FILE — BAN ONE FROM THE OSSUARY</div>';
+            } else {
+                baleGrid.innerHTML = baleCards.map(c => renderBaleCardHTML(c, false)).join("");
+            }
+
+            if (dreadCards.length === 0) {
+                dreadGrid.innerHTML = '<div class="grid-empty">NO DREADS KINDLED YET</div>';
+            } else {
+                dreadGrid.innerHTML = dreadCards.map(c => renderDreadCardHTML(c)).join("");
+            }
+
+            updateStats();
+            bindCardEvents();
+        }
+
+        function bindCardEvents() {
+            document.querySelectorAll('[data-act="fix-bale"]').forEach(btn => {
+                btn.addEventListener("click", () => fixBale(btn.dataset.id));
+            });
+            document.querySelectorAll('[data-act="kindle"]').forEach(btn => {
+                btn.addEventListener("click", () => startKindle(btn.dataset.id));
+            });
+            document.querySelectorAll('[data-act="fix-dread"]').forEach(btn => {
+                btn.addEventListener("click", () => fixDread(btn.dataset.id));
+            });
+        }
+
+        // ===== FIX Bale =====
+
+        function fixBale(id) {
+            const card = baleCards.find(c => c.id === id);
+            if (!card || card.fixed) return;
+            card.fixed = true;
+            saveBales();
+            addLog(`BALE FIXED — ${card.name} SPENT. AVAILABLE TO KINDLE.`);
+            renderGrids();
+            const reveal = document.getElementById("baleReveal");
+            if (reveal.classList.contains("active")) {
+                const cardEl = reveal.querySelector(".op-card");
+                if (cardEl && cardEl.dataset.id === id) {
+                    reveal.innerHTML = renderBaleCardHTML(card, false);
+                }
+            }
+        }
+
+        // ===== KINDLE =====
+
+        function startKindle(id) {
+            if (kindlingActive) return;
+            const card = baleCards.find(c => c.id === id);
+            if (!card || !card.fixed) return;
+            kindlingActive = true;
+
+            const pyreWrap = document.getElementById("pyreWrap");
+            const pyreContent = document.getElementById("pyreContent");
+            pyreWrap.classList.add("active");
+            pyreContent.className = "pyre-content burning";
+            pyreContent.textContent = "";
+
+            let lines = 12;
+            let cols = 45;
+            let html = "";
+            for (let i = 0; i < lines; i++) {
+                let line = "";
+                for (let j = 0; j < cols; j++) {
+                    const ch = emberChars[Math.floor(Math.random() * emberChars.length)];
+                    const opacity = 0.3 + Math.random() * 0.7;
+                    line += `<span style="opacity:${opacity.toFixed(2)}">${ch}</span>`;
+                }
+                html += `<div>${line}</div>`;
+            }
+            pyreContent.innerHTML = html;
+
+            document.getElementById("pyreStatus").textContent = `STATUS: KINDLING ${card.name} — DRIVING PAST THRESHOLD`;
+            addLog(`KINDLING INITIATED — ${card.name} DRIVEN INTO OVERDRIVE.`);
+
+            let tick = 0;
+            const interval = setInterval(() => {
+                tick++;
+                pyreContent.style.filter =
+                    `brightness(${0.6 + Math.random() * 1.0}) contrast(${1 + Math.random() * 0.8})`;
+                let newHtml = "";
+                for (let i = 0; i < lines; i++) {
+                    let line = "";
+                    for (let j = 0; j < cols; j++) {
+                        const ch = emberChars[Math.floor(Math.random() * emberChars.length)];
+                        const opacity = 0.3 + Math.random() * 0.7;
+                        line += `<span style="opacity:${opacity.toFixed(2)}">${ch}</span>`;
+                    }
+                    newHtml += `<div>${line}</div>`;
+                }
+                pyreContent.innerHTML = newHtml;
+
+                if (tick % 5 === 0) {
+                    const overlay = document.getElementById("glitchOverlay");
+                    const stripe = document.createElement("div");
+                    stripe.className = "glitch-stripe";
+                    stripe.style.top = Math.random() * 100 + "%";
+                    stripe.style.background = `rgba(255, 200, 100, ${0.3 + Math.random() * 0.6})`;
+                    stripe.style.animationDuration = (0.1 + Math.random() * 0.2) + "s";
+                    overlay.appendChild(stripe);
+                    setTimeout(() => stripe.remove(), 300);
+                }
+            }, 70);
+
+            setTimeout(() => {
+                clearInterval(interval);
+                pyreContent.style.filter = "none";
+
+                const pair = MATRIX[card.row][card.category];
+                dreadCounter++;
+                const dread = {
+                    id: "dread" + Date.now() + "_" + dreadCounter,
+                    row: card.row,
+                    category: card.category,
+                    name: pair.dread.name,
+                    effect: pair.dread.effect,
+                    cost: pair.dread.cost,
+                    fromBaleId: card.id
+                };
+                dreadCards.push(dread);
+                saveDreads();
+
+                baleCards = baleCards.filter(c => c.id !== id);
+                saveBales();
+
+                pyreContent.className = "pyre-content";
+                pyreContent.innerHTML = `<div class="dread-reveal">${renderDreadCardHTML(dread)}</div>`;
+                document.getElementById("pyreStatus").textContent = `STATUS: KINDLED — ${dread.name} BURNED CLEAR`;
+                addLog(`DREAD KINDLED — ${dread.name} (${dread.row} / ${dread.category}). BALE SPENT.`);
+
+                kindlingActive = false;
+                renderGrids();
+
+                setTimeout(() => {
+                    const status = document.getElementById("pyreStatus");
+                    status.innerHTML =
+                        'STATUS: DREAD BURNED — <button class="btn small" id="closePyreBtn">CLOSE PYRE</button>';
+                    document.getElementById("closePyreBtn").addEventListener("click", () => {
+                        pyreWrap.classList.remove("active");
+                        pyreContent.innerHTML = "";
+                        document.getElementById("pyreStatus").textContent = "STATUS: IDLE";
+                    });
+                }, 800);
+            }, 2000);
+        }
+
+        // ===== FIX Dread =====
+
+        function fixDread(id) {
+            const card = dreadCards.find(c => c.id === id);
+            if (!card) return;
+            dreadCards = dreadCards.filter(c => c.id !== id);
+            saveDreads();
+            addLog(`DREAD FIXED — ${card.name} RESOLVED. COST PAID IN FULL. NOTHING REMAINS.`);
+            renderGrids();
+        }
+
+        // ===== init =====
+
+        document.addEventListener("DOMContentLoaded", () => {
+            baleCards = loadCards(BALE_KEY);
+            dreadCards = loadCards(DREAD_KEY);
+            renderGrids();
+
+            setTimeout(() => {
+                initCircles();
+                updateBanningNoise();
+                setInterval(updateBanningNoise, 250);
+            }, 100);
+
+            window.addEventListener("resize", () => {
+                if (isPanelReady && !banTriggered) {
+                    const panel = document.getElementById("banningPanel");
+                    const rect = panel.getBoundingClientRect();
+                    const centerX = rect.width / 2;
+                    const centerY = rect.height / 2;
+                    for (let i = 0; i < circles.length; i++) {
+                        const angle = (i / circles.length) * 2 * Math.PI - Math.PI / 2;
+                        const x = centerX + BASE_RADIUS * Math.cos(angle) + (Math.random() - 0.5) * 30;
+                        const y = centerY + BASE_RADIUS * Math.sin(angle) + (Math.random() - 0.5) * 30;
+                        const c = circles[i];
+                        c.jitter.baseX = x;
+                        c.jitter.baseY = y;
+                        if (!c.jitter.isDragging) {
+                            c.el.style.left = x + "px";
+                            c.el.style.top = y + "px";
+                        }
+                    }
+                }
+            });
+
+            console.log("BANNING AND KINDLING TERMINAL ONLINE");
+            console.log("ALIGN THE ECLIPSES. FEED THE PYRE.");
+        });
+    </script>
+</body>
+</html>
