@@ -586,45 +586,21 @@
             min-height: 200px;
             position: relative;
             overflow: hidden;
-            transition: border-color 0.3s;
+            transition: border-color 0.3s, transform 0.1s;
             width: 80%;
             margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .pyre-wrap.active {
             border-color: var(--fg);
         }
 
-        .pyre-content {
-            font-family: "Courier New", monospace;
-            font-size: 14px;
-            line-height: 1.2;
-            letter-spacing: 0.5px;
-            white-space: pre;
-            color: rgba(255, 255, 255, 0.3);
-            min-height: 200px;
-            padding: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-            transition: all 0.1s;
-            background: var(--bg);
-            width: 100%;
-        }
-
-        .pyre-content .noise-row {
-            font-family: "Courier New", monospace;
-            font-size: 14px;
-            line-height: 1.2;
-            letter-spacing: 0.5px;
-            white-space: pre;
-            color: rgba(255, 255, 255, 0.3);
-        }
-
-        .pyre-content.burning {
+        /* The whole box shakes when burning */
+        .pyre-wrap.burning {
             animation: pyreShake 0.05s infinite;
-            color: rgba(255, 255, 255, 0.7);
             border-color: var(--fg);
         }
 
@@ -649,10 +625,43 @@
             }
         }
 
+        .pyre-content {
+            font-family: "Courier New", monospace;
+            font-size: 14px;
+            line-height: 1.2;
+            letter-spacing: 0.5px;
+            white-space: pre;
+            color: rgba(255, 255, 255, 0.3);
+            min-height: 200px;
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            transition: all 0.1s;
+            background: var(--bg);
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .pyre-content .noise-row {
+            font-family: "Courier New", monospace;
+            font-size: 14px;
+            line-height: 1.2;
+            letter-spacing: 0.5px;
+            white-space: pre;
+            color: rgba(255, 255, 255, 0.3);
+        }
+
+        .pyre-content.burning {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
         .pyre-content .dread-reveal {
             width: 100%;
             max-width: 500px;
-            margin: auto;
+            margin: 0 auto;
             animation: dreadReveal 0.6s ease-out;
         }
 
@@ -672,6 +681,7 @@
         .pyre-content .dread-reveal .op-card {
             border-color: var(--fg);
             background: var(--bg);
+            width: 100%;
         }
 
         #pyreStatus {
@@ -1351,6 +1361,9 @@
             // Disable kindle buttons
             document.querySelectorAll('[data-act="kindle"]').forEach(b => b.disabled = true);
 
+            // Start the box shake
+            pyreWrap.classList.add("burning");
+
             // Generate noise covering the whole box
             let lines = 12;
             let cols = 45;
@@ -1380,7 +1393,8 @@
                 baleCards = baleCards.filter(c => c.id !== id);
                 saveBales();
 
-                // Show Dread in pyre – smooth transition
+                // Stop the box shake and show the Dread card smoothly
+                pyreWrap.classList.remove("burning");
                 pyreContent.className = "pyre-content";
                 pyreContent.innerHTML = `<div class="dread-reveal">${renderDreadCardHTML(dread)}</div>`;
                 pyreStatus.textContent = `STATUS: KINDLED — ${dread.name} BURNED CLEAR`;
@@ -1393,6 +1407,7 @@
                 setTimeout(() => {
                     pyreSection.classList.remove("active");
                     pyreWrap.classList.remove("active");
+                    pyreWrap.classList.remove("burning");
                     pyreStatus.classList.remove("active");
                     pyreContent.innerHTML = "";
                     pyreContent.className = "pyre-content";
