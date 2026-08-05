@@ -125,24 +125,15 @@
         min-height:220px;
         border:1px solid var(--line);
         background:#020202;
+        padding:0;
+        overflow:hidden;
+    }
+
+    .noise-layer{
+        position:absolute;
+        inset:0;
         padding:16px;
         overflow:hidden;
-        display:flex;
-        align-items:center;
-        justify-content:center;
-    }
-
-    .signal-field.live{
-        align-items:flex-start;
-        justify-content:flex-start;
-    }
-
-    .signal-field .signal-placeholder{
-        font-family:"Courier New", monospace;
-        font-size:12px;
-        letter-spacing:2px;
-        text-transform:uppercase;
-        color:var(--dim);
     }
 
     .noise-row{
@@ -154,15 +145,36 @@
         color:rgba(255,255,255,0.5);
     }
 
+    .blade-line{
+        position:absolute;
+        top:0;
+        bottom:0;
+        width:2px;
+        background:var(--fg);
+        box-shadow:0 0 6px 1px rgba(255,255,255,0.5);
+        z-index:2;
+        transform:translateX(-1px);
+    }
+
+    .resolved-layer{
+        position:relative;
+        width:100%;
+        height:100%;
+        z-index:3;
+    }
+
     .signal-field.resolved{
-        justify-content:flex-start;
-        align-items:stretch;
-        padding:0;
         border-color:var(--fg);
     }
 
     .signal-field.resolved .op-card{
         border:none;
+        width:100%;
+        height:100%;
+        display:flex;
+        flex-direction:column;
+        justify-content:center;
+        padding:24px 22px;
     }
 
     #signalStatus, #pyreStatus{
@@ -172,6 +184,62 @@
         letter-spacing:1.5px;
         text-transform:uppercase;
         color:var(--dim);
+    }
+
+    /* ===== BLADE CONTROLS ===== */
+
+    .blade-controls{
+        display:flex;
+        gap:24px;
+        flex-wrap:wrap;
+        margin-top:14px;
+    }
+
+    .blade-control{
+        flex:1;
+        min-width:200px;
+    }
+
+    .blade-control label{
+        display:block;
+        font-family:"Courier New", monospace;
+        font-size:10.5px;
+        letter-spacing:1.5px;
+        text-transform:uppercase;
+        color:var(--dim);
+        margin-bottom:6px;
+    }
+
+    .blade-control input[type="range"]{
+        width:100%;
+        -webkit-appearance:none;
+        appearance:none;
+        height:1px;
+        background:var(--line);
+        outline:none;
+    }
+
+    .blade-control input[type="range"]::-webkit-slider-thumb{
+        -webkit-appearance:none;
+        width:3px;
+        height:22px;
+        background:var(--fg);
+        cursor:ew-resize;
+        box-shadow:0 0 6px 1px rgba(255,255,255,0.5);
+    }
+
+    .blade-control input[type="range"]::-moz-range-thumb{
+        width:3px;
+        height:22px;
+        border:none;
+        background:var(--fg);
+        cursor:ew-resize;
+        box-shadow:0 0 6px 1px rgba(255,255,255,0.5);
+    }
+
+    .blade-control input[type="range"]:disabled::-webkit-slider-thumb{
+        background:var(--dim);
+        box-shadow:none;
     }
 
     .action-row{
@@ -336,7 +404,15 @@
         animation:none;
         padding:0;
     }
-    .pyre-field.resolved .op-card{ border:none; }
+    .pyre-field.resolved .op-card{
+        border:none;
+        width:100%;
+        height:100%;
+        display:flex;
+        flex-direction:column;
+        justify-content:center;
+        padding:24px 22px;
+    }
 
     /* ===== LOG ===== */
 
@@ -405,13 +481,29 @@
     <h2 style="margin-top:28px;">Signal Field</h2>
     <div class="signal-wrap">
         <div class="signal-field" id="signalField">
-            <div class="signal-placeholder">NO SIGNAL CUT — AWAITING FINETUNE</div>
+            <div class="noise-layer" id="noiseLayer"></div>
+            <div class="blade-line" id="bladeLineLeft"></div>
+            <div class="blade-line" id="bladeLineRight"></div>
+            <div class="resolved-layer" id="resolvedLayer"></div>
         </div>
-        <div id="signalStatus">STATUS: IDLE</div>
+        <div id="signalStatus">STATUS: DRIFTING — AWAITING BLADES</div>
     </div>
 
+    <div class="blade-controls">
+        <div class="blade-control">
+            <label for="bladeLeft">BLADE L</label>
+            <input type="range" id="bladeLeft" min="0" max="100" value="8">
+        </div>
+        <div class="blade-control">
+            <label for="bladeRight">BLADE R</label>
+            <input type="range" id="bladeRight" min="0" max="100" value="92">
+        </div>
+    </div>
+    <p class="mono">Drag the blades toward each other. When the gap closes, the signal cuts on its own.</p>
+
     <div class="action-row">
-        <button class="btn" id="finetuneBtn" type="button">FINETUNE — NICK A YOKE</button>
+        <button class="btn" id="finetuneBtn" type="button">FORCE CUT — SKIP THE BLADES</button>
+        <button class="btn" id="resetSignalBtn" type="button" style="display:none;">CUT ANOTHER SIGNAL</button>
     </div>
 
     <hr>
