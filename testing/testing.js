@@ -1,6 +1,6 @@
 /*
 
-CONSTELLATION — STARFIELD TERMINAL
+CONSTELLATION TESTING — STARFIELD TERMINAL
 
 AFTERIMAGES holds every named point of light: its code, its display
 name, and its fixed position on the field (x, y in a 600×340 space).
