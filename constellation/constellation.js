@@ -347,8 +347,16 @@ function renderCatalog(){
 // re-projected onto the field from the log using whatever set charted it
 // the first time.
 function projectCharted(card){
-    if(!card || !Array.isArray(card.requires)) return;
-    selected = [...card.requires];
+    if(!card) return;
+    let requires = card.requires;
+    if(!Array.isArray(requires)){
+        // Defensive fallback in case backfill missed it — reconstruct from
+        // the known formation table when possible.
+        const known = CONSTELLATIONS.find(c => c.name === card.name);
+        requires = known ? known.requires : null;
+    }
+    if(!Array.isArray(requires) || requires.length === 0) return;
+    selected = [...requires];
     update();
 }
 
@@ -454,6 +462,25 @@ function parseManualInput(raw){
 
 document.addEventListener("DOMContentLoaded", () => {
     chartedCards = loadCharted();
+
+    // Older saves (from before the log could re-project a formation) only
+    // stored { name, mechanicName } — backfill 'requires' for those from the
+    // known CONSTELLATIONS table so they become clickable too. Anything that
+    // still can't be resolved (a pre-existing Constellation Zero entry, which
+    // has no fixed set) is left alone; projectCharted() handles that case.
+    let backfilled = false;
+    chartedCards.forEach(card => {
+        if(!Array.isArray(card.requires)){
+            const known = CONSTELLATIONS.find(c => c.name === card.name);
+            if(known){
+                card.requires = [...known.requires];
+                if(!card.mechanicText) card.mechanicText = known.mechanicText;
+                backfilled = true;
+            }
+        }
+    });
+    if(backfilled) persistCharted();
+
     update();
 
     document.getElementById("clearBtn").addEventListener("click", () => {
