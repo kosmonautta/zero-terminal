@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CONSTELLATION TESTING</title>
+<title>CONSTELLATION</title>
 <link rel="stylesheet" href="../style.css">
 <style>
     :root{
@@ -136,6 +136,28 @@
         background:#000;
         overflow:hidden;
         padding:52px 64px;
+        border-radius:6px;
+        /* screen-edge falloff, like the curve of an old tube monitor */
+        box-shadow:
+            inset 0 0 55px rgba(0,0,0,0.85),
+            inset 0 0 10px rgba(255,255,255,0.05);
+        animation:crtFlicker 6.5s infinite;
+    }
+
+    @keyframes crtFlicker{
+        0%, 95%, 100%{ opacity:1; }
+        96%{ opacity:0.93; }
+        97%{ opacity:1; }
+        98%{ opacity:0.96; }
+    }
+
+    /* phosphor bloom, scoped to text inside the field panel only (the HUD
+       readouts) — text-shadow inherits, so this cascades to every span
+       inside without needing to target each one */
+    .hud{
+        text-shadow:
+            0 0 1px rgba(255,255,255,0.45),
+            0 0 3px rgba(255,255,255,0.12);
     }
 
     .field-inner{
@@ -538,7 +560,7 @@
     .nav-link:hover{ border-bottom-color:var(--fg); }
 
     @media (prefers-reduced-motion: reduce){
-        body::after, .field-wrap::after, .field-wrap::before{ animation:none !important; }
+        .field-wrap, .field-wrap::after, .field-wrap::before{ animation:none !important; }
         .star-body, .star-glow, .field-line, .result-name{ transition:none !important; animation:none !important; }
     }
 
