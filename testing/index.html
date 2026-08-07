@@ -137,19 +137,32 @@
         overflow:hidden;
         padding:52px 64px;
         border-radius:6px;
-        /* opacity is nudged directly from JS (see startCrtFlicker in
-           constellation.js) on an irregular timer, not a fixed CSS loop —
-           a perfectly even repeat reads as fake within a few cycles */
+        /* soft light bleed off the edge of the tube, like a lit phosphor
+           screen glowing into the room around it */
+        box-shadow:0 0 28px rgba(255,255,255,0.08);
     }
 
     .field-inner{
         position:relative;
     }
 
+    /* screen-edge falloff over the star image itself, kept below the HUD
+       (nested inside field-inner rather than field-wrap) so the corner
+       plates read clean and only the star field darkens toward the edges */
+    .field-inner::after{
+        content:"";
+        position:absolute;
+        inset:0;
+        pointer-events:none;
+        z-index:2;
+        background:radial-gradient(ellipse at center, transparent 38%, rgba(0,0,0,0.88) 100%);
+    }
+
     /* phosphor bloom, scoped to text inside the field panel only (the HUD
        readouts) — text-shadow inherits, so this cascades to every span
        inside without needing to target each one */
     .hud{
+        font-weight:700;
         text-shadow:
             0 0 2px rgba(255,255,255,0.7),
             0 0 6px rgba(255,255,255,0.35);
@@ -178,27 +191,35 @@
         100%{ transform:translate(-2px, 1px); }
     }
 
-    /* light white phosphor CRT scanlines plus the screen-edge vignette,
-       combined in one layer and raised above the HUD — reads as glass in
-       front of the whole screen, boxes and text included, not just the
-       stars behind them. Plain alpha layering (no blend mode) since the
-       panel is already monochrome, so it looks the same as screen/multiply
-       would without the cross-blend complexity. */
+    /* light phosphor scanlines, screen-blended so they genuinely brighten
+       the field rather than sitting on top as a flat gray wash — this is
+       what makes it read as a glowing tube instead of a printed texture */
     .field-wrap::before{
         content:"";
         position:absolute;
         inset:0;
         pointer-events:none;
         z-index:6;
-        background:
-            repeating-linear-gradient(
-                to bottom,
-                rgba(255,255,255,0.07) 0px,
-                rgba(255,255,255,0.07) 1px,
-                transparent 1px,
-                transparent 3px
-            ),
-            radial-gradient(ellipse at center, transparent 45%, rgba(0,0,0,0.55) 100%);
+        background:repeating-linear-gradient(
+            to bottom,
+            rgba(255,255,255,0.13) 0px,
+            rgba(255,255,255,0.13) 1px,
+            transparent 1px,
+            transparent 3px
+        );
+        mix-blend-mode:screen;
+    }
+
+    /* soft ambient bloom at the center, also screen-blended, standing in
+       for the diffuse phosphor glow a real CRT throws across its own glass */
+    .field-wrap .crt-bloom{
+        content:"";
+        position:absolute;
+        inset:0;
+        pointer-events:none;
+        z-index:5;
+        background:radial-gradient(ellipse at center, rgba(255,255,255,0.08) 0%, transparent 60%);
+        mix-blend-mode:screen;
     }
 
     /* ===== HUD OVERLAY (recovered-tape corner readouts) =====
@@ -261,6 +282,7 @@
         display:block;
         position:relative;
         z-index:1;
+        filter:drop-shadow(0 0 1.5px rgba(255,255,255,0.4));
     }
 
     .field-empty{
@@ -612,6 +634,7 @@
             </svg>
             <div class="field-empty" id="fieldEmpty">NO POINTS PROJECTED</div>
         </div>
+        <div class="crt-bloom"></div>
 
         <!-- Recovered-tape HUD: corner readouts wired to live field state -->
         <div class="hud">
