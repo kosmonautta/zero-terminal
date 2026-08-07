@@ -492,6 +492,11 @@ function updateHud(){
         typeEl.textContent = match ? match.name.toUpperCase() : (selected.length ? "UNKNOWN" : "——");
     }
 
+    const traceEl = document.getElementById("hudTrace");
+    if(traceEl){
+        traceEl.textContent = selected.map(() => "•").join(" ");
+    }
+
     const battEl = document.getElementById("hudBatteryFill");
     if(battEl){
         const pct = Math.round((chartedCards.length / TOTAL_FORMATIONS) * 100);
