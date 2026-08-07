@@ -113,16 +113,28 @@
 
         .view-panel {
             display: none;
-            animation: fadeIn 0.35s ease;
         }
 
         .view-panel.active {
             display: block;
+            animation: glitchIn 0.55s steps(1) both;
         }
 
         @keyframes fadeIn {
             0% { opacity: 0; transform: translateY(6px); }
             100% { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Glitchy / noisy panel transition */
+        @keyframes glitchIn {
+            0%   { opacity: 0; transform: translate(-8px, 0) scaleY(1.03); clip-path: inset(0 0 42% 0); filter: contrast(2.2) brightness(1.6) saturate(0); }
+            8%   { opacity: 1; transform: translate(6px, 0);               clip-path: inset(18% 0 0 0); filter: contrast(1.8) brightness(1.3) hue-rotate(8deg); }
+            16%  { opacity: 0.85; transform: translate(-5px, 0);           clip-path: inset(0 0 65% 0); filter: contrast(2.4) brightness(0.7); }
+            24%  { opacity: 1; transform: translate(4px, 0);               clip-path: inset(48% 0 0 0); filter: contrast(1.4) brightness(1.4); }
+            33%  { opacity: 0.9; transform: translate(-2px, 0);            clip-path: inset(0 0 12% 0); filter: contrast(1.9) brightness(0.85); }
+            45%  { opacity: 1; transform: translate(2px, 0);               clip-path: inset(0); filter: contrast(1.2) brightness(1.1); }
+            60%  { opacity: 1; transform: translate(0, 0);                 clip-path: inset(0); filter: none; }
+            100% { opacity: 1; transform: translate(0, 0);                 clip-path: inset(0); filter: none; }
         }
 
         /* ============================================================
@@ -152,7 +164,7 @@
             background: transparent;
             border: none;
             border-right: 1px solid rgba(255, 255, 255, 0.3);
-            color: var(--dim);
+            color: rgba(255, 255, 255, 0.7);
             font-family: var(--font-mono);
             font-size: 0.62rem;
             letter-spacing: 0.2em;
@@ -161,6 +173,9 @@
             cursor: pointer;
             white-space: nowrap;
             transition: color 0.2s ease, background 0.2s ease, text-shadow 0.2s ease;
+            text-shadow:
+                0 0 1px rgba(255, 255, 255, 0.5),
+                0 0 4px rgba(255, 255, 255, 0.25);
         }
 
         .hud-tab:last-child { border-right: none; }
@@ -169,20 +184,31 @@
             display: block;
             font-size: 0.5rem;
             letter-spacing: 0.15em;
-            opacity: 0.6;
+            opacity: 0.75;
             margin-top: 2px;
         }
 
         .hud-tab:hover {
             color: #fff;
-            text-shadow: 0 0 2px rgba(255, 255, 255, 0.7), 0 0 8px rgba(255, 255, 255, 0.4);
+            text-shadow:
+                0 0 1px #fff,
+                0 0 4px rgba(255, 255, 255, 0.95),
+                0 0 12px rgba(255, 255, 255, 0.75),
+                0 0 24px rgba(255, 255, 255, 0.5),
+                0 0 40px rgba(255, 255, 255, 0.3);
         }
 
         .hud-tab.active {
             background: transparent;
             color: #fff;
-            text-shadow: 0 0 3px rgba(255, 255, 255, 0.85), 0 0 10px rgba(255, 255, 255, 0.5);
-            box-shadow: inset 0 -2px 0 #fff;
+            text-shadow:
+                0 0 1px #fff,
+                0 0 3px #fff,
+                0 0 8px rgba(255, 255, 255, 1),
+                0 0 18px rgba(255, 255, 255, 0.85),
+                0 0 34px rgba(255, 255, 255, 0.6),
+                0 0 55px rgba(255, 255, 255, 0.35);
+            box-shadow: inset 0 -2px 0 #fff, 0 0 14px rgba(255, 255, 255, 0.25);
         }
 
         /* CRT scanlines — screen-blended so they brighten rather than sit as a flat wash */
@@ -234,6 +260,7 @@
             display: block;
             position: relative;
             background: #000;
+            overflow: hidden;
         }
 
         .ref-image {
@@ -247,17 +274,107 @@
             image-rendering: crisp-edges;
             position: relative;
             z-index: 1;
-            filter: brightness(0.72) contrast(1.12) saturate(0);
+            filter: brightness(0.78) contrast(1.15) saturate(0);
+        }
+
+        /* Bloom pass — a blurred, brightened duplicate of the figure, screen-blended
+           on top to spill light past the edges of bright areas like a phosphor CRT. */
+        .ref-image-bloom {
+            display: block;
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            max-height: 70vh;
+            margin: 0 auto;
+            object-fit: contain;
+            z-index: 2;
+            pointer-events: none;
+            mix-blend-mode: screen;
+            opacity: 0.85;
+            filter: brightness(1.9) contrast(1.5) saturate(0) blur(14px);
+        }
+
+        .ref-image-bloom.bloom-strong {
+            opacity: 1;
+        }
+
+        /* Secondary wider, softer halo layer for extra spread */
+        .figure-stage .bloom-halo {
+            position: absolute;
+            inset: 0;
+            z-index: 3;
+            pointer-events: none;
+            background: radial-gradient(ellipse at center, rgba(255, 255, 255, 0.16) 0%, rgba(255, 255, 255, 0.06) 38%, transparent 70%);
+            mix-blend-mode: screen;
+        }
+
+        /* Glitch / noise sweep shown briefly on tab switch */
+        .glitch-noise {
+            position: absolute;
+            inset: 0;
+            z-index: 7;
+            pointer-events: none;
+            opacity: 0;
+            background-image:
+                repeating-linear-gradient(0deg, rgba(255,255,255,0.5) 0px, rgba(255,255,255,0.5) 1px, transparent 1px, transparent 3px),
+                repeating-linear-gradient(90deg, rgba(255,255,255,0.25) 0px, transparent 2px, transparent 5px);
+            mix-blend-mode: screen;
+        }
+
+        .glitch-noise.flashing {
+            animation: glitchNoiseFlash 0.5s steps(6);
+        }
+
+        @keyframes glitchNoiseFlash {
+            0%   { opacity: 0.7; transform: translate(0, 0); }
+            15%  { opacity: 0.15; transform: translate(6px, -3px); }
+            30%  { opacity: 0.65; transform: translate(-8px, 2px); }
+            45%  { opacity: 0.1; transform: translate(4px, 4px); }
+            60%  { opacity: 0.5; transform: translate(-3px, -2px); }
+            80%  { opacity: 0.2; transform: translate(2px, 1px); }
+            100% { opacity: 0; transform: translate(0, 0); }
+        }
+
+        .figure-stage.glitching .ref-image {
+            animation: glitchImageJitter 0.5s steps(1);
+        }
+
+        .figure-stage.glitching .ref-image-bloom {
+            animation: glitchBloomJitter 0.5s steps(1);
+        }
+
+        @keyframes glitchImageJitter {
+            0%   { transform: translate(0, 0); clip-path: inset(0 0 45% 0); filter: brightness(0.3) contrast(2.4) saturate(0); }
+            10%  { transform: translate(10px, 0); clip-path: inset(20% 0 0 0); filter: brightness(2.2) contrast(2) invert(1) saturate(0); }
+            22%  { transform: translate(-12px, 0); clip-path: inset(0 0 70% 0); filter: brightness(0.5) contrast(2) saturate(0); }
+            35%  { transform: translate(8px, 0); clip-path: inset(55% 0 0 0); filter: brightness(1.8) contrast(1.6) saturate(0); }
+            50%  { transform: translate(-5px, 0); clip-path: inset(0 0 10% 0); filter: brightness(0.6) contrast(1.8) saturate(0); }
+            65%  { transform: translate(4px, 0); clip-path: inset(0); filter: brightness(1.3) contrast(1.3) saturate(0); }
+            80%  { transform: translate(-2px, 0); clip-path: inset(0); filter: brightness(0.9) contrast(1.2) saturate(0); }
+            100% { transform: translate(0, 0); clip-path: inset(0); filter: brightness(0.78) contrast(1.15) saturate(0); }
+        }
+
+        @keyframes glitchBloomJitter {
+            0%   { transform: translate(0, 0) scale(1.02); opacity: 0.2; }
+            20%  { transform: translate(-10px, 3px) scale(1.05); opacity: 0.9; }
+            40%  { transform: translate(8px, -4px) scale(1.0); opacity: 0.3; }
+            60%  { transform: translate(-6px, 2px) scale(1.04); opacity: 0.8; }
+            80%  { transform: translate(3px, -2px) scale(1.01); opacity: 0.5; }
+            100% { transform: translate(0, 0) scale(1); opacity: 0.85; }
         }
 
         @media (prefers-reduced-motion: reduce) {
-            .hud-frame::before, .hud-grain { animation: none !important; }
+            .hud-frame::before, .hud-grain,
+            .view-panel.active, .glitch-noise.flashing,
+            .figure-stage.glitching .ref-image,
+            .figure-stage.glitching .ref-image-bloom { animation: none !important; }
         }
 
         @media(max-width:720px) {
             .hud-tab { font-size: 0.52rem; padding: 8px 8px; }
             .hud-tab .hud-tab-sub { font-size: 0.44rem; }
-            .ref-image {
+            .ref-image, .ref-image-bloom {
                 max-height: 50vh;
             }
         }
@@ -354,7 +471,7 @@
 
         .kindling-card.active-group.expanded .card-body {
             display: block;
-            animation: fadeIn 0.3s ease;
+            animation: glitchIn 0.4s steps(1) both;
         }
 
         .kindling-card .stage-group {
@@ -559,9 +676,12 @@
                 <button class="hud-tab" data-view="nerve">NERVE<span class="hud-tab-sub">NRV</span></button>
                 <button class="hud-tab" data-view="frame">FRAME<span class="hud-tab-sub">FRM</span></button>
             </div>
-            <div class="figure-stage">
+            <div class="figure-stage" id="figureStage">
                 <img class="ref-image" id="hudImage" src="../images/brain.png" alt="BRN reference figure">
+                <img class="ref-image-bloom bloom-strong" id="hudImageBloom" src="../images/brain.png" alt="" aria-hidden="true">
+                <div class="bloom-halo"></div>
                 <div class="hud-grain"></div>
+                <div class="glitch-noise" id="glitchNoise"></div>
             </div>
         </div>
 
@@ -1133,6 +1253,9 @@
             function setupViewToggles() {
                 const buttons = document.querySelectorAll('.hud-tab');
                 const hudImage = document.getElementById('hudImage');
+                const hudImageBloom = document.getElementById('hudImageBloom');
+                const figureStage = document.getElementById('figureStage');
+                const glitchNoise = document.getElementById('glitchNoise');
                 const IMAGE_SRC = {
                     brain: '../images/brain.png',
                     nerve: '../images/nerve.png',
@@ -1149,17 +1272,48 @@
                     frame: document.getElementById('grid-frame')
                 };
 
+                let glitchTimeout = null;
+
                 buttons.forEach(btn => {
                     btn.addEventListener('click', () => {
                         buttons.forEach(b => b.classList.remove('active'));
                         btn.classList.add('active');
                         const view = btn.dataset.view;
+
+                        // trigger the glitch/noise transition on the image + tab panel
+                        if (figureStage) {
+                            figureStage.classList.remove('glitching');
+                            void figureStage.offsetWidth; // restart animation
+                            figureStage.classList.add('glitching');
+                        }
+                        if (glitchNoise) {
+                            glitchNoise.classList.remove('flashing');
+                            void glitchNoise.offsetWidth;
+                            glitchNoise.classList.add('flashing');
+                        }
+                        if (glitchTimeout) clearTimeout(glitchTimeout);
+                        glitchTimeout = setTimeout(() => {
+                            if (figureStage) figureStage.classList.remove('glitching');
+                            if (glitchNoise) glitchNoise.classList.remove('flashing');
+                        }, 520);
+
                         if (hudImage) {
                             hudImage.src = IMAGE_SRC[view];
                             hudImage.alt = view.toUpperCase() + ' reference figure';
                         }
+                        if (hudImageBloom) {
+                            hudImageBloom.src = IMAGE_SRC[view];
+                        }
                         Object.keys(panels).forEach(key => {
-                            panels[key].classList.toggle('active', key === view);
+                            const wasActive = panels[key].classList.contains('active');
+                            const nowActive = key === view;
+                            panels[key].classList.toggle('active', nowActive);
+                            if (nowActive) {
+                                // restart the glitchIn animation each time it becomes active
+                                panels[key].style.animation = 'none';
+                                void panels[key].offsetWidth;
+                                panels[key].style.animation = '';
+                            }
                         });
                         Object.keys(grids).forEach(key => {
                             const cards = grids[key].querySelectorAll('.kindling-card');
