@@ -145,11 +145,54 @@
         .hud-frame {
             width: fit-content;
             max-width: 100%;
-            margin: 1rem auto 1.6rem;
             border: 2px solid #fff;
             background: #000;
             position: relative;
             overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        /* ============================================================
+           HUD LAYOUT — the two Keeps that aren't wired into a group flank
+           the image panel: Black Nail/Red Salt to the left, Red Bone/
+           Black Thread to the right, each stacked top/bottom.
+           ============================================================ */
+        .hud-layout {
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            gap: 1.1rem;
+            margin: 1rem auto 1.6rem;
+            max-width: 100%;
+        }
+
+        .hud-side {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            width: 190px;
+            flex-shrink: 0;
+        }
+
+        .hud-side .keep-slot .keep-card {
+            height: 100%;
+        }
+
+        @media (max-width: 1150px) {
+            .hud-side { width: 160px; }
+        }
+
+        @media (max-width: 900px) {
+            .hud-layout { flex-direction: column; align-items: center; }
+            .hud-frame { order: -1; }
+            .hud-side-left { order: 0; }
+            .hud-side-right { order: 1; }
+            .hud-side {
+                flex-direction: row;
+                width: 100%;
+                max-width: 640px;
+            }
+            .hud-side .keep-slot { flex: 1; }
         }
 
         .hud-tabs {
@@ -497,67 +540,67 @@
             border-color: var(--fg);
         }
 
+        /* Selected/expanded card flips to a solid white plate with dark text — no glow, just contrast */
         .kindling-card.active-group.expanded {
-            border-color: var(--fg);
+            background: #fff;
+            border-color: #000;
+            --fg: #000;
+            --dim: rgba(0, 0, 0, 0.6);
+            --line: rgba(0, 0, 0, 0.25);
+            --border-dot: rgba(0, 0, 0, 0.3);
+            --bg: #fff;
+            --bg-panel: #fff;
         }
 
-        /* Ignite tiers — the card glows a little more as it's dialed from Nibble to Devour */
-        .kindling-card.active-group.ignite-1 {
-            box-shadow: 0 0 8px rgba(255, 255, 255, 0.12);
-        }
-        .kindling-card.active-group.ignite-2 {
-            box-shadow: 0 0 16px rgba(255, 255, 255, 0.22);
-            border-color: #fff;
-        }
-
-        /* Subtle continuous shake on highlighted cards — grows rougher with ignite tier */
+        /* Subtle continuous shake on highlighted cards — short, snappy jumps, no sway */
         .kindling-card.active-group {
-            animation: cardJitterLow 2.1s infinite steps(10);
+            animation: cardJitterLow 0.9s infinite steps(9);
         }
         .kindling-card.active-group.ignite-1 {
-            animation: cardJitterMed 1.5s infinite steps(10);
+            animation: cardJitterMed 0.55s infinite steps(9);
         }
         .kindling-card.active-group.ignite-2 {
-            animation: cardJitterHigh 1.0s infinite steps(10);
+            animation: cardJitterHigh 0.35s infinite steps(10);
         }
 
         @keyframes cardJitterLow {
-            0%, 100% { transform: translate(0, 0); }
-            10% { transform: translate(0.4px, -0.3px); }
-            20% { transform: translate(-0.3px, 0.4px); }
-            30% { transform: translate(0.5px, 0.2px); }
-            40% { transform: translate(-0.4px, -0.4px); }
-            50% { transform: translate(0.3px, 0.3px); }
-            60% { transform: translate(-0.5px, 0.1px); }
-            70% { transform: translate(0.2px, -0.4px); }
-            80% { transform: translate(-0.2px, 0.3px); }
-            90% { transform: translate(0.4px, -0.2px); }
+            0%   { transform: translate(0, 0) rotate(0deg); }
+            11%  { transform: translate(0.6px, -0.7px) rotate(-0.06deg); }
+            22%  { transform: translate(-0.8px, 0.3px) rotate(0.09deg); }
+            33%  { transform: translate(0.4px, 0.8px) rotate(-0.04deg); }
+            44%  { transform: translate(-0.9px, -0.4px) rotate(0.07deg); }
+            56%  { transform: translate(0.7px, 0.5px) rotate(-0.1deg); }
+            67%  { transform: translate(-0.3px, -0.9px) rotate(0.05deg); }
+            78%  { transform: translate(0.8px, 0.2px) rotate(-0.07deg); }
+            89%  { transform: translate(-0.6px, 0.6px) rotate(0.03deg); }
+            100% { transform: translate(0, 0) rotate(0deg); }
         }
 
         @keyframes cardJitterMed {
-            0%, 100% { transform: translate(0, 0) rotate(0deg); }
-            10% { transform: translate(0.9px, -0.6px) rotate(0.06deg); }
-            20% { transform: translate(-0.7px, 0.8px) rotate(-0.05deg); }
-            30% { transform: translate(1px, 0.4px) rotate(0.04deg); }
-            40% { transform: translate(-0.8px, -0.9px) rotate(-0.06deg); }
-            50% { transform: translate(0.6px, 0.6px) rotate(0.03deg); }
-            60% { transform: translate(-1px, 0.2px) rotate(-0.04deg); }
-            70% { transform: translate(0.4px, -0.8px) rotate(0.05deg); }
-            80% { transform: translate(-0.4px, 0.6px) rotate(-0.03deg); }
-            90% { transform: translate(0.8px, -0.4px) rotate(0.04deg); }
+            0%   { transform: translate(0, 0) rotate(0deg); }
+            11%  { transform: translate(1.1px, -1.3px) rotate(-0.11deg); }
+            22%  { transform: translate(-1.5px, 0.5px) rotate(0.16deg); }
+            33%  { transform: translate(0.6px, 1.4px) rotate(-0.08deg); }
+            44%  { transform: translate(-1.6px, -0.7px) rotate(0.13deg); }
+            56%  { transform: translate(1.3px, 0.9px) rotate(-0.18deg); }
+            67%  { transform: translate(-0.5px, -1.6px) rotate(0.09deg); }
+            78%  { transform: translate(1.5px, 0.3px) rotate(-0.14deg); }
+            89%  { transform: translate(-1.1px, 1.1px) rotate(0.06deg); }
+            100% { transform: translate(0, 0) rotate(0deg); }
         }
 
         @keyframes cardJitterHigh {
-            0%, 100% { transform: translate(0, 0) rotate(0deg); }
-            10% { transform: translate(1.6px, -1.1px) rotate(0.12deg); }
-            20% { transform: translate(-1.3px, 1.5px) rotate(-0.1deg); }
-            30% { transform: translate(1.8px, 0.7px) rotate(0.09deg); }
-            40% { transform: translate(-1.5px, -1.7px) rotate(-0.12deg); }
-            50% { transform: translate(1.1px, 1.2px) rotate(0.07deg); }
-            60% { transform: translate(-1.8px, 0.4px) rotate(-0.09deg); }
-            70% { transform: translate(0.8px, -1.5px) rotate(0.1deg); }
-            80% { transform: translate(-0.8px, 1.1px) rotate(-0.06deg); }
-            90% { transform: translate(1.4px, -0.7px) rotate(0.08deg); }
+            0%   { transform: translate(0, 0) rotate(0deg); }
+            10%  { transform: translate(1.8px, -2.1px) rotate(-0.18deg); }
+            20%  { transform: translate(-2.4px, 0.8px) rotate(0.25deg); }
+            30%  { transform: translate(1px, 2.4px) rotate(-0.13deg); }
+            40%  { transform: translate(-2.6px, -1.1px) rotate(0.21deg); }
+            50%  { transform: translate(2px, 1.5px) rotate(-0.28deg); }
+            60%  { transform: translate(-0.8px, -2.7px) rotate(0.14deg); }
+            70%  { transform: translate(2.5px, 0.4px) rotate(-0.22deg); }
+            80%  { transform: translate(-1.7px, 2.2px) rotate(0.11deg); }
+            90%  { transform: translate(1px, -1.3px) rotate(-0.16deg); }
+            100% { transform: translate(0, 0) rotate(0deg); }
         }
 
         @media (prefers-reduced-motion: reduce) {
@@ -826,7 +869,6 @@
 
         .keep-card:hover {
             border-color: var(--fg);
-            box-shadow: 0 0 14px rgba(255, 255, 255, 0.16);
         }
 
         .keep-glyph {
@@ -950,18 +992,30 @@
             &nbsp;—&nbsp; Reality, prepared to ignite.
         </div>
 
-        <div class="hud-frame">
-            <div class="hud-tabs" id="hudTabs">
-                <button class="hud-tab active" data-view="brain">BRAIN<span class="hud-tab-sub">BRN</span></button>
-                <button class="hud-tab" data-view="nerve">NERVE<span class="hud-tab-sub">NRV</span></button>
-                <button class="hud-tab" data-view="frame">FRAME<span class="hud-tab-sub">FRM</span></button>
+        <div class="hud-layout">
+            <div class="hud-side hud-side-left">
+                <div class="keep-slot" id="keep-slot-black-nail"></div>
+                <div class="keep-slot" id="keep-slot-red-salt"></div>
             </div>
-            <div class="figure-stage" id="figureStage">
-                <img class="ref-image" id="hudImage" src="../images/brain.png" alt="BRN reference figure">
-                <img class="ref-image-bloom bloom-strong" id="hudImageBloom" src="../images/brain.png" alt="" aria-hidden="true">
-                <div class="bloom-halo"></div>
-                <div class="hud-grain"></div>
-                <div class="glitch-noise" id="glitchNoise"></div>
+
+            <div class="hud-frame">
+                <div class="hud-tabs" id="hudTabs">
+                    <button class="hud-tab active" data-view="brain">BRAIN<span class="hud-tab-sub">BRN</span></button>
+                    <button class="hud-tab" data-view="nerve">NERVE<span class="hud-tab-sub">NRV</span></button>
+                    <button class="hud-tab" data-view="frame">FRAME<span class="hud-tab-sub">FRM</span></button>
+                </div>
+                <div class="figure-stage" id="figureStage">
+                    <img class="ref-image" id="hudImage" src="../images/brain.png" alt="BRN reference figure">
+                    <img class="ref-image-bloom bloom-strong" id="hudImageBloom" src="../images/brain.png" alt="" aria-hidden="true">
+                    <div class="bloom-halo"></div>
+                    <div class="hud-grain"></div>
+                    <div class="glitch-noise" id="glitchNoise"></div>
+                </div>
+            </div>
+
+            <div class="hud-side hud-side-right">
+                <div class="keep-slot" id="keep-slot-red-bone"></div>
+                <div class="keep-slot" id="keep-slot-black-thread"></div>
             </div>
         </div>
 
@@ -1013,11 +1067,6 @@
                 <div class="synergy-item"><strong>Borrow the Shadow</strong> + <strong>The Creeping Gloom</strong> / <strong>Make the Dark Cut</strong> — arrive already striking, from inside a blade you made.</div>
                 <div class="synergy-item"><strong>Strike From Everywhere</strong> + <strong>Second Corpse</strong> — split the strikes, split the cost.</div>
             </div>
-        </div>
-
-        <div class="keeps-section">
-            <h2>The Four Keeps</h2>
-            <div class="keeps-grid" id="keepsGrid"></div>
         </div>
 
         <div class="demand-note">
@@ -1479,17 +1528,23 @@
                 { name: 'Red Bone', glyph: '☉', tagline: 'Identity, presence, disguise' }
             ];
 
-            function renderKeeps(containerId) {
-                const container = document.getElementById(containerId);
-                if (!container) return;
-                container.innerHTML = '';
+            const KEEP_SLOTS = {
+                'Black Nail': 'keep-slot-black-nail',
+                'Red Salt': 'keep-slot-red-salt',
+                'Red Bone': 'keep-slot-red-bone',
+                'Black Thread': 'keep-slot-black-thread'
+            };
 
+            function renderKeeps() {
                 const all = [];
                 ['brain', 'nerve', 'frame'].forEach(group => {
                     KINDLINGS[group].forEach(k => all.push(k));
                 });
 
                 KEEPS.forEach(keep => {
+                    const slot = document.getElementById(KEEP_SLOTS[keep.name]);
+                    if (!slot) return;
+                    slot.innerHTML = '';
                     const matches = all.filter(k => k.keep.toLowerCase().includes(keep.name.toLowerCase()));
                     const card = document.createElement('div');
                     card.className = 'keep-card';
@@ -1500,7 +1555,7 @@
                         <div class="keep-count">${String(matches.length).padStart(2, '0')} Kindlings Bound</div>
                         <div class="keep-list">${matches.map(m => '#' + String(m.id).padStart(2, '0')).join('&nbsp;&nbsp;')}</div>
                     `;
-                    container.appendChild(card);
+                    slot.appendChild(card);
                 });
             }
 
@@ -1687,7 +1742,7 @@
                 renderGroupCards('grid-brain', 'brain');
                 renderGroupCards('grid-nerve', 'nerve');
                 renderGroupCards('grid-frame', 'frame');
-                renderKeeps('keepsGrid');
+                renderKeeps();
                 setupViewToggles();
                 console.log('🔴 THE 18 KINDLINGS · ULTRABLACK ONLINE');
             });
