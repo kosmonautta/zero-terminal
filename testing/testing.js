@@ -1,6 +1,6 @@
 /*
 
-CONSTELLATION TESTING — STARFIELD TERMINAL
+CONSTELLATION — STARFIELD TERMINAL
 
 AFTERIMAGES holds every named point of light: its code, its display
 name, and its fixed position on the field (x, y in a 600×340 space).
@@ -177,6 +177,28 @@ function startJitter(code, body){
 
 let selected = []; // names, in the order they were added
 let lastAdded = null; // most recently toggled-on afterimage, for the HUD "TARGET" readout
+
+// ===== CRT FLICKER =====
+// Nudges the field panel's opacity on an irregular timer rather than a fixed
+// CSS loop — same idea as the star jitter above: re-roll both the dip depth
+// and the wait before the next one every single time, so it never settles
+// into an obviously repeating cycle.
+function startCrtFlicker(){
+    const panel = document.querySelector(".field-wrap");
+    if(!panel) return;
+    if(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    function tick(){
+        const dip = randRange(0.88, 1);
+        panel.style.opacity = dip.toFixed(2);
+        const holdFor = randRange(30, 90);
+        setTimeout(() => {
+            panel.style.opacity = "1";
+            setTimeout(tick, randRange(1500, 6000));
+        }, holdFor);
+    }
+    setTimeout(tick, randRange(1000, 4000));
+}
 
 // ===== CARD SAVING =====
 
@@ -523,8 +545,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     update();
 
-    // Keep the HUD date live even while the tab sits idle
+    // Keep TARGET/TYPE/battery current even while the tab sits idle
     setInterval(updateHud, 30000);
+
+    startCrtFlicker();
 
     document.getElementById("clearBtn").addEventListener("click", () => {
         selected = [];
