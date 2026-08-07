@@ -211,31 +211,37 @@
             box-shadow: inset 0 -2px 0 #fff, 0 0 14px rgba(255, 255, 255, 0.25);
         }
 
-        /* CRT scanlines — multiply-blended so they darken the image, like a real dim tube */
+        /* CRT scanlines — softened and slowly drifting, so it reads as a live tube rather than a fixed overlay */
         .hud-frame::before {
             content: "";
             position: absolute;
-            inset: 0;
+            inset: -4px;
             pointer-events: none;
             z-index: 5;
             background: repeating-linear-gradient(
                 to bottom,
-                rgba(0, 0, 0, 0.72) 0px,
-                rgba(0, 0, 0, 0.72) 1px,
+                rgba(0, 0, 0, 0.32) 0px,
+                rgba(0, 0, 0, 0.32) 1px,
                 transparent 1px,
-                transparent 2px
+                transparent 3px
             );
             mix-blend-mode: multiply;
+            animation: scanlineDrift 5s linear infinite;
         }
 
-        /* CRT vignette — darkens the corners hard for a punchier, higher-contrast tube look */
+        @keyframes scanlineDrift {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(3px); }
+        }
+
+        /* CRT vignette — softened so it frames the image without crushing the corners */
         .figure-stage::after {
             content: "";
             position: absolute;
             inset: 0;
             pointer-events: none;
             z-index: 6;
-            background: radial-gradient(ellipse at center, transparent 40%, rgba(0, 0, 0, 0.35) 78%, rgba(0, 0, 0, 0.7) 100%);
+            background: radial-gradient(ellipse at center, transparent 48%, rgba(0, 0, 0, 0.18) 80%, rgba(0, 0, 0, 0.4) 100%);
             mix-blend-mode: multiply;
         }
 
@@ -245,11 +251,11 @@
             inset: -4px;
             pointer-events: none;
             z-index: 4;
-            opacity: 0.12;
+            opacity: 0.06;
             background-image:
                 repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.6) 0px, transparent 1px, transparent 2px),
                 repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.3) 0px, transparent 1px, transparent 3px);
-            animation: hudGrain 0.22s steps(2) infinite;
+            animation: hudGrain 0.4s steps(2) infinite;
         }
 
         @keyframes hudGrain {
@@ -1467,10 +1473,10 @@
             };
 
             const KEEPS = [
-                { name: 'Black Nail', glyph: '⊤', tagline: 'Perception, nerve, current' },
-                { name: 'Black Thread', glyph: '≈', tagline: 'Binding, control, puppetry' },
-                { name: 'Red Salt', glyph: '⁘', tagline: 'Kinetic force, motion, distance' },
-                { name: 'Red Bone', glyph: '◇', tagline: 'Identity, presence, disguise' }
+                { name: 'Black Nail', glyph: '☿', tagline: 'Perception, nerve, current' },
+                { name: 'Black Thread', glyph: '🜔', tagline: 'Binding, control, puppetry' },
+                { name: 'Red Salt', glyph: '🜍', tagline: 'Kinetic force, motion, distance' },
+                { name: 'Red Bone', glyph: '☉', tagline: 'Identity, presence, disguise' }
             ];
 
             function renderKeeps(containerId) {
@@ -1498,21 +1504,16 @@
                 });
             }
 
-            function renderAllCards(containerId) {
+            function renderGroupCards(containerId, groupKey) {
                 const container = document.getElementById(containerId);
                 if (!container) return;
                 container.innerHTML = '';
 
-                const all = [];
-                ['brain', 'nerve', 'frame'].forEach(group => {
-                    KINDLINGS[group].forEach(k => {
-                        all.push({ ...k, group });
-                    });
-                });
+                const items = KINDLINGS[groupKey].map(k => ({ ...k, group: groupKey }));
 
-                all.forEach(k => {
+                items.forEach(k => {
                     const card = document.createElement('div');
-                    card.className = 'kindling-card ignite-0';
+                    card.className = 'kindling-card active-group ignite-0';
                     card.dataset.group = k.group;
 
                     const header = document.createElement('div');
@@ -1605,7 +1606,6 @@
 
                     card.addEventListener('click', (e) => {
                         if (e.target.closest('.card-toggle')) return;
-                        if (!card.classList.contains('active-group')) return;
                         card.classList.toggle('expanded');
                         const btn = card.querySelector('.card-toggle');
                         if (btn) {
@@ -1633,11 +1633,6 @@
                     brain: document.getElementById('view-brain'),
                     nerve: document.getElementById('view-nerve'),
                     frame: document.getElementById('view-frame')
-                };
-                const grids = {
-                    brain: document.getElementById('grid-brain'),
-                    nerve: document.getElementById('grid-nerve'),
-                    frame: document.getElementById('grid-frame')
                 };
 
                 let glitchTimeout = null;
@@ -1673,7 +1668,6 @@
                             hudImageBloom.src = IMAGE_SRC[view];
                         }
                         Object.keys(panels).forEach(key => {
-                            const wasActive = panels[key].classList.contains('active');
                             const nowActive = key === view;
                             panels[key].classList.toggle('active', nowActive);
                             if (nowActive) {
@@ -1683,21 +1677,6 @@
                                 panels[key].style.animation = '';
                             }
                         });
-                        Object.keys(grids).forEach(key => {
-                            const cards = grids[key].querySelectorAll('.kindling-card');
-                            cards.forEach(card => {
-                                const group = card.dataset.group;
-                                card.classList.toggle('active-group', group === view);
-                                if (group !== view) {
-                                    card.classList.remove('expanded');
-                                    const toggle = card.querySelector('.card-toggle');
-                                    if (toggle) {
-                                        toggle.textContent = 'Expand';
-                                        toggle.classList.remove('expanded-toggle');
-                                    }
-                                }
-                            });
-                        });
                     });
                 });
 
@@ -1705,9 +1684,9 @@
             }
 
             document.addEventListener('DOMContentLoaded', () => {
-                renderAllCards('grid-brain');
-                renderAllCards('grid-nerve');
-                renderAllCards('grid-frame');
+                renderGroupCards('grid-brain', 'brain');
+                renderGroupCards('grid-nerve', 'nerve');
+                renderGroupCards('grid-frame', 'frame');
                 renderKeeps('keepsGrid');
                 setupViewToggles();
                 console.log('🔴 THE 18 KINDLINGS · ULTRABLACK ONLINE');
