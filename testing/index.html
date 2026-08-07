@@ -257,9 +257,39 @@
 
     .hud-tl{ top:0; left:0; border-right:2px solid #fff; border-bottom:2px solid #fff; }
     .hud-tr{ top:0; right:0; text-align:right; align-items:flex-end; border-left:2px solid #fff; border-bottom:2px solid #fff; }
-    .hud-bl{ bottom:0; left:0; border-right:2px solid #fff; border-top:2px solid #fff; }
-    .hud-bm{ bottom:0; left:50%; transform:translateX(-50%); align-items:center; text-align:center; border-left:2px solid #fff; border-right:2px solid #fff; border-top:2px solid #fff; }
     .hud-br{ bottom:0; right:0; align-items:flex-end; text-align:right; border-left:2px solid #fff; border-top:2px solid #fff; }
+
+    /* TARGET / TRACE / TYPE as one contiguous strip along the bottom edge —
+       a shared top border, flush with the panel on the left, one vertical
+       divider between each cell, and align-items:stretch so all three cells
+       come out exactly the same height regardless of content length */
+    .hud-row-bottom{
+        position:absolute;
+        bottom:0;
+        left:0;
+        display:flex;
+        align-items:stretch;
+        border-top:2px solid #fff;
+    }
+
+    .hud-row-bottom .hud-cell{
+        display:flex;
+        flex-direction:column;
+        justify-content:center;
+        gap:3px;
+        padding:6px 9px;
+        background:#000;
+        color:#fff;
+        border-right:2px solid #fff;
+    }
+
+    /* one dot per connected afterimage, in order, so the trace box fills
+       left to right as points are added to the field */
+    .hud-dots{
+        letter-spacing:4px;
+        min-width:1em;
+        min-height:1em;
+    }
 
     /* plain rectangle gauge — one border, one solid fill, no nub or ticks */
     .hud-battery-shell{
@@ -645,13 +675,19 @@
             <div class="hud-corner hud-tr">
                 <span>RECORDING</span>
             </div>
-            <div class="hud-corner hud-bl">
-                <span class="hud-label">TARGET</span>
-                <span id="hudTarget">——</span>
-            </div>
-            <div class="hud-corner hud-bm">
-                <span class="hud-label">TYPE</span>
-                <span id="hudType">——</span>
+            <div class="hud-row-bottom">
+                <div class="hud-cell">
+                    <span class="hud-label">TARGET</span>
+                    <span id="hudTarget">——</span>
+                </div>
+                <div class="hud-cell">
+                    <span class="hud-label">TRACE</span>
+                    <span id="hudTrace" class="hud-dots"></span>
+                </div>
+                <div class="hud-cell">
+                    <span class="hud-label">TYPE</span>
+                    <span id="hudType">——</span>
+                </div>
             </div>
             <div class="hud-corner hud-br">
                 <div class="hud-battery-shell"><div class="hud-battery-fill" id="hudBatteryFill"></div></div>
