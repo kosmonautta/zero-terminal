@@ -137,18 +137,18 @@
         overflow:hidden;
         padding:52px 64px;
         border-radius:6px;
-        /* screen-edge falloff, like the curve of an old tube monitor */
-        box-shadow:
-            inset 0 0 55px rgba(0,0,0,0.85),
-            inset 0 0 10px rgba(255,255,255,0.05);
-        animation:crtFlicker 6.5s infinite;
+        animation:crtFlicker 5s infinite;
     }
 
     @keyframes crtFlicker{
-        0%, 95%, 100%{ opacity:1; }
-        96%{ opacity:0.93; }
-        97%{ opacity:1; }
-        98%{ opacity:0.96; }
+        0%, 92%, 100%{ opacity:1; }
+        93%{ opacity:0.86; }
+        94%{ opacity:1; }
+        95.5%{ opacity:0.9; }
+    }
+
+    .field-inner{
+        position:relative;
     }
 
     /* phosphor bloom, scoped to text inside the field panel only (the HUD
@@ -156,12 +156,8 @@
        inside without needing to target each one */
     .hud{
         text-shadow:
-            0 0 1px rgba(255,255,255,0.45),
-            0 0 3px rgba(255,255,255,0.12);
-    }
-
-    .field-inner{
-        position:relative;
+            0 0 2px rgba(255,255,255,0.7),
+            0 0 6px rgba(255,255,255,0.35);
     }
 
     /* field-local grain, distinct from the page-level overlay so the sky itself
@@ -171,8 +167,8 @@
         position:absolute;
         inset:0;
         pointer-events:none;
-        z-index:2;
-        opacity:0.035;
+        z-index:5;
+        opacity:0.09;
         background-image:
             repeating-linear-gradient(0deg, rgba(255,255,255,0.6) 0px, transparent 1px, transparent 2px),
             repeating-linear-gradient(90deg, rgba(255,255,255,0.3) 0px, transparent 1px, transparent 3px);
@@ -183,20 +179,27 @@
        page background. A fine, static horizontal line texture standing in for the
        phosphor rows. mix-blend-mode:screen so it brightens the stars/lines under
        it instead of covering them. No moving band — just the static texture. */
+    /* light white phosphor CRT scanlines plus the screen-edge vignette,
+       combined in one layer and raised above the HUD — reads as glass in
+       front of the whole screen, boxes and text included, not just the
+       stars behind them. Plain alpha layering (no blend mode) since the
+       panel is already monochrome, so it looks the same as screen/multiply
+       would without the cross-blend complexity. */
     .field-wrap::before{
         content:"";
         position:absolute;
         inset:0;
         pointer-events:none;
-        z-index:3;
-        background:repeating-linear-gradient(
-            to bottom,
-            rgba(255,255,255,0.015) 0px,
-            rgba(255,255,255,0.015) 1px,
-            transparent 1px,
-            transparent 3px
-        );
-        mix-blend-mode:screen;
+        z-index:6;
+        background:
+            repeating-linear-gradient(
+                to bottom,
+                rgba(255,255,255,0.07) 0px,
+                rgba(255,255,255,0.07) 1px,
+                transparent 1px,
+                transparent 3px
+            ),
+            radial-gradient(ellipse at center, transparent 45%, rgba(0,0,0,0.55) 100%);
     }
 
     /* ===== HUD OVERLAY (recovered-tape corner readouts) =====
