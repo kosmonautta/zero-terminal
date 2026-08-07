@@ -1,0 +1,1666 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>THE 18 KINDLINGS — ULTRABLACK</title>
+    <style>
+        /* ============================================================
+           ROOT & RESET
+           ============================================================ */
+        :root {
+            --bg: #0b0a0a;
+            --bg-panel: #121010;
+            --fg: #f0ece6;
+            --dim: #8a8480;
+            --line: rgba(240, 236, 230, 0.13);
+            --red: #c0392b;
+            --red-dim: rgba(192, 57, 43, 0.35);
+            --red-glow: rgba(192, 57, 43, 0.08);
+            --border-dot: rgba(240, 236, 230, 0.18);
+            --font-serif: "Times New Roman", Georgia, "Palatino Linotype", serif;
+            --font-mono: "Courier New", "SF Mono", "Menlo", monospace;
+        }
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            background: var(--bg);
+            color: var(--fg);
+            font-family: var(--font-serif);
+            font-size: 17px;
+            line-height: 1.7;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            padding: 1.8rem 1.2rem 5rem;
+            min-height: 100vh;
+            background:
+                radial-gradient(ellipse at 20% 50%, rgba(192, 57, 43, 0.04) 0%, transparent 70%),
+                radial-gradient(ellipse at 80% 30%, rgba(192, 57, 43, 0.02) 0%, transparent 60%),
+                var(--bg);
+        }
+
+        /* ============================================================
+           TYPOGRAPHY
+           ============================================================ */
+        .eyebrow {
+            font-family: var(--font-mono);
+            font-size: 0.6rem;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            color: var(--dim);
+            margin-bottom: 0.15rem;
+        }
+
+        h1 {
+            font-family: var(--font-serif);
+            font-size: 3.2rem;
+            font-weight: 600;
+            line-height: 1.0;
+            letter-spacing: -0.01em;
+            margin-bottom: 0.15rem;
+            color: var(--fg);
+        }
+
+        h1 .accent {
+            color: var(--red);
+        }
+
+        .subhead {
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            color: var(--dim);
+            border-bottom: 1px solid var(--line);
+            padding-bottom: 1rem;
+            margin-bottom: 1.6rem;
+        }
+
+        .subhead strong {
+            color: var(--fg);
+            font-weight: 600;
+        }
+
+        h2 {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--fg);
+            font-weight: 400;
+            margin: 1.8rem 0 0.5rem;
+        }
+
+        .label-tag {
+            display: inline-block;
+            font-family: var(--font-mono);
+            font-size: 0.55rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            padding: 0.15rem 0.6rem;
+            border: 1px solid var(--border-dot);
+            color: var(--dim);
+            border-radius: 2px;
+        }
+
+        /* ============================================================
+           LAYOUT
+           ============================================================ */
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+        }
+
+        /* ============================================================
+           VIEW TOGGLE
+           ============================================================ */
+        .view-toggle {
+            display: flex;
+            gap: 0.4rem;
+            flex-wrap: wrap;
+            margin: 1rem 0 1.4rem;
+            border-bottom: 1px solid var(--line);
+            padding-bottom: 0.8rem;
+        }
+
+        .view-btn {
+            background: transparent;
+            border: 1px solid var(--border-dot);
+            color: var(--dim);
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            padding: 0.5rem 1.4rem;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            border-radius: 2px;
+        }
+
+        .view-btn:hover {
+            border-color: var(--fg);
+            color: var(--fg);
+            background: rgba(240, 236, 230, 0.04);
+        }
+
+        .view-btn.active {
+            border-color: var(--red);
+            color: var(--fg);
+            background: var(--red-dim);
+            box-shadow: 0 0 24px var(--red-glow);
+        }
+
+        /* ============================================================
+           VIEW PANELS
+           ============================================================ */
+        .view-panel {
+            display: none;
+            animation: fadeIn 0.35s ease;
+        }
+
+        .view-panel.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            0% {
+                opacity: 0;
+                transform: translateY(6px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ============================================================
+           FIGURE STAGE — Pixel-art chibi figures
+           ============================================================ */
+        .figure-stage {
+            width: 100%;
+            overflow: hidden;
+            background: #1a1818;
+            padding: 18px 8px 12px;
+            border: 1px dashed var(--border-dot);
+            border-radius: 2px;
+            margin-bottom: 1.6rem;
+        }
+
+        .figure-stage svg {
+            width: 100%;
+            height: auto;
+            display: block;
+            shape-rendering: crispEdges;
+            image-rendering: pixelated;
+        }
+
+        .ref-figure {
+            transition: opacity .25s;
+        }
+
+        .ref-tick {
+            stroke: rgba(255, 255, 255, .7);
+            stroke-width: 1;
+            fill: none;
+            shape-rendering: crispEdges;
+        }
+
+        .ref-long-tick {
+            stroke: #fff;
+            stroke-width: 2;
+            shape-rendering: crispEdges;
+        }
+
+        .ref-measure {
+            stroke: #fff;
+            stroke-width: 1.4;
+            fill: none;
+            shape-rendering: crispEdges;
+        }
+
+        .ref-marker {
+            stroke: #fff;
+            stroke-width: 1.5;
+            fill: #1d1d1d;
+            shape-rendering: crispEdges;
+        }
+
+        /* brain – dotted chibi */
+        .brain-outline {
+            fill: none;
+            stroke: #fff;
+            stroke-width: 1.5;
+            stroke-dasharray: 1.5 4;
+            stroke-linecap: round;
+            shape-rendering: crispEdges;
+        }
+
+        .brain-head {
+            fill: #1d1d1d;
+            stroke: #fff;
+            stroke-width: 1.5;
+            shape-rendering: crispEdges;
+        }
+
+        .brain-focus {
+            fill: #fff;
+            stroke: none;
+            shape-rendering: crispEdges;
+        }
+
+        .pixel-eye {
+            fill: #fff;
+            stroke: none;
+            shape-rendering: crispEdges;
+        }
+
+        /* skeleton / nerve – chibi */
+        .skeleton {
+            fill: none;
+            stroke: #fff;
+            stroke-width: 1.8;
+            shape-rendering: crispEdges;
+        }
+
+        .skeleton-thin {
+            fill: none;
+            stroke: #fff;
+            stroke-width: 1;
+            shape-rendering: crispEdges;
+        }
+
+        .nerve {
+            fill: none;
+            stroke: rgba(255, 255, 255, 0.9);
+            stroke-width: 1.5;
+            shape-rendering: crispEdges;
+        }
+
+        .joint {
+            fill: #fff;
+            stroke: none;
+            shape-rendering: crispEdges;
+        }
+
+        /* block body – chibi */
+        .block-body {
+            fill: #fff;
+            stroke: #fff;
+            stroke-width: 1;
+            shape-rendering: crispEdges;
+        }
+
+        .block-cut {
+            fill: #1d1d1d;
+            stroke: none;
+            shape-rendering: crispEdges;
+        }
+
+        .block-noise {
+            fill: url(#blockDots);
+            opacity: .55;
+        }
+
+        /* text */
+        .ref-readout {
+            fill: #1d1d1d;
+            font-family: "Courier New", monospace;
+            font-size: 12px;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        .ref-caption {
+            fill: #fff;
+            font-family: "Courier New", monospace;
+            font-size: 11px;
+            letter-spacing: 1px;
+        }
+
+        .ref-caption-dim {
+            fill: rgba(255, 255, 255, .72);
+            font-family: "Courier New", monospace;
+            font-size: 10px;
+            letter-spacing: .5px;
+        }
+
+        @media(max-width:720px) {
+            .figure-stage {
+                overflow-x: auto;
+                padding-left: 0;
+                padding-right: 0;
+            }
+            .figure-stage svg {
+                min-width: 760px;
+            }
+        }
+
+        /* ============================================================
+           KINDLING GRID — all 18 cards, active/inactive styling
+           ============================================================ */
+        .kindling-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.2rem;
+            margin-top: 0.3rem;
+        }
+
+        .kindling-card {
+            background: var(--bg-panel);
+            border: 1px solid var(--border-dot);
+            border-radius: 2px;
+            overflow: hidden;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease, opacity 0.3s ease;
+            cursor: pointer;
+            opacity: 0.35;
+            border-style: dashed;
+        }
+
+        .kindling-card.active-group {
+            opacity: 1;
+            border-style: solid;
+            border-color: var(--border-dot);
+        }
+
+        .kindling-card.active-group:hover {
+            border-color: rgba(240, 236, 230, 0.3);
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .kindling-card.active-group.expanded {
+            border-color: var(--red);
+            box-shadow: 0 0 40px var(--red-glow);
+        }
+
+        .kindling-card .card-header {
+            padding: 0.7rem 1rem 0.5rem;
+            border-bottom: 1px solid var(--line);
+            display: flex;
+            align-items: baseline;
+            flex-wrap: wrap;
+            gap: 0.2rem 0.5rem;
+        }
+
+        .kindling-card .card-number {
+            font-family: var(--font-mono);
+            font-size: 0.55rem;
+            letter-spacing: 0.15em;
+            color: var(--dim);
+            padding: 0.05rem 0.4rem;
+            border: 1px solid var(--border-dot);
+            border-radius: 2px;
+        }
+
+        .kindling-card .card-title {
+            font-family: var(--font-serif);
+            font-size: 1.05rem;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+            color: var(--fg);
+        }
+
+        .kindling-card .card-theme {
+            font-family: var(--font-mono);
+            font-size: 0.55rem;
+            letter-spacing: 0.08em;
+            color: var(--dim);
+            font-style: italic;
+            width: 100%;
+            margin-top: 0.05rem;
+        }
+
+        .kindling-card .card-preview {
+            padding: 0.5rem 1rem 0.7rem;
+            font-size: 0.8rem;
+            color: var(--dim);
+            line-height: 1.6;
+            border-bottom: 1px solid var(--line);
+        }
+
+        .kindling-card .card-preview .quote {
+            font-style: italic;
+            color: var(--fg);
+            font-size: 0.85rem;
+        }
+
+        .kindling-card .card-body {
+            display: none;
+            padding: 0.6rem 1rem 1rem;
+            border-top: 1px solid var(--line);
+        }
+
+        .kindling-card.active-group.expanded .card-body {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .kindling-card .stage-group {
+            margin-top: 0.6rem;
+        }
+
+        .kindling-card .stage-group:first-child {
+            margin-top: 0;
+        }
+
+        .kindling-card .stage-label {
+            font-family: var(--font-mono);
+            font-size: 0.5rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--red);
+            border-bottom: 1px dotted var(--border-dot);
+            padding-bottom: 0.15rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .kindling-card .stage-label.living {
+            color: #d4a574;
+        }
+        .kindling-card .stage-label.dead {
+            color: #6a7a8a;
+        }
+
+        .kindling-card .stage-item {
+            font-size: 0.72rem;
+            line-height: 1.6;
+            color: var(--dim);
+            padding: 0.15rem 0 0.15rem 0.6rem;
+            border-left: 1px dotted var(--border-dot);
+            margin-bottom: 0.2rem;
+        }
+
+        .kindling-card .stage-item strong {
+            color: var(--fg);
+            font-weight: 500;
+        }
+
+        .kindling-card .stage-item .effect {
+            color: #c9c2ba;
+        }
+
+        .kindling-card .stage-item .demand {
+            color: var(--red);
+            font-size: 0.65rem;
+        }
+
+        .kindling-card .card-toggle {
+            display: inline-block;
+            font-family: var(--font-mono);
+            font-size: 0.55rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--dim);
+            padding: 0.2rem 0.7rem;
+            border: 1px solid var(--border-dot);
+            border-radius: 2px;
+            margin-top: 0.4rem;
+            transition: all 0.2s ease;
+            background: transparent;
+            cursor: pointer;
+        }
+
+        .kindling-card .card-toggle:hover {
+            border-color: var(--fg);
+            color: var(--fg);
+        }
+
+        .kindling-card .card-toggle.expanded-toggle {
+            border-color: var(--red);
+            color: var(--red);
+        }
+
+        /* inactive cards: hide toggle and body, dim */
+        .kindling-card:not(.active-group) .card-toggle {
+            display: none;
+        }
+        .kindling-card:not(.active-group) .card-body {
+            display: none !important;
+        }
+        .kindling-card:not(.active-group) .card-preview .quote {
+            opacity: 0.5;
+        }
+        .kindling-card:not(.active-group) .card-preview span:last-child {
+            display: none;
+        }
+        .kindling-card:not(.active-group) .card-header .card-theme {
+            opacity: 0.4;
+        }
+
+        /* ============================================================
+           SYNERGY SECTION
+           ============================================================ */
+        .synergy-section {
+            margin-top: 2.8rem;
+            border-top: 1px solid var(--line);
+            padding-top: 1.8rem;
+        }
+
+        .synergy-section h2 {
+            margin-top: 0;
+        }
+
+        .synergy-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 0.9rem;
+            margin-top: 0.3rem;
+        }
+
+        .synergy-item {
+            background: rgba(240, 236, 230, 0.02);
+            border: 1px dotted var(--border-dot);
+            padding: 0.6rem 0.9rem;
+            border-radius: 2px;
+            font-size: 0.75rem;
+            color: var(--dim);
+            line-height: 1.7;
+        }
+
+        .synergy-item strong {
+            color: var(--fg);
+        }
+
+        /* ============================================================
+           DEMAND NOTE
+           ============================================================ */
+        .demand-note {
+            margin-top: 2.2rem;
+            border-top: 1px solid var(--line);
+            padding-top: 1.6rem;
+            font-size: 0.7rem;
+            color: var(--dim);
+            font-family: var(--font-mono);
+            letter-spacing: 0.05em;
+            line-height: 2;
+        }
+
+        .demand-note .label-tag {
+            margin-right: 0.6rem;
+        }
+
+        .demand-note .dm-item {
+            display: inline-block;
+            margin: 0 0.8rem;
+        }
+
+        .demand-note .dm-item strong {
+            color: var(--fg);
+        }
+
+        .demand-note .closing {
+            display: block;
+            margin-top: 0.4rem;
+            opacity: 0.5;
+            font-size: 0.65rem;
+        }
+
+        /* ============================================================
+           RESPONSIVE
+           ============================================================ */
+        @media (max-width: 720px) {
+            h1 {
+                font-size: 2.0rem;
+            }
+            .kindling-grid {
+                grid-template-columns: 1fr;
+            }
+            .view-btn {
+                padding: 0.35rem 0.9rem;
+                font-size: 0.55rem;
+            }
+            .kindling-card .card-title {
+                font-size: 0.95rem;
+            }
+            .synergy-grid {
+                grid-template-columns: 1fr;
+            }
+            .demand-note .dm-item {
+                display: block;
+                margin: 0.2rem 0;
+            }
+        }
+
+        @media (min-width: 721px) and (max-width: 1024px) {
+            .kindling-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        /* ============================================================
+           SCROLLBAR
+           ============================================================ */
+        ::-webkit-scrollbar {
+            width: 4px;
+            height: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--red-dim);
+            border-radius: 2px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--red);
+        }
+
+        /* ============================================================
+           MISC
+           ============================================================ */
+        .mt-1 {
+            margin-top: 0.8rem;
+        }
+        .mb-1 {
+            margin-bottom: 0.8rem;
+        }
+        .text-dim {
+            color: var(--dim);
+        }
+        .no-select {
+            user-select: none;
+        }
+        .dotted-box {
+            border: 1px dashed var(--border-dot);
+            padding: 0.6rem 0.8rem;
+            border-radius: 2px;
+            background: rgba(240, 236, 230, 0.015);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+
+        <!-- ========== HEADER ========== -->
+        <p class="eyebrow">NODE // 018 — ULTRABLACK</p>
+        <h1>THE 18 <span class="accent">KINDLINGS</span></h1>
+        <div class="subhead">
+            <strong>Hard Lock</strong> · <strong>Red Shift</strong> · <strong>Negative Box</strong>
+            &nbsp;—&nbsp; Reality, prepared to ignite.
+        </div>
+
+        <!-- ========== VIEW TOGGLE ========== -->
+        <div class="view-toggle">
+            <button class="view-btn active" data-view="brain">BRAIN</button>
+            <button class="view-btn" data-view="nerve">NERVE</button>
+            <button class="view-btn" data-view="frame">FRAME</button>
+        </div>
+
+        <!-- ========== VIEW: BRAIN ========== -->
+        <div class="view-panel active" id="view-brain">
+            <!-- figure stage: chibi BRAIN -->
+            <div class="figure-stage">
+                <svg viewBox="0 0 960 620" xmlns="http://www.w3.org/2000/svg" fill="none">
+                    <defs>
+                        <pattern id="blockDots" width="4" height="4" patternUnits="userSpaceOnUse">
+                            <circle cx="1" cy="1" r=".55" fill="#000" />
+                        </pattern>
+                    </defs>
+                    <g class="ref-tick">
+                        <g>
+                            <line x1="22" y1="92" x2="37" y2="92" /><line x1="22" y1="125" x2="37" y2="125" />
+                            <line x1="22" y1="158" x2="37" y2="158" /><line x1="22" y1="191" x2="37" y2="191" />
+                            <line x1="22" y1="224" x2="37" y2="224" /><line x1="22" y1="257" x2="37" y2="257" />
+                            <line x1="22" y1="290" x2="37" y2="290" /><line x1="22" y1="323" x2="37" y2="323" />
+                            <line x1="22" y1="356" x2="37" y2="356" /><line x1="22" y1="389" x2="37" y2="389" />
+                            <line x1="22" y1="422" x2="37" y2="422" /><line x1="22" y1="455" x2="37" y2="455" />
+                            <line x1="22" y1="488" x2="37" y2="488" />
+                            <line x1="285" y1="92" x2="300" y2="92" /><line x1="285" y1="125" x2="300" y2="125" />
+                            <line x1="285" y1="158" x2="300" y2="158" /><line x1="285" y1="191" x2="300" y2="191" />
+                            <line x1="285" y1="224" x2="300" y2="224" /><line x1="285" y1="257" x2="300" y2="257" />
+                            <line x1="285" y1="290" x2="300" y2="290" /><line x1="285" y1="323" x2="300" y2="323" />
+                            <line x1="285" y1="356" x2="300" y2="356" /><line x1="285" y1="389" x2="300" y2="389" />
+                            <line x1="285" y1="422" x2="300" y2="422" /><line x1="285" y1="455" x2="300" y2="455" />
+                            <line x1="285" y1="488" x2="300" y2="488" />
+                        </g>
+                        <g>
+                            <line x1="332" y1="92" x2="347" y2="92" /><line x1="332" y1="125" x2="347" y2="125" />
+                            <line x1="332" y1="158" x2="347" y2="158" /><line x1="332" y1="191" x2="347" y2="191" />
+                            <line x1="332" y1="224" x2="347" y2="224" /><line x1="332" y1="257" x2="347" y2="257" />
+                            <line x1="332" y1="290" x2="347" y2="290" /><line x1="332" y1="323" x2="347" y2="323" />
+                            <line x1="332" y1="356" x2="347" y2="356" /><line x1="332" y1="389" x2="347" y2="389" />
+                            <line x1="332" y1="422" x2="347" y2="422" /><line x1="332" y1="455" x2="347" y2="455" />
+                            <line x1="332" y1="488" x2="347" y2="488" />
+                            <line x1="595" y1="92" x2="610" y2="92" /><line x1="595" y1="125" x2="610" y2="125" />
+                            <line x1="595" y1="158" x2="610" y2="158" /><line x1="595" y1="191" x2="610" y2="191" />
+                            <line x1="595" y1="224" x2="610" y2="224" /><line x1="595" y1="257" x2="610" y2="257" />
+                            <line x1="595" y1="290" x2="610" y2="290" /><line x1="595" y1="323" x2="610" y2="323" />
+                            <line x1="595" y1="356" x2="610" y2="356" /><line x1="595" y1="389" x2="610" y2="389" />
+                            <line x1="595" y1="422" x2="610" y2="422" /><line x1="595" y1="455" x2="610" y2="455" />
+                            <line x1="595" y1="488" x2="610" y2="488" />
+                        </g>
+                        <g>
+                            <line x1="642" y1="92" x2="657" y2="92" /><line x1="642" y1="125" x2="657" y2="125" />
+                            <line x1="642" y1="158" x2="657" y2="158" /><line x1="642" y1="191" x2="657" y2="191" />
+                            <line x1="642" y1="224" x2="657" y2="224" /><line x1="642" y1="257" x2="657" y2="257" />
+                            <line x1="642" y1="290" x2="657" y2="290" /><line x1="642" y1="323" x2="657" y2="323" />
+                            <line x1="642" y1="356" x2="657" y2="356" /><line x1="642" y1="389" x2="657" y2="389" />
+                            <line x1="642" y1="422" x2="657" y2="422" /><line x1="642" y1="455" x2="657" y2="455" />
+                            <line x1="642" y1="488" x2="657" y2="488" />
+                            <line x1="905" y1="92" x2="920" y2="92" /><line x1="905" y1="125" x2="920" y2="125" />
+                            <line x1="905" y1="158" x2="920" y2="158" /><line x1="905" y1="191" x2="920" y2="191" />
+                            <line x1="905" y1="224" x2="920" y2="224" /><line x1="905" y1="257" x2="920" y2="257" />
+                            <line x1="905" y1="290" x2="920" y2="290" /><line x1="905" y1="323" x2="920" y2="323" />
+                            <line x1="905" y1="356" x2="920" y2="356" /><line x1="905" y1="389" x2="920" y2="389" />
+                            <line x1="905" y1="422" x2="920" y2="422" /><line x1="905" y1="455" x2="920" y2="455" />
+                            <line x1="905" y1="488" x2="920" y2="488" />
+                        </g>
+                    </g>
+                    <g class="ref-long-tick">
+                        <line x1="48" y1="62" x2="82" y2="62" /><line x1="238" y1="62" x2="272" y2="62" />
+                        <line x1="358" y1="62" x2="392" y2="62" /><line x1="548" y1="62" x2="582" y2="62" />
+                        <line x1="668" y1="62" x2="702" y2="62" /><line x1="858" y1="62" x2="892" y2="62" />
+                    </g>
+
+                    <!-- ===== CHIBI BRAIN FIGURE ===== -->
+                    <g id="reference-brain-figure" class="ref-figure">
+                        <rect x="120" y="60" width="50" height="50" rx="4" class="brain-head" />
+                        <g class="brain-focus">
+                            <rect x="132" y="72" width="6" height="6" />
+                            <rect x="144" y="72" width="6" height="6" />
+                            <rect x="156" y="72" width="6" height="6" />
+                            <rect x="126" y="78" width="6" height="6" />
+                            <rect x="138" y="78" width="6" height="6" />
+                            <rect x="150" y="78" width="6" height="6" />
+                            <rect x="162" y="78" width="6" height="6" />
+                            <rect x="132" y="84" width="6" height="6" />
+                            <rect x="144" y="84" width="6" height="6" />
+                            <rect x="156" y="84" width="6" height="6" />
+                            <rect x="138" y="90" width="6" height="6" />
+                            <rect x="150" y="90" width="6" height="6" />
+                            <rect x="144" y="96" width="6" height="6" />
+                        </g>
+                        <rect x="128" y="72" width="4" height="4" class="pixel-eye" />
+                        <rect x="158" y="72" width="4" height="4" class="pixel-eye" />
+                        <path d="M145 110 L120 118 L100 126 L100 140 L120 140 L125 148 L125 200 L125 230 L115 270 L110 310 L125 310 L130 270 L145 250" class="brain-outline" />
+                        <path d="M145 110 L170 118 L190 126 L190 140 L170 140 L165 148 L165 200 L165 230 L175 270 L180 310 L165 310 L160 270 L145 250" class="brain-outline" />
+                        <line x1="145" y1="110" x2="145" y2="250" class="brain-outline" />
+                        <line x1="47" y1="180" x2="251" y2="180" class="ref-measure" />
+                        <rect x="42" y="173" width="12" height="14" class="ref-marker" />
+                        <rect x="245" y="173" width="12" height="14" class="ref-marker" />
+                        <rect x="48" y="270" width="60" height="28" fill="#fff" />
+                        <text x="54" y="289" class="ref-readout">6321</text>
+                        <line x1="48" y1="390" x2="82" y2="390" class="ref-long-tick" />
+                        <line x1="207" y1="390" x2="241" y2="390" class="ref-long-tick" />
+                        <text x="48" y="426" class="ref-caption">BRN // FOCUS</text>
+                        <text x="48" y="446" class="ref-caption-dim">Hard Lock onto Cognition.</text>
+                        <text x="48" y="462" class="ref-caption-dim">Perception. Thought. Will.</text>
+                    </g>
+                </svg>
+            </div>
+
+            <div class="kindling-grid" id="grid-brain"></div>
+        </div>
+
+        <!-- ========== VIEW: NERVE ========== -->
+        <div class="view-panel" id="view-nerve">
+            <div class="figure-stage">
+                <svg viewBox="0 0 960 620" xmlns="http://www.w3.org/2000/svg" fill="none">
+                    <defs>
+                        <pattern id="blockDots2" width="4" height="4" patternUnits="userSpaceOnUse">
+                            <circle cx="1" cy="1" r=".55" fill="#000" />
+                        </pattern>
+                    </defs>
+                    <g class="ref-tick">
+                        <g>
+                            <line x1="22" y1="92" x2="37" y2="92" /><line x1="22" y1="125" x2="37" y2="125" />
+                            <line x1="22" y1="158" x2="37" y2="158" /><line x1="22" y1="191" x2="37" y2="191" />
+                            <line x1="22" y1="224" x2="37" y2="224" /><line x1="22" y1="257" x2="37" y2="257" />
+                            <line x1="22" y1="290" x2="37" y2="290" /><line x1="22" y1="323" x2="37" y2="323" />
+                            <line x1="22" y1="356" x2="37" y2="356" /><line x1="22" y1="389" x2="37" y2="389" />
+                            <line x1="22" y1="422" x2="37" y2="422" /><line x1="22" y1="455" x2="37" y2="455" />
+                            <line x1="22" y1="488" x2="37" y2="488" />
+                            <line x1="285" y1="92" x2="300" y2="92" /><line x1="285" y1="125" x2="300" y2="125" />
+                            <line x1="285" y1="158" x2="300" y2="158" /><line x1="285" y1="191" x2="300" y2="191" />
+                            <line x1="285" y1="224" x2="300" y2="224" /><line x1="285" y1="257" x2="300" y2="257" />
+                            <line x1="285" y1="290" x2="300" y2="290" /><line x1="285" y1="323" x2="300" y2="323" />
+                            <line x1="285" y1="356" x2="300" y2="356" /><line x1="285" y1="389" x2="300" y2="389" />
+                            <line x1="285" y1="422" x2="300" y2="422" /><line x1="285" y1="455" x2="300" y2="455" />
+                            <line x1="285" y1="488" x2="300" y2="488" />
+                        </g>
+                        <g>
+                            <line x1="332" y1="92" x2="347" y2="92" /><line x1="332" y1="125" x2="347" y2="125" />
+                            <line x1="332" y1="158" x2="347" y2="158" /><line x1="332" y1="191" x2="347" y2="191" />
+                            <line x1="332" y1="224" x2="347" y2="224" /><line x1="332" y1="257" x2="347" y2="257" />
+                            <line x1="332" y1="290" x2="347" y2="290" /><line x1="332" y1="323" x2="347" y2="323" />
+                            <line x1="332" y1="356" x2="347" y2="356" /><line x1="332" y1="389" x2="347" y2="389" />
+                            <line x1="332" y1="422" x2="347" y2="422" /><line x1="332" y1="455" x2="347" y2="455" />
+                            <line x1="332" y1="488" x2="347" y2="488" />
+                            <line x1="595" y1="92" x2="610" y2="92" /><line x1="595" y1="125" x2="610" y2="125" />
+                            <line x1="595" y1="158" x2="610" y2="158" /><line x1="595" y1="191" x2="610" y2="191" />
+                            <line x1="595" y1="224" x2="610" y2="224" /><line x1="595" y1="257" x2="610" y2="257" />
+                            <line x1="595" y1="290" x2="610" y2="290" /><line x1="595" y1="323" x2="610" y2="323" />
+                            <line x1="595" y1="356" x2="610" y2="356" /><line x1="595" y1="389" x2="610" y2="389" />
+                            <line x1="595" y1="422" x2="610" y2="422" /><line x1="595" y1="455" x2="610" y2="455" />
+                            <line x1="595" y1="488" x2="610" y2="488" />
+                        </g>
+                        <g>
+                            <line x1="642" y1="92" x2="657" y2="92" /><line x1="642" y1="125" x2="657" y2="125" />
+                            <line x1="642" y1="158" x2="657" y2="158" /><line x1="642" y1="191" x2="657" y2="191" />
+                            <line x1="642" y1="224" x2="657" y2="224" /><line x1="642" y1="257" x2="657" y2="257" />
+                            <line x1="642" y1="290" x2="657" y2="290" /><line x1="642" y1="323" x2="657" y2="323" />
+                            <line x1="642" y1="356" x2="657" y2="356" /><line x1="642" y1="389" x2="657" y2="389" />
+                            <line x1="642" y1="422" x2="657" y2="422" /><line x1="642" y1="455" x2="657" y2="455" />
+                            <line x1="642" y1="488" x2="657" y2="488" />
+                            <line x1="905" y1="92" x2="920" y2="92" /><line x1="905" y1="125" x2="920" y2="125" />
+                            <line x1="905" y1="158" x2="920" y2="158" /><line x1="905" y1="191" x2="920" y2="191" />
+                            <line x1="905" y1="224" x2="920" y2="224" /><line x1="905" y1="257" x2="920" y2="257" />
+                            <line x1="905" y1="290" x2="920" y2="290" /><line x1="905" y1="323" x2="920" y2="323" />
+                            <line x1="905" y1="356" x2="920" y2="356" /><line x1="905" y1="389" x2="920" y2="389" />
+                            <line x1="905" y1="422" x2="920" y2="422" /><line x1="905" y1="455" x2="920" y2="455" />
+                            <line x1="905" y1="488" x2="920" y2="488" />
+                        </g>
+                    </g>
+                    <g class="ref-long-tick">
+                        <line x1="48" y1="62" x2="82" y2="62" /><line x1="238" y1="62" x2="272" y2="62" />
+                        <line x1="358" y1="62" x2="392" y2="62" /><line x1="548" y1="62" x2="582" y2="62" />
+                        <line x1="668" y1="62" x2="702" y2="62" /><line x1="858" y1="62" x2="892" y2="62" />
+                    </g>
+
+                    <!-- ===== CHIBI NERVE FIGURE ===== -->
+                    <g id="reference-nerve-figure" class="ref-figure">
+                        <rect x="450" y="60" width="56" height="56" rx="4" class="skeleton" />
+                        <rect x="462" y="72" width="8" height="8" class="skeleton-thin" />
+                        <rect x="486" y="72" width="8" height="8" class="skeleton-thin" />
+                        <rect x="478" y="84" width="4" height="4" class="skeleton-thin" />
+                        <path d="M462 100 Q470 108 494 100" class="skeleton-thin" stroke-width="1.5" />
+                        <line x1="478" y1="116" x2="478" y2="200" class="skeleton" />
+                        <line x1="464" y1="130" x2="492" y2="130" class="skeleton" />
+                        <line x1="462" y1="140" x2="494" y2="140" class="skeleton" />
+                        <line x1="464" y1="150" x2="492" y2="150" class="skeleton" />
+                        <line x1="468" y1="135" x2="440" y2="150" class="skeleton" />
+                        <line x1="440" y1="150" x2="420" y2="150" class="skeleton" />
+                        <line x1="488" y1="135" x2="516" y2="150" class="skeleton" />
+                        <line x1="516" y1="150" x2="536" y2="150" class="skeleton" />
+                        <rect x="410" y="145" width="10" height="10" class="skeleton" />
+                        <rect x="536" y="145" width="10" height="10" class="skeleton" />
+                        <rect x="462" y="200" width="32" height="16" rx="2" class="skeleton" />
+                        <line x1="472" y1="216" x2="462" y2="260" class="skeleton" />
+                        <line x1="462" y1="260" x2="452" y2="310" class="skeleton" />
+                        <line x1="484" y1="216" x2="494" y2="260" class="skeleton" />
+                        <line x1="494" y1="260" x2="504" y2="310" class="skeleton" />
+                        <rect x="442" y="310" width="20" height="10" class="skeleton" />
+                        <rect x="494" y="310" width="20" height="10" class="skeleton" />
+                        <g class="nerve">
+                            <line x1="478" y1="116" x2="478" y2="200" />
+                            <line x1="478" y1="130" x2="460" y2="140" />
+                            <line x1="478" y1="130" x2="496" y2="140" />
+                            <line x1="478" y1="145" x2="458" y2="155" />
+                            <line x1="478" y1="145" x2="498" y2="155" />
+                            <line x1="478" y1="160" x2="460" y2="170" />
+                            <line x1="478" y1="160" x2="496" y2="170" />
+                            <line x1="460" y1="140" x2="440" y2="150" />
+                            <line x1="496" y1="140" x2="516" y2="150" />
+                            <line x1="478" y1="200" x2="462" y2="240" />
+                            <line x1="478" y1="200" x2="494" y2="240" />
+                            <line x1="462" y1="240" x2="452" y2="280" />
+                            <line x1="494" y1="240" x2="504" y2="280" />
+                        </g>
+                        <line x1="347" y1="180" x2="555" y2="180" class="ref-measure" />
+                        <rect x="342" y="173" width="12" height="14" class="ref-marker" />
+                        <rect x="549" y="173" width="12" height="14" class="ref-marker" />
+                        <rect x="348" y="270" width="60" height="28" fill="#fff" />
+                        <text x="354" y="289" class="ref-readout">6321</text>
+                        <line x1="348" y1="390" x2="382" y2="390" class="ref-long-tick" />
+                        <line x1="507" y1="390" x2="541" y2="390" class="ref-long-tick" />
+                        <text x="348" y="426" class="ref-caption">NRV // MAP</text>
+                        <text x="348" y="446" class="ref-caption-dim">Nerve grid. Signal. Reflex.</text>
+                        <text x="348" y="462" class="ref-caption-dim">Transmission. Red Shift.</text>
+                    </g>
+                </svg>
+            </div>
+
+            <div class="kindling-grid" id="grid-nerve"></div>
+        </div>
+
+        <!-- ========== VIEW: FRAME ========== -->
+        <div class="view-panel" id="view-frame">
+            <div class="figure-stage">
+                <svg viewBox="0 0 960 620" xmlns="http://www.w3.org/2000/svg" fill="none">
+                    <defs>
+                        <pattern id="blockDots3" width="4" height="4" patternUnits="userSpaceOnUse">
+                            <circle cx="1" cy="1" r=".55" fill="#000" />
+                        </pattern>
+                    </defs>
+                    <g class="ref-tick">
+                        <g>
+                            <line x1="22" y1="92" x2="37" y2="92" /><line x1="22" y1="125" x2="37" y2="125" />
+                            <line x1="22" y1="158" x2="37" y2="158" /><line x1="22" y1="191" x2="37" y2="191" />
+                            <line x1="22" y1="224" x2="37" y2="224" /><line x1="22" y1="257" x2="37" y2="257" />
+                            <line x1="22" y1="290" x2="37" y2="290" /><line x1="22" y1="323" x2="37" y2="323" />
+                            <line x1="22" y1="356" x2="37" y2="356" /><line x1="22" y1="389" x2="37" y2="389" />
+                            <line x1="22" y1="422" x2="37" y2="422" /><line x1="22" y1="455" x2="37" y2="455" />
+                            <line x1="22" y1="488" x2="37" y2="488" />
+                            <line x1="285" y1="92" x2="300" y2="92" /><line x1="285" y1="125" x2="300" y2="125" />
+                            <line x1="285" y1="158" x2="300" y2="158" /><line x1="285" y1="191" x2="300" y2="191" />
+                            <line x1="285" y1="224" x2="300" y2="224" /><line x1="285" y1="257" x2="300" y2="257" />
+                            <line x1="285" y1="290" x2="300" y2="290" /><line x1="285" y1="323" x2="300" y2="323" />
+                            <line x1="285" y1="356" x2="300" y2="356" /><line x1="285" y1="389" x2="300" y2="389" />
+                            <line x1="285" y1="422" x2="300" y2="422" /><line x1="285" y1="455" x2="300" y2="455" />
+                            <line x1="285" y1="488" x2="300" y2="488" />
+                        </g>
+                        <g>
+                            <line x1="332" y1="92" x2="347" y2="92" /><line x1="332" y1="125" x2="347" y2="125" />
+                            <line x1="332" y1="158" x2="347" y2="158" /><line x1="332" y1="191" x2="347" y2="191" />
+                            <line x1="332" y1="224" x2="347" y2="224" /><line x1="332" y1="257" x2="347" y2="257" />
+                            <line x1="332" y1="290" x2="347" y2="290" /><line x1="332" y1="323" x2="347" y2="323" />
+                            <line x1="332" y1="356" x2="347" y2="356" /><line x1="332" y1="389" x2="347" y2="389" />
+                            <line x1="332" y1="422" x2="347" y2="422" /><line x1="332" y1="455" x2="347" y2="455" />
+                            <line x1="332" y1="488" x2="347" y2="488" />
+                            <line x1="595" y1="92" x2="610" y2="92" /><line x1="595" y1="125" x2="610" y2="125" />
+                            <line x1="595" y1="158" x2="610" y2="158" /><line x1="595" y1="191" x2="610" y2="191" />
+                            <line x1="595" y1="224" x2="610" y2="224" /><line x1="595" y1="257" x2="610" y2="257" />
+                            <line x1="595" y1="290" x2="610" y2="290" /><line x1="595" y1="323" x2="610" y2="323" />
+                            <line x1="595" y1="356" x2="610" y2="356" /><line x1="595" y1="389" x2="610" y2="389" />
+                            <line x1="595" y1="422" x2="610" y2="422" /><line x1="595" y1="455" x2="610" y2="455" />
+                            <line x1="595" y1="488" x2="610" y2="488" />
+                        </g>
+                        <g>
+                            <line x1="642" y1="92" x2="657" y2="92" /><line x1="642" y1="125" x2="657" y2="125" />
+                            <line x1="642" y1="158" x2="657" y2="158" /><line x1="642" y1="191" x2="657" y2="191" />
+                            <line x1="642" y1="224" x2="657" y2="224" /><line x1="642" y1="257" x2="657" y2="257" />
+                            <line x1="642" y1="290" x2="657" y2="290" /><line x1="642" y1="323" x2="657" y2="323" />
+                            <line x1="642" y1="356" x2="657" y2="356" /><line x1="642" y1="389" x2="657" y2="389" />
+                            <line x1="642" y1="422" x2="657" y2="422" /><line x1="642" y1="455" x2="657" y2="455" />
+                            <line x1="642" y1="488" x2="657" y2="488" />
+                            <line x1="905" y1="92" x2="920" y2="92" /><line x1="905" y1="125" x2="920" y2="125" />
+                            <line x1="905" y1="158" x2="920" y2="158" /><line x1="905" y1="191" x2="920" y2="191" />
+                            <line x1="905" y1="224" x2="920" y2="224" /><line x1="905" y1="257" x2="920" y2="257" />
+                            <line x1="905" y1="290" x2="920" y2="290" /><line x1="905" y1="323" x2="920" y2="323" />
+                            <line x1="905" y1="356" x2="920" y2="356" /><line x1="905" y1="389" x2="920" y2="389" />
+                            <line x1="905" y1="422" x2="920" y2="422" /><line x1="905" y1="455" x2="920" y2="455" />
+                            <line x1="905" y1="488" x2="920" y2="488" />
+                        </g>
+                    </g>
+                    <g class="ref-long-tick">
+                        <line x1="48" y1="62" x2="82" y2="62" /><line x1="238" y1="62" x2="272" y2="62" />
+                        <line x1="358" y1="62" x2="392" y2="62" /><line x1="548" y1="62" x2="582" y2="62" />
+                        <line x1="668" y1="62" x2="702" y2="62" /><line x1="858" y1="62" x2="892" y2="62" />
+                    </g>
+
+                    <!-- ===== CHIBI FRAME FIGURE ===== -->
+                    <g id="reference-frame-figure" class="ref-figure">
+                        <rect x="750" y="60" width="56" height="56" rx="4" class="block-body" />
+                        <rect x="750" y="60" width="56" height="56" class="block-noise" />
+                        <rect x="774" y="50" width="8" height="10" class="block-body" />
+                        <rect x="762" y="72" width="8" height="8" class="block-cut" />
+                        <rect x="786" y="72" width="8" height="8" class="block-cut" />
+                        <rect x="762" y="92" width="32" height="6" class="block-cut" />
+                        <rect x="774" y="116" width="12" height="12" class="block-body" />
+                        <rect x="744" y="128" width="72" height="80" class="block-body" />
+                        <rect x="744" y="128" width="72" height="80" class="block-noise" />
+                        <rect x="730" y="128" width="100" height="16" class="block-body" />
+                        <rect x="730" y="144" width="16" height="40" class="block-body" />
+                        <rect x="814" y="144" width="16" height="40" class="block-body" />
+                        <rect x="726" y="184" width="24" height="16" class="block-body" />
+                        <rect x="810" y="184" width="24" height="16" class="block-body" />
+                        <rect x="748" y="208" width="64" height="20" class="block-body" />
+                        <rect x="752" y="228" width="20" height="60" class="block-body" />
+                        <rect x="788" y="228" width="20" height="60" class="block-body" />
+                        <rect x="744" y="288" width="36" height="16" class="block-body" />
+                        <rect x="780" y="288" width="36" height="16" class="block-body" />
+                        <line x1="657" y1="180" x2="851" y2="180" class="ref-measure" />
+                        <rect x="652" y="173" width="12" height="14" class="ref-marker" />
+                        <rect x="845" y="173" width="12" height="14" class="ref-marker" />
+                        <rect x="658" y="270" width="60" height="28" fill="#fff" />
+                        <text x="664" y="289" class="ref-readout">6321</text>
+                        <line x1="658" y1="390" x2="682" y2="390" class="ref-long-tick" />
+                        <line x1="817" y1="390" x2="851" y2="390" class="ref-long-tick" />
+                        <text x="658" y="426" class="ref-caption">FRM // SHELL</text>
+                        <text x="658" y="446" class="ref-caption-dim">Form. Mass. Structure.</text>
+                        <text x="658" y="462" class="ref-caption-dim">The Negative Box.</text>
+                    </g>
+                </svg>
+            </div>
+
+            <div class="kindling-grid" id="grid-frame"></div>
+        </div>
+
+        <!-- ========== SYNERGIES ========== -->
+        <div class="synergy-section">
+            <h2>Cross-Synergies</h2>
+            <div class="synergy-grid" id="synergyGrid">
+                <div class="synergy-item"><strong>Remove the Righteous Eyes</strong> (Dead Witness) + <strong>Command the Hollow</strong> (Dead Vessel) — one corpse, sight and speech both.</div>
+                <div class="synergy-item"><strong>Drink the Lightning</strong> (Living conductor) + <strong>The Static Storm</strong> — a storm chained through a marked conductor.</div>
+                <div class="synergy-item"><strong>Strip to the Bone</strong> + <strong>The Hollow Rib</strong> — burn to bone, hit like the bone is the weapon.</div>
+                <div class="synergy-item"><strong>Borrow the Shadow</strong> + <strong>The Creeping Gloom</strong> / <strong>Make the Dark Cut</strong> — arrive already striking, from inside a blade you made.</div>
+                <div class="synergy-item"><strong>Strike From Everywhere</strong> + <strong>Second Corpse</strong> — split the strikes, split the cost.</div>
+            </div>
+        </div>
+
+        <!-- ========== DEMAND NOTE ========== -->
+        <div class="demand-note">
+            <span class="label-tag">DEMAND</span>
+            <span class="dm-item"><strong style="color:var(--fg);">Self</strong> — Your own body · Power, bought across three tiers</span>
+            <span class="dm-item"><strong style="color:var(--fg);">Living</strong> — Another's nervous system · Power taken by force</span>
+            <span class="dm-item"><strong style="color:var(--fg);">Dead</strong> — What the nervous system left behind · A vessel, an anchor, a witness</span>
+            <span class="closing">A Doomer doesn't improvise. Every ritual runs through the same object, over and over, until it stops being a coin or a nail or a thread and starts being a debt.</span>
+        </div>
+
+    </div>
+
+    <!-- ================================================================
+    JAVASCRIPT
+    ================================================================ -->
+    <script>
+        (function() {
+            'use strict';
+
+            // ------------------------------------------------------------
+            // DATA — All 18 Kindlings
+            // ------------------------------------------------------------
+            const KINDLINGS = {
+                brain: [{
+                    id: 1,
+                    title: 'Remove the Righteous Eyes',
+                    theme: 'Perception, ESP sensitivity, witnessing',
+                    keep: 'black nail, black thread',
+                    quote: '"You will not need them again."',
+                    stages: {
+                        self: [
+                            { label: 'Nibble', effect: 'Nails through the lids. See through walls, briefly. Immune to Surprise. Advantage on Initiative.',
+                                demand: 'The nails stay. No blinking.' },
+                            { label: 'Feed', effect: 'Thread through the lids, pulled shut. Feel the Static directly. Advantage on all BRN.',
+                                demand: 'Blind, mundane-blind, for as long as the thread holds.' },
+                            { label: 'Devour', effect: 'See the Static outright. See every mind nearby, walls or no walls.',
+                                demand: 'Permanent. Nothing grows back.' }
+                        ],
+                        living: [
+                            { label: 'Living Demand', effect: 'Nail, then thread, driven into someone else\'s eyes. Blind them. Or wear their sight instead.',
+                                demand: 'Every hour behind their eyes, yours go a little darker.' }
+                        ],
+                        dead: [
+                            { label: 'Dead Demand', effect: 'Same, on a corpse. A permanent Witness — see through it, always.',
+                                demand: 'None owed by you. The corpse carries this one.' }
+                        ]
+                    }
+                }, {
+                    id: 2,
+                    title: 'Silence the Holy Tongue',
+                    theme: 'ESP output, amplifies offensive Hard Lock',
+                    keep: 'black thread',
+                    quote: '"Every prayer leaves through the mouth. Close it."',
+                    stages: {
+                        self: [
+                            { label: 'Nibble', effect: 'Three stitches, one knot, pulled free. BRN Kindlings can\'t be interrupted. Ignore Concentration checks.',
+                                demand: 'The thread scars. Each use costs more silence.' },
+                            { label: 'Feed', effect: 'Six stitches, held until torn loose. Offensive BRN Kindlings hit harder, spread wider.',
+                                demand: 'No speech until the stitches tear.' },
+                            { label: 'Devour', effect: 'Sewn through permanently. Thought becomes Static outright — offensive BRN reaches its ceiling.',
+                                demand: 'Speech gone. Forever.' }
+                        ],
+                        living: [
+                            { label: 'Living Demand', effect: 'Thread through another\'s lips. Silences them; strips one spoken memory or command loose.',
+                                demand: 'Their silence borrows against yours — your own voice thins.' }
+                        ],
+                        dead: [
+                            { label: 'Dead Demand', effect: 'Sew a corpse\'s mouth shut, then open it again. It answers what\'s asked.',
+                                demand: 'None. The dead already paid theirs.' }
+                        ]
+                    }
+                }, {
+                    id: 3,
+                    title: 'Split the Skull',
+                    theme: 'Clairvoyance, Concentration',
+                    keep: 'black nail',
+                    quote: '"Thought was never meant to stay quiet."',
+                    stages: {
+                        self: [
+                            { label: 'Nibble', effect: 'Nail to the temple. Read intent. Predict one creature\'s next move.',
+                                demand: 'A headache that doesn\'t fade on its own.' },
+                            { label: 'Feed', effect: 'Nail flat to the brow. Hold two Concentration Kindlings at once.',
+                                demand: 'Nosebleeds. Migraines that stack.' },
+                            { label: 'Devour', effect: 'Driven in below the hairline. Permanent. Futures, seen constantly, passively.',
+                                demand: 'The present grows harder to trust.' }
+                        ],
+                        living: [
+                            { label: 'Living Demand', effect: 'Nail to another\'s temple. Force hallucination. Rewrite a decision.',
+                                demand: 'Their fracture echoes back — you carry a sliver.' }
+                        ],
+                        dead: [
+                            { label: 'Dead Demand', effect: 'Nail through a corpse\'s skull. Walk its last memories like rooms.',
+                                demand: 'None. The memories were already spent.' }
+                        ]
+                    }
+                }, {
+                    id: 4,
+                    title: 'Static Lance',
+                    theme: 'Pure offense',
+                    keep: 'Red Salt',
+                    quote: '"Point. Release."',
+                    stages: {
+                        self: [
+                            { label: 'Nibble', effect: 'Charge at the palm, released. Bolt strikes one target.',
+                                demand: 'A burn across the palm that doesn\'t heal by nightfall.' },
+                            { label: 'Feed', effect: 'Charge arced hand to hand. Bolt pierces, strikes a line.',
+                                demand: 'The burn spreads up the forearm.' },
+                            { label: 'Devour', effect: 'The current never fully discharges. Bolt splits, strikes several at once.',
+                                demand: 'You hum, faintly, always.' }
+                        ],
+                        living: [
+                            { label: 'Living Demand', effect: 'Charge forced into another\'s closed fist. Damage lands as a mental wound.',
+                                demand: 'Feedback — you take a fraction of what they take.' }
+                        ],
+                        dead: [
+                            { label: 'Dead Demand', effect: 'Charge driven into a corpse. Cast future Lances from its location instead of your own.',
+                                demand: 'None.' }
+                        ]
+                    }
+                }, {
+                    id: 5,
+                    title: 'Command the Hollow',
+                    theme: 'Corpse puppetry — requires a prepared Witness',
+                    keep: 'black thread',
+                    quote: '"The dead do what they\'re told."',
+                    stages: {
+                        self: [
+                            { label: 'Nibble', effect: 'One thread, finger to wrist. The Witness performs one small action.',
+                                demand: 'A pull behind your own sternum.' },
+                            { label: 'Feed', effect: 'Threads to both wrists and the jaw. It walks. It repeats short phrases.',
+                                demand: 'You feel what it feels — cold, stillness, nothing.' },
+                            { label: 'Devour', effect: 'Threads sewn into your own fingers. It moves when you move. Near-perfect impersonation.',
+                                demand: 'One permanent point of BRN, spent per hour run.' }
+                        ],
+                        living: [
+                            { label: 'Living Demand', effect: 'An unnoticed thread looped around a living finger. Force one sentence, one action.',
+                                demand: 'They remember the pull. Word gets around.' }
+                        ],
+                        dead: [
+                            { label: 'Dead Demand', effect: 'Full set of threads, sewn permanently into an already-prepared Witness. Full Vessel.',
+                                demand: 'None, so long as the body holds together.' }
+                        ]
+                    }
+                }, {
+                    id: 6,
+                    title: 'Strip to the Bone',
+                    theme: 'Self-consumption, kinetic overdrive',
+                    keep: 'Red Salt',
+                    quote: '"Flesh is fuel."',
+                    stages: {
+                        self: [
+                            { label: 'Nibble', effect: 'Powder rubbed into the forearms, sparked. Ignore exhaustion. Minor boost to output.',
+                                demand: 'Hunger food doesn\'t touch for the rest of the day.' },
+                            { label: 'Feed', effect: 'Powder packed along the ribs, ignited. Increased strike damage.',
+                                demand: 'You visibly thin, in front of witnesses.' },
+                            { label: 'Devour', effect: 'A fistful swallowed, ignited from within. Near-skeletal, striking with immense force.',
+                                demand: 'You never look fed again.' }
+                        ],
+                        living: [
+                            { label: 'Living Demand', effect: 'Powder forced into another\'s mouth, ignited. Their body cannibalizes itself.',
+                                demand: 'You taste it too — ash and iron, every round it burns.' }
+                        ],
+                        dead: [
+                            { label: 'Dead Demand', effect: 'Chest cavity packed, ignited. Rises as a Husk, one action of extreme force.',
+                                demand: 'None. There\'s nothing left to owe.' }
+                        ]
+                    }
+                }],
+                nerve: [{
+                    id: 7,
+                    title: 'Faster! Faster! Faster!',
+                    theme: 'Movement, extra actions',
+                    keep: 'Red Salt',
+                    quote: '"Outrun your own signal."',
+                    stages: {
+                        self: [
+                            { label: 'Nibble', effect: 'Charge built in the legs. Double movement speed.',
+                                demand: 'Legs shake for the rest of the scene.' },
+                            { label: 'Feed', effect: 'Two charges released together. Two full actions.',
+                                demand: 'Joints ache like they\'ve run twice as far.' },
+                            { label: 'Devour', effect: 'The charge never fully discharges. Four full actions, blinking between each.',
+                                demand: 'You can\'t sit still anymore. Ever.' }
+                        ],
+                        living: [
+                            { label: 'Living Demand', effect: 'Charge forced into another\'s legs. Their movement becomes yours.',
+                                demand: 'You feel their stumble land in your own knees.' }
+                        ],
+                        dead: [
+                            { label: 'Dead Demand', effect: 'Lingering charge driven into a corpse\'s legs. Blink to its location at will.',
+                                demand: 'None.' }
+                        ]
+                    }
+                }, {
+                    id: 8,
+                    title: 'Exchange Footsteps',
+                    theme: 'Teleportation',
+                    keep: 'Red Salt',
+                    quote: '"Pay the road."',
+                    stages: {
+                        self: [
+                            { label: 'Nibble', effect: 'A pinch of Red Salt struck alight at your heel. Short blink.',
+                                demand: 'The burn mark fades. So does feeling in your feet.' },
+                            { label: 'Feed', effect: 'Two pinches, two points. Double range, one free blink per round.',
+                                demand: 'Vertigo that lingers a full round after landing.' },
+                            { label: 'Devour', effect: 'A grain burned on every threshold you cross. Chain unlimited blinks.',
+                                demand: 'You\'re never fully sure which step is real anymore.' }
+                        ],
+                        living: [
+                            { label: 'Living Demand', effect: 'Red Salt struck against another\'s heel. Swap two creatures\' positions.',
+                                demand: 'Whatever ground they stood on, you feel underfoot.' }
+                        ],
+                        dead: [
+                            { label: 'Dead Demand', effect: 'Salt burned into the ground beneath a corpse\'s feet. Permanent Anchor.',
+                                demand: 'None.' }
+                        ]
+                    }
+                }, {
+                    id: 9,
+                    title: 'Drink the Lightning',
+                    theme: 'Single-target electrical offense',
+                    keep: 'black nail',
+                    quote: '"Teach the nerves what thunder feels like."',
+                    stages: {
+                        self: [
+                            { label: 'Nibble', effect: 'Nail held between the palms until it hums. Bolt strikes one target.',
+                                demand: 'Hands numb through the next action.' },
+                            { label: 'Feed', effect: 'Two nails crossed, arced. Bolt chains to a second target.',
+                                demand: 'Numbness climbs to the elbow.' },
+                            { label: 'Devour', effect: 'The nail swallowed. Every enemy nearby, struck at once.',
+                                demand: 'Metal near you sparks unprompted.' }
+                        ],
+                        living: [
+                            { label: 'Living Demand', effect: 'A nail pressed into another\'s palm. They conduct — every bolt chains through them.',
+                                demand: 'The chain runs both ways. Some of it comes back.' }
+                        ],
+                        dead: [
+                            { label: 'Dead Demand', effect: 'Nail driven into a corpse\'s palm. Lightning Rod.',
+                                demand: 'None.' }
+                        ]
+                    }
+                }, {
+                    id: 10,
+                    title: 'The Static Storm',
+                    theme: 'Area lightning, artillery',
+                    keep: 'Red Salt',
+                    quote: '"Make the sky answer to you."',
+                    stages: {
+                        self: [
+                            { label: 'Nibble', effect: 'Static built across the whole body. One bolt, one point, area damage.',
+                                demand: 'Ears ring the rest of the scene.' },
+                            { label: 'Feed', effect: 'Held through a full breath. A second automatic strike, next turn.',
+                                demand: 'The ringing becomes a headache that doesn\'t quit.' },
+                            { label: 'Devour', effect: 'A permanent charge, carried in the heartbeat. Sustained storm, random strikes.',
+                                demand: 'Metal, glass — it isn\'t always the enemy that gets hit.' }
+                        ],
+                        living: [
+                            { label: 'Living Demand', effect: 'Charge forced into another. Storm converges entirely on them.',
+                                demand: 'Holding them there costs your full attention.' }
+                        ],
+                        dead: [
+                            { label: 'Dead Demand', effect: 'Standing charge driven into a corpse. Permanent Storm Well.',
+                                demand: 'None.' }
+                        ]
+                    }
+                }, {
+                    id: 11,
+                    title: 'Cut the Strings',
+                    theme: 'Control movement',
+                    keep: 'black thread',
+                    quote: '"The body mistakes Static for commands."',
+                    stages: {
+                        self: [
+                            { label: 'Nibble', effect: 'One knot against the skin, pulled loose. Ignore restraints.',
+                                demand: 'Skin left raw where the knot sat.' },
+                            { label: 'Feed', effect: 'Thread wound around a limb. That limb keeps working past what should disable it.',
+                                demand: 'When the scene ends, so does the limb.' },
+                            { label: 'Devour', effect: 'Thread sewn beneath the skin. Keep moving past what would be fatal.',
+                                demand: 'Every scene you survive this way shortens the ones after it.' }
+                        ],
+                        living: [
+                            { label: 'Living Demand', effect: 'Thread tied to another\'s wrist. Force one action or movement.',
+                                demand: 'Your own hands twitch with it after.' }
+                        ],
+                        dead: [
+                            { label: 'Dead Demand', effect: 'Thread knotted around a corpse\'s wrist. A Marionette.',
+                                demand: 'None.' }
+                        ]
+                    }
+                }, {
+                    id: 12,
+                    title: 'Strike From Everywhere',
+                    theme: 'Multi-attack via blink',
+                    keep: 'Red Salt',
+                    quote: '"Arrive already finished."',
+                    stages: {
+                        self: [
+                            { label: 'Nibble', effect: 'A spark carries you to a target. Blink and strike once.',
+                                demand: 'Disorientation on landing.' },
+                            { label: 'Feed', effect: 'A second charge held ready. Blink-strike two targets in sequence.',
+                                demand: 'Disorientation doubles.' },
+                            { label: 'Devour', effect: 'The charge sits permanently. Blink-strike up to four targets.',
+                                demand: 'You start arriving places a half-second before you mean to.' }
+                        ],
+                        living: [
+                            { label: 'Living Demand', effect: 'Charge driven into another. Blink to them, strike from any angle.',
+                                demand: 'Their mark lingers on your own skin.' }
+                        ],
+                        dead: [
+                            { label: 'Dead Demand', effect: 'Permanent charge driven into a corpse. A Beacon.',
+                                demand: 'None.' }
+                        ]
+                    }
+                }],
+                frame: [{
+                    id: 13,
+                    title: 'Borrow the Shadow',
+                    theme: 'Failsafe — reactive swap, shadow travel',
+                    keep: 'Red Salt',
+                    quote: '"Leave the body behind."',
+                    stages: {
+                        self: [
+                            { label: 'Nibble', effect: 'Edge of your shadow traced in powder. Once per scene, swap places with the Shade instantly.',
+                                demand: 'The Shade holds for one exchange only.' },
+                            { label: 'Feed', effect: 'Traced again at dusk. The swap unwinds the last wound you took. Usable twice per scene.',
+                                demand: 'What gets unwound catches up all at once when the scene ends.' },
+                            { label: 'Devour', effect: 'Burned into the ground where your shadow always falls. Swap no longer limited — full shadow travel.',
+                                demand: 'You cast no shadow at all anymore.' }
+                        ],
+                        living: [
+                            { label: 'Living Demand', effect: 'Another\'s shadow traced and one edge ignited. Their speed halved, yours doubled.',
+                                demand: 'The drag catches up all at once.' }
+                        ],
+                        dead: [
+                            { label: 'Dead Demand', effect: 'A corpse\'s shadow traced at death. A permanent doorway.',
+                                demand: 'None.' }
+                        ]
+                    }
+                }, {
+                    id: 14,
+                    title: 'The Creeping Gloom',
+                    theme: 'Shadow strikes',
+                    keep: 'black nail',
+                    quote: '"Every shadow is a blade waiting for permission."',
+                    stages: {
+                        self: [
+                            { label: 'Nibble', effect: 'A nail driven into the nearest dark corner. A tendril lashes out, strikes one target.',
+                                demand: 'The corner stays cold after.' },
+                            { label: 'Feed', effect: 'A second nail, driven into the target\'s own shadow. Strikes ignore cover and distance.',
+                                demand: 'Their shadow remembers you now.' },
+                            { label: 'Devour', effect: 'A nail into your own shadow. Every shadow in the area strikes at once.',
+                                demand: 'Your own shadow is armed, always.' }
+                        ],
+                        living: [
+                            { label: 'Living Demand', effect: 'A nail driven into another\'s shadow directly. Their shadow turns on them automatically.',
+                                demand: 'Its hunger lingers near you after.' }
+                        ],
+                        dead: [
+                            { label: 'Dead Demand', effect: 'A nail through a corpse\'s shadow. A standing Sentinel.',
+                                demand: 'None.' }
+                        ]
+                    }
+                }, {
+                    id: 15,
+                    title: 'Make the Dark Cut',
+                    theme: 'Shadow strikes from flash and afterimage',
+                    keep: 'Red Salt',
+                    quote: '"Light it. Let what\'s left do the cutting."',
+                    stages: {
+                        self: [
+                            { label: 'Nibble', effect: 'A line of powder struck alight. A residual blade slashes one target.',
+                                demand: 'Your own eyes ache in bright light.' },
+                            { label: 'Feed', effect: 'Ignited in a wider arc. The blade sweeps a line, striking all in front of you.',
+                                demand: 'Disadvantage in any lit space.' },
+                            { label: 'Devour', effect: 'Both hands coated. Every strike leaves a following shadow-blade.',
+                                demand: 'You flinch from light now, reflexively.' }
+                        ],
+                        living: [
+                            { label: 'Living Demand', effect: 'Powder rubbed into another\'s shadow, ignited. Their shadow cuts at them.',
+                                demand: 'The light burns your eyes too.' }
+                        ],
+                        dead: [
+                            { label: 'Dead Demand', effect: 'Powder packed into a corpse\'s eyes and mouth, ignited. Its shadow permanently arms itself.',
+                                demand: 'None.' }
+                        ]
+                    }
+                }, {
+                    id: 16,
+                    title: 'The Hollow Rib',
+                    theme: 'Momentum, density',
+                    keep: 'black nail',
+                    quote: '"Bone remembers weight it was never built for."',
+                    stages: {
+                        self: [
+                            { label: 'Nibble', effect: 'A nail carried in a closed fist. Next strike, increased force.',
+                                demand: 'The hand carrying it goes numb.' },
+                            { label: 'Feed', effect: 'The nail swallowed. Resist knockback; strikes shockwave outward.',
+                                demand: 'Every meal tastes faintly of iron.' },
+                            { label: 'Devour', effect: 'The nail replaces a rib. Momentum becomes a crushing blow.',
+                                demand: 'Breathing never feels quite complete.' }
+                        ],
+                        living: [
+                            { label: 'Living Demand', effect: 'A nail pressed to another\'s chest. Their defense drops, yours rises.',
+                                demand: 'Their labored breath echoes in your own chest.' }
+                        ],
+                        dead: [
+                            { label: 'Dead Demand', effect: 'A nail driven into a corpse, buried. Nearby Negative Box Kindlings hit harder.',
+                                demand: 'None.' }
+                        ]
+                    }
+                }, {
+                    id: 17,
+                    title: 'Wear Their Face',
+                    theme: 'Disguise, voice, presence',
+                    keep: 'Red Bone',
+                    quote: '"Identity has a price."',
+                    stages: {
+                        self: [
+                            { label: 'Nibble', effect: 'A shard of your own bone, pressed under the skin. Avoid casual recognition.',
+                                demand: 'Your own face feels wrong to you.' },
+                            { label: 'Feed', effect: 'The shard moved to the throat. Unplaceable — voice and presence both.',
+                                demand: 'Your real voice takes longer to come back.' },
+                            { label: 'Devour', effect: 'The shard Kindles permanently. Featureless — unreadable to magic, memory, and sight.',
+                                demand: 'No one remembers your face anymore.' }
+                        ],
+                        living: [
+                            { label: 'Living Demand', effect: 'A shard taken from another, pressed under your own skin. Steal their appearance.',
+                                demand: 'You forget one small true thing about your own face.' }
+                        ],
+                        dead: [
+                            { label: 'Dead Demand', effect: 'A shard of corpse-bone, fused under your skin. Perfect impersonation.',
+                                demand: 'None.' }
+                        ]
+                    }
+                }, {
+                    id: 18,
+                    title: 'Second Corpse',
+                    theme: 'Shade doubles, damage transfer',
+                    keep: 'black thread',
+                    quote: '"One body survives. One remembers."',
+                    stages: {
+                        self: [
+                            { label: 'Nibble', effect: 'Thread knotted into a small likeness. A Shade forms; damage splits.',
+                                demand: 'You feel every hit it takes, dull, delayed.' },
+                            { label: 'Feed', effect: 'The likeness burned. The Shade can be targeted independently; carries out one Kindling.',
+                                demand: 'Whatever it does, you\'re spent as if you\'d done it yourself.' },
+                            { label: 'Devour', effect: 'The likeness sewn under your skin. The Shade acts as a second, fully independent body.',
+                                demand: 'Split attention, split self — you\'re never fully anywhere.' }
+                        ],
+                        living: [
+                            { label: 'Living Demand', effect: 'A likeness of a living victim knotted and burned over their shadow. Their Shade.',
+                                demand: 'You feel the tether the whole time — their pulse alongside yours.' }
+                        ],
+                        dead: [
+                            { label: 'Dead Demand', effect: 'A likeness of a corpse knotted, buried beneath the body. Its shadow animates.',
+                                demand: 'None.' }
+                        ]
+                    }
+                }]
+            };
+
+            // ------------------------------------------------------------
+            // RENDER — all 18 cards in each grid, with data-group
+            // ------------------------------------------------------------
+            function renderAllCards(containerId) {
+                const container = document.getElementById(containerId);
+                if (!container) return;
+                container.innerHTML = '';
+
+                // combine all groups into one array
+                const all = [];
+                ['brain', 'nerve', 'frame'].forEach(group => {
+                    KINDLINGS[group].forEach(k => {
+                        all.push({ ...k, group });
+                    });
+                });
+
+                all.forEach(k => {
+                    const card = document.createElement('div');
+                    card.className = 'kindling-card';
+                    card.dataset.group = k.group;
+
+                    // header
+                    const header = document.createElement('div');
+                    header.className = 'card-header';
+                    header.innerHTML = `
+                        <span class="card-number">#${String(k.id).padStart(2, '0')}</span>
+                        <span class="card-title">${k.title}</span>
+                        <span class="card-theme">${k.theme} · ${k.keep}</span>
+                    `;
+                    card.appendChild(header);
+
+                    // preview
+                    const preview = document.createElement('div');
+                    preview.className = 'card-preview';
+                    preview.innerHTML = `<span class="quote">${k.quote}</span><br><span style="font-size:0.65rem;color:var(--dim);">click to expand</span>`;
+                    card.appendChild(preview);
+
+                    // body
+                    const body = document.createElement('div');
+                    body.className = 'card-body';
+
+                    const stageTypes = [
+                        { key: 'self', label: 'Self', cls: '' },
+                        { key: 'living', label: 'Living Demand', cls: 'living' },
+                        { key: 'dead', label: 'Dead Demand', cls: 'dead' }
+                    ];
+
+                    stageTypes.forEach(st => {
+                        const items = k.stages[st.key];
+                        if (!items || items.length === 0) return;
+                        const groupDiv = document.createElement('div');
+                        groupDiv.className = 'stage-group';
+                        const label = document.createElement('div');
+                        label.className = 'stage-label' + (st.cls ? ' ' + st.cls : '');
+                        label.textContent = st.label;
+                        groupDiv.appendChild(label);
+
+                        items.forEach(item => {
+                            const div = document.createElement('div');
+                            div.className = 'stage-item';
+                            div.innerHTML = `
+                                <strong>${item.label}</strong> —
+                                <span class="effect">${item.effect}</span>
+                                <br><span class="demand">✦ ${item.demand}</span>
+                            `;
+                            groupDiv.appendChild(div);
+                        });
+                        body.appendChild(groupDiv);
+                    });
+
+                    // toggle
+                    const toggleBtn = document.createElement('button');
+                    toggleBtn.className = 'card-toggle';
+                    toggleBtn.textContent = 'Expand';
+                    toggleBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        card.classList.toggle('expanded');
+                        toggleBtn.textContent = card.classList.contains('expanded') ? 'Collapse' : 'Expand';
+                        toggleBtn.classList.toggle('expanded-toggle');
+                    });
+                    body.appendChild(toggleBtn);
+                    card.appendChild(body);
+
+                    // click on card toggles expansion (only if active)
+                    card.addEventListener('click', (e) => {
+                        if (e.target.closest('.card-toggle')) return;
+                        if (!card.classList.contains('active-group')) return;
+                        card.classList.toggle('expanded');
+                        const btn = card.querySelector('.card-toggle');
+                        if (btn) {
+                            btn.textContent = card.classList.contains('expanded') ? 'Collapse' : 'Expand';
+                            btn.classList.toggle('expanded-toggle');
+                        }
+                    });
+
+                    container.appendChild(card);
+                });
+            }
+
+            // ------------------------------------------------------------
+            // VIEW SWITCHING — update active group class on grids
+            // ------------------------------------------------------------
+            function setupViewToggles() {
+                const buttons = document.querySelectorAll('.view-btn');
+                const panels = {
+                    brain: document.getElementById('view-brain'),
+                    nerve: document.getElementById('view-nerve'),
+                    frame: document.getElementById('view-frame')
+                };
+                const grids = {
+                    brain: document.getElementById('grid-brain'),
+                    nerve: document.getElementById('grid-nerve'),
+                    frame: document.getElementById('grid-frame')
+                };
+
+                buttons.forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        buttons.forEach(b => b.classList.remove('active'));
+                        btn.classList.add('active');
+                        const view = btn.dataset.view;
+                        // show panel
+                        Object.keys(panels).forEach(key => {
+                            panels[key].classList.toggle('active', key === view);
+                        });
+                        // update active group on all grids
+                        Object.keys(grids).forEach(key => {
+                            const cards = grids[key].querySelectorAll('.kindling-card');
+                            cards.forEach(card => {
+                                const group = card.dataset.group;
+                                card.classList.toggle('active-group', group === view);
+                                // if not active, collapse
+                                if (group !== view) {
+                                    card.classList.remove('expanded');
+                                    const toggle = card.querySelector('.card-toggle');
+                                    if (toggle) {
+                                        toggle.textContent = 'Expand';
+                                        toggle.classList.remove('expanded-toggle');
+                                    }
+                                }
+                            });
+                        });
+                    });
+                });
+
+                // initial activation: default view is brain
+                document.querySelector('.view-btn.active')?.click();
+            }
+
+            // ------------------------------------------------------------
+            // INIT
+            // ------------------------------------------------------------
+            document.addEventListener('DOMContentLoaded', () => {
+                // render all cards in each grid
+                renderAllCards('grid-brain');
+                renderAllCards('grid-nerve');
+                renderAllCards('grid-frame');
+
+                // set up view toggles (will also set initial active group)
+                setupViewToggles();
+
+                console.log('🔴 THE 18 KINDLINGS · ULTRABLACK ONLINE');
+            });
+
+        })();
+    </script>
+
+</body>
+</html>
