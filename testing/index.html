@@ -137,14 +137,9 @@
         overflow:hidden;
         padding:52px 64px;
         border-radius:6px;
-        animation:crtFlicker 5s infinite;
-    }
-
-    @keyframes crtFlicker{
-        0%, 92%, 100%{ opacity:1; }
-        93%{ opacity:0.86; }
-        94%{ opacity:1; }
-        95.5%{ opacity:0.9; }
+        /* opacity is nudged directly from JS (see startCrtFlicker in
+           constellation.js) on an irregular timer, not a fixed CSS loop —
+           a perfectly even repeat reads as fake within a few cycles */
     }
 
     .field-inner{
@@ -160,25 +155,29 @@
             0 0 6px rgba(255,255,255,0.35);
     }
 
-    /* field-local grain, distinct from the page-level overlay so the sky itself
-       reads as a noisy sensor image rather than a clean vector plot */
+    /* field-local grain: two offset dither layers that hop between two
+       positions every frame, like real sensor noise rather than a static
+       print. (Previously referenced a keyframe that was never defined, so
+       this layer sat there completely still — the single biggest reason
+       the panel read as stale rather than live.) */
     .field-wrap::after{
         content:"";
         position:absolute;
-        inset:0;
+        inset:-4px;
         pointer-events:none;
         z-index:5;
-        opacity:0.09;
+        opacity:0.1;
         background-image:
             repeating-linear-gradient(0deg, rgba(255,255,255,0.6) 0px, transparent 1px, transparent 2px),
             repeating-linear-gradient(90deg, rgba(255,255,255,0.3) 0px, transparent 1px, transparent 3px);
         animation:flirGrain 0.4s steps(2) infinite;
     }
 
-    /* light white phosphor CRT scanlines — sits on the FIELD PANEL only, not the
-       page background. A fine, static horizontal line texture standing in for the
-       phosphor rows. mix-blend-mode:screen so it brightens the stars/lines under
-       it instead of covering them. No moving band — just the static texture. */
+    @keyframes flirGrain{
+        0%{ transform:translate(0, 0); }
+        100%{ transform:translate(-2px, 1px); }
+    }
+
     /* light white phosphor CRT scanlines plus the screen-edge vignette,
        combined in one layer and raised above the HUD — reads as glass in
        front of the whole screen, boxes and text included, not just the
