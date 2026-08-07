@@ -135,7 +135,7 @@
         border:2px solid #fff;
         background:#000;
         overflow:hidden;
-        padding:52px 64px;
+        padding:62px 92px;
         border-radius:6px;
         /* soft light bleed off the edge of the tube, like a lit phosphor
            screen glowing into the room around it */
@@ -283,12 +283,43 @@
         border-right:2px solid #fff;
     }
 
-    /* one dot per connected afterimage, in order, so the trace box fills
-       left to right as points are added to the field */
+    /* one dot per connected afterimage, in order, with a connecting line
+       that only lights up once the selection resolves into a formation —
+       same idea as the line the field itself draws between selected stars */
     .hud-dots{
-        letter-spacing:4px;
+        position:relative;
+        display:flex;
+        align-items:center;
+        gap:7px;
         min-width:1em;
-        min-height:1em;
+        min-height:11px;
+    }
+
+    .hud-dot{
+        position:relative;
+        z-index:1;
+        width:5px;
+        height:5px;
+        border-radius:50%;
+        background:#fff;
+        flex:none;
+    }
+
+    .hud-dot-line{
+        position:absolute;
+        left:2px;
+        right:2px;
+        top:50%;
+        height:1px;
+        background:#fff;
+        transform:translateY(-50%);
+        opacity:0;
+        transition:opacity 0.4s ease;
+        z-index:0;
+    }
+
+    .hud-dots.linked .hud-dot-line{
+        opacity:0.9;
     }
 
     /* plain rectangle gauge — one border, one solid fill, no nub or ticks */
@@ -622,7 +653,7 @@
         h1{ font-size:42px; }
         .star-grid{ grid-template-columns:repeat(2, 1fr); }
         .charted-grid{ grid-template-columns:repeat(2, 1fr); }
-        .field-wrap{ padding:34px 20px; }
+        .field-wrap{ padding:42px 26px; }
         .hud{ font-size:9px; }
         .hud-corner{ padding:5px 7px; }
     }
