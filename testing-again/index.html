@@ -113,17 +113,9 @@
         }
 
         /* ============================================================
-           LAYOUT
+           LAYER SWITCH BUTTONS
            ============================================================ */
-        .container {
-            max-width: 1280px;
-            margin: 0 auto;
-        }
-
-        /* ============================================================
-           VIEW TOGGLE
-           ============================================================ */
-        .view-toggle {
+        .layer-toggle {
             display: flex;
             gap: 0.4rem;
             flex-wrap: wrap;
@@ -132,27 +124,27 @@
             padding-bottom: 0.8rem;
         }
 
-        .view-btn {
+        .layer-btn {
             background: transparent;
             border: 1px solid var(--border-dot);
             color: var(--dim);
             font-family: var(--font-mono);
-            font-size: 0.65rem;
+            font-size: 0.7rem;
             letter-spacing: 0.2em;
             text-transform: uppercase;
-            padding: 0.5rem 1.4rem;
+            padding: 0.5rem 1.6rem;
             cursor: pointer;
             transition: all 0.25s ease;
             border-radius: 2px;
         }
 
-        .view-btn:hover {
+        .layer-btn:hover {
             border-color: var(--fg);
             color: var(--fg);
             background: rgba(240, 236, 230, 0.04);
         }
 
-        .view-btn.active {
+        .layer-btn.active {
             border-color: var(--red);
             color: var(--fg);
             background: var(--red-dim);
@@ -160,177 +152,33 @@
         }
 
         /* ============================================================
-           VIEW PANELS
-           ============================================================ */
-        .view-panel {
-            display: none;
-            animation: fadeIn 0.35s ease;
-        }
-
-        .view-panel.active {
-            display: block;
-        }
-
-        @keyframes fadeIn {
-            0% {
-                opacity: 0;
-                transform: translateY(6px);
-            }
-            100% {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* ============================================================
-           FIGURE STAGE — Pixel-art chibi figures
+           FIGURE STAGE — container for PNG layers
            ============================================================ */
         .figure-stage {
             width: 100%;
-            overflow: hidden;
+            min-height: 250px;
             background: #1a1818;
-            padding: 18px 8px 12px;
             border: 1px dashed var(--border-dot);
             border-radius: 2px;
             margin-bottom: 1.6rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 8px 0 4px;
+            overflow: hidden;
+            position: relative;
         }
 
-        .figure-stage svg {
-            width: 100%;
+        .figure-layer {
+            width: min(430px, 100%);
             height: auto;
-            display: block;
-            shape-rendering: crispEdges;
+            display: none;
+            object-fit: contain;
             image-rendering: pixelated;
         }
 
-        .ref-figure {
-            transition: opacity .25s;
-        }
-
-        .ref-tick {
-            stroke: rgba(255, 255, 255, .7);
-            stroke-width: 1;
-            fill: none;
-            shape-rendering: crispEdges;
-        }
-
-        .ref-long-tick {
-            stroke: #fff;
-            stroke-width: 2;
-            shape-rendering: crispEdges;
-        }
-
-        .ref-measure {
-            stroke: #fff;
-            stroke-width: 1.4;
-            fill: none;
-            shape-rendering: crispEdges;
-        }
-
-        .ref-marker {
-            stroke: #fff;
-            stroke-width: 1.5;
-            fill: #1d1d1d;
-            shape-rendering: crispEdges;
-        }
-
-        /* brain – dotted chibi */
-        .brain-outline {
-            fill: none;
-            stroke: #fff;
-            stroke-width: 1.5;
-            stroke-dasharray: 1.5 4;
-            stroke-linecap: round;
-            shape-rendering: crispEdges;
-        }
-
-        .brain-head {
-            fill: #1d1d1d;
-            stroke: #fff;
-            stroke-width: 1.5;
-            shape-rendering: crispEdges;
-        }
-
-        .brain-focus {
-            fill: #fff;
-            stroke: none;
-            shape-rendering: crispEdges;
-        }
-
-        .pixel-eye {
-            fill: #fff;
-            stroke: none;
-            shape-rendering: crispEdges;
-        }
-
-        /* skeleton / nerve – chibi */
-        .skeleton {
-            fill: none;
-            stroke: #fff;
-            stroke-width: 1.8;
-            shape-rendering: crispEdges;
-        }
-
-        .skeleton-thin {
-            fill: none;
-            stroke: #fff;
-            stroke-width: 1;
-            shape-rendering: crispEdges;
-        }
-
-        .nerve {
-            fill: none;
-            stroke: rgba(255, 255, 255, 0.9);
-            stroke-width: 1.5;
-            shape-rendering: crispEdges;
-        }
-
-        .joint {
-            fill: #fff;
-            stroke: none;
-            shape-rendering: crispEdges;
-        }
-
-        /* block body – chibi */
-        .block-body {
-            fill: #fff;
-            stroke: #fff;
-            stroke-width: 1;
-            shape-rendering: crispEdges;
-        }
-
-        .block-cut {
-            fill: #1d1d1d;
-            stroke: none;
-            shape-rendering: crispEdges;
-        }
-
-        .block-noise {
-            fill: url(#blockDots);
-            opacity: .55;
-        }
-
-        /* text */
-        .ref-readout {
-            fill: #1d1d1d;
-            font-family: "Courier New", monospace;
-            font-size: 12px;
-            font-weight: bold;
-            letter-spacing: 1px;
-        }
-
-        .ref-caption {
-            fill: #fff;
-            font-family: "Courier New", monospace;
-            font-size: 11px;
-            letter-spacing: 1px;
-        }
-
-        .ref-caption-dim {
-            fill: rgba(255, 255, 255, .72);
-            font-family: "Courier New", monospace;
-            font-size: 10px;
-            letter-spacing: .5px;
+        .figure-layer.active {
+            display: block;
         }
 
         @media(max-width:720px) {
@@ -339,8 +187,8 @@
                 padding-left: 0;
                 padding-right: 0;
             }
-            .figure-stage svg {
-                min-width: 760px;
+            .figure-layer {
+                min-width: 360px;
             }
         }
 
@@ -535,6 +383,17 @@
             opacity: 0.4;
         }
 
+        @keyframes fadeIn {
+            0% {
+                opacity: 0;
+                transform: translateY(6px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
         /* ============================================================
            SYNERGY SECTION
            ============================================================ */
@@ -613,7 +472,7 @@
             .kindling-grid {
                 grid-template-columns: 1fr;
             }
-            .view-btn {
+            .layer-btn {
                 padding: 0.35rem 0.9rem;
                 font-size: 0.55rem;
             }
@@ -688,342 +547,24 @@
             &nbsp;—&nbsp; Reality, prepared to ignite.
         </div>
 
-        <!-- ========== VIEW TOGGLE ========== -->
-        <div class="view-toggle">
-            <button class="view-btn active" data-view="brain">BRAIN</button>
-            <button class="view-btn" data-view="nerve">NERVE</button>
-            <button class="view-btn" data-view="frame">FRAME</button>
+        <!-- ========== LAYER SWITCH BUTTONS ========== -->
+        <div class="layer-toggle">
+            <button class="layer-btn active" data-layer="brain">BRAIN</button>
+            <button class="layer-btn" data-layer="nerve">NERVE</button>
+            <button class="layer-btn" data-layer="frame">FRAME</button>
         </div>
 
-        <!-- ========== VIEW: BRAIN ========== -->
-        <div class="view-panel active" id="view-brain">
-            <!-- figure stage: chibi BRAIN -->
-            <div class="figure-stage">
-                <svg viewBox="0 0 960 620" xmlns="http://www.w3.org/2000/svg" fill="none">
-                    <defs>
-                        <pattern id="blockDots" width="4" height="4" patternUnits="userSpaceOnUse">
-                            <circle cx="1" cy="1" r=".55" fill="#000" />
-                        </pattern>
-                    </defs>
-                    <g class="ref-tick">
-                        <g>
-                            <line x1="22" y1="92" x2="37" y2="92" /><line x1="22" y1="125" x2="37" y2="125" />
-                            <line x1="22" y1="158" x2="37" y2="158" /><line x1="22" y1="191" x2="37" y2="191" />
-                            <line x1="22" y1="224" x2="37" y2="224" /><line x1="22" y1="257" x2="37" y2="257" />
-                            <line x1="22" y1="290" x2="37" y2="290" /><line x1="22" y1="323" x2="37" y2="323" />
-                            <line x1="22" y1="356" x2="37" y2="356" /><line x1="22" y1="389" x2="37" y2="389" />
-                            <line x1="22" y1="422" x2="37" y2="422" /><line x1="22" y1="455" x2="37" y2="455" />
-                            <line x1="22" y1="488" x2="37" y2="488" />
-                            <line x1="285" y1="92" x2="300" y2="92" /><line x1="285" y1="125" x2="300" y2="125" />
-                            <line x1="285" y1="158" x2="300" y2="158" /><line x1="285" y1="191" x2="300" y2="191" />
-                            <line x1="285" y1="224" x2="300" y2="224" /><line x1="285" y1="257" x2="300" y2="257" />
-                            <line x1="285" y1="290" x2="300" y2="290" /><line x1="285" y1="323" x2="300" y2="323" />
-                            <line x1="285" y1="356" x2="300" y2="356" /><line x1="285" y1="389" x2="300" y2="389" />
-                            <line x1="285" y1="422" x2="300" y2="422" /><line x1="285" y1="455" x2="300" y2="455" />
-                            <line x1="285" y1="488" x2="300" y2="488" />
-                        </g>
-                        <g>
-                            <line x1="332" y1="92" x2="347" y2="92" /><line x1="332" y1="125" x2="347" y2="125" />
-                            <line x1="332" y1="158" x2="347" y2="158" /><line x1="332" y1="191" x2="347" y2="191" />
-                            <line x1="332" y1="224" x2="347" y2="224" /><line x1="332" y1="257" x2="347" y2="257" />
-                            <line x1="332" y1="290" x2="347" y2="290" /><line x1="332" y1="323" x2="347" y2="323" />
-                            <line x1="332" y1="356" x2="347" y2="356" /><line x1="332" y1="389" x2="347" y2="389" />
-                            <line x1="332" y1="422" x2="347" y2="422" /><line x1="332" y1="455" x2="347" y2="455" />
-                            <line x1="332" y1="488" x2="347" y2="488" />
-                            <line x1="595" y1="92" x2="610" y2="92" /><line x1="595" y1="125" x2="610" y2="125" />
-                            <line x1="595" y1="158" x2="610" y2="158" /><line x1="595" y1="191" x2="610" y2="191" />
-                            <line x1="595" y1="224" x2="610" y2="224" /><line x1="595" y1="257" x2="610" y2="257" />
-                            <line x1="595" y1="290" x2="610" y2="290" /><line x1="595" y1="323" x2="610" y2="323" />
-                            <line x1="595" y1="356" x2="610" y2="356" /><line x1="595" y1="389" x2="610" y2="389" />
-                            <line x1="595" y1="422" x2="610" y2="422" /><line x1="595" y1="455" x2="610" y2="455" />
-                            <line x1="595" y1="488" x2="610" y2="488" />
-                        </g>
-                        <g>
-                            <line x1="642" y1="92" x2="657" y2="92" /><line x1="642" y1="125" x2="657" y2="125" />
-                            <line x1="642" y1="158" x2="657" y2="158" /><line x1="642" y1="191" x2="657" y2="191" />
-                            <line x1="642" y1="224" x2="657" y2="224" /><line x1="642" y1="257" x2="657" y2="257" />
-                            <line x1="642" y1="290" x2="657" y2="290" /><line x1="642" y1="323" x2="657" y2="323" />
-                            <line x1="642" y1="356" x2="657" y2="356" /><line x1="642" y1="389" x2="657" y2="389" />
-                            <line x1="642" y1="422" x2="657" y2="422" /><line x1="642" y1="455" x2="657" y2="455" />
-                            <line x1="642" y1="488" x2="657" y2="488" />
-                            <line x1="905" y1="92" x2="920" y2="92" /><line x1="905" y1="125" x2="920" y2="125" />
-                            <line x1="905" y1="158" x2="920" y2="158" /><line x1="905" y1="191" x2="920" y2="191" />
-                            <line x1="905" y1="224" x2="920" y2="224" /><line x1="905" y1="257" x2="920" y2="257" />
-                            <line x1="905" y1="290" x2="920" y2="290" /><line x1="905" y1="323" x2="920" y2="323" />
-                            <line x1="905" y1="356" x2="920" y2="356" /><line x1="905" y1="389" x2="920" y2="389" />
-                            <line x1="905" y1="422" x2="920" y2="422" /><line x1="905" y1="455" x2="920" y2="455" />
-                            <line x1="905" y1="488" x2="920" y2="488" />
-                        </g>
-                    </g>
-                    <g class="ref-long-tick">
-                        <line x1="48" y1="62" x2="82" y2="62" /><line x1="238" y1="62" x2="272" y2="62" />
-                        <line x1="358" y1="62" x2="392" y2="62" /><line x1="548" y1="62" x2="582" y2="62" />
-                        <line x1="668" y1="62" x2="702" y2="62" /><line x1="858" y1="62" x2="892" y2="62" />
-                    </g>
-
-                    <!-- ===== CHIBI BRAIN FIGURE ===== -->
-                    <g id="reference-brain-figure" class="ref-figure">
-                        <rect x="120" y="60" width="50" height="50" rx="4" class="brain-head" />
-                        <g class="brain-focus">
-                            <rect x="132" y="72" width="6" height="6" />
-                            <rect x="144" y="72" width="6" height="6" />
-                            <rect x="156" y="72" width="6" height="6" />
-                            <rect x="126" y="78" width="6" height="6" />
-                            <rect x="138" y="78" width="6" height="6" />
-                            <rect x="150" y="78" width="6" height="6" />
-                            <rect x="162" y="78" width="6" height="6" />
-                            <rect x="132" y="84" width="6" height="6" />
-                            <rect x="144" y="84" width="6" height="6" />
-                            <rect x="156" y="84" width="6" height="6" />
-                            <rect x="138" y="90" width="6" height="6" />
-                            <rect x="150" y="90" width="6" height="6" />
-                            <rect x="144" y="96" width="6" height="6" />
-                        </g>
-                        <rect x="128" y="72" width="4" height="4" class="pixel-eye" />
-                        <rect x="158" y="72" width="4" height="4" class="pixel-eye" />
-                        <path d="M145 110 L120 118 L100 126 L100 140 L120 140 L125 148 L125 200 L125 230 L115 270 L110 310 L125 310 L130 270 L145 250" class="brain-outline" />
-                        <path d="M145 110 L170 118 L190 126 L190 140 L170 140 L165 148 L165 200 L165 230 L175 270 L180 310 L165 310 L160 270 L145 250" class="brain-outline" />
-                        <line x1="145" y1="110" x2="145" y2="250" class="brain-outline" />
-                        <line x1="47" y1="180" x2="251" y2="180" class="ref-measure" />
-                        <rect x="42" y="173" width="12" height="14" class="ref-marker" />
-                        <rect x="245" y="173" width="12" height="14" class="ref-marker" />
-                        <rect x="48" y="270" width="60" height="28" fill="#fff" />
-                        <text x="54" y="289" class="ref-readout">6321</text>
-                        <line x1="48" y1="390" x2="82" y2="390" class="ref-long-tick" />
-                        <line x1="207" y1="390" x2="241" y2="390" class="ref-long-tick" />
-                        <text x="48" y="426" class="ref-caption">BRN // FOCUS</text>
-                        <text x="48" y="446" class="ref-caption-dim">Hard Lock onto Cognition.</text>
-                        <text x="48" y="462" class="ref-caption-dim">Perception. Thought. Will.</text>
-                    </g>
-                </svg>
-            </div>
-
-            <div class="kindling-grid" id="grid-brain"></div>
+        <!-- ========== FIGURE STAGE — PNG LAYERS ========== -->
+        <div class="figure-stage">
+            <img id="figure-brain" class="figure-layer active" src="brain.png" alt="Brain Anatomy" />
+            <img id="figure-nerve" class="figure-layer" src="nerve.png" alt="Nerve Anatomy" />
+            <img id="figure-frame" class="figure-layer" src="frame.png" alt="Frame Anatomy" />
         </div>
 
-        <!-- ========== VIEW: NERVE ========== -->
-        <div class="view-panel" id="view-nerve">
-            <div class="figure-stage">
-                <svg viewBox="0 0 960 620" xmlns="http://www.w3.org/2000/svg" fill="none">
-                    <defs>
-                        <pattern id="blockDots2" width="4" height="4" patternUnits="userSpaceOnUse">
-                            <circle cx="1" cy="1" r=".55" fill="#000" />
-                        </pattern>
-                    </defs>
-                    <g class="ref-tick">
-                        <g>
-                            <line x1="22" y1="92" x2="37" y2="92" /><line x1="22" y1="125" x2="37" y2="125" />
-                            <line x1="22" y1="158" x2="37" y2="158" /><line x1="22" y1="191" x2="37" y2="191" />
-                            <line x1="22" y1="224" x2="37" y2="224" /><line x1="22" y1="257" x2="37" y2="257" />
-                            <line x1="22" y1="290" x2="37" y2="290" /><line x1="22" y1="323" x2="37" y2="323" />
-                            <line x1="22" y1="356" x2="37" y2="356" /><line x1="22" y1="389" x2="37" y2="389" />
-                            <line x1="22" y1="422" x2="37" y2="422" /><line x1="22" y1="455" x2="37" y2="455" />
-                            <line x1="22" y1="488" x2="37" y2="488" />
-                            <line x1="285" y1="92" x2="300" y2="92" /><line x1="285" y1="125" x2="300" y2="125" />
-                            <line x1="285" y1="158" x2="300" y2="158" /><line x1="285" y1="191" x2="300" y2="191" />
-                            <line x1="285" y1="224" x2="300" y2="224" /><line x1="285" y1="257" x2="300" y2="257" />
-                            <line x1="285" y1="290" x2="300" y2="290" /><line x1="285" y1="323" x2="300" y2="323" />
-                            <line x1="285" y1="356" x2="300" y2="356" /><line x1="285" y1="389" x2="300" y2="389" />
-                            <line x1="285" y1="422" x2="300" y2="422" /><line x1="285" y1="455" x2="300" y2="455" />
-                            <line x1="285" y1="488" x2="300" y2="488" />
-                        </g>
-                        <g>
-                            <line x1="332" y1="92" x2="347" y2="92" /><line x1="332" y1="125" x2="347" y2="125" />
-                            <line x1="332" y1="158" x2="347" y2="158" /><line x1="332" y1="191" x2="347" y2="191" />
-                            <line x1="332" y1="224" x2="347" y2="224" /><line x1="332" y1="257" x2="347" y2="257" />
-                            <line x1="332" y1="290" x2="347" y2="290" /><line x1="332" y1="323" x2="347" y2="323" />
-                            <line x1="332" y1="356" x2="347" y2="356" /><line x1="332" y1="389" x2="347" y2="389" />
-                            <line x1="332" y1="422" x2="347" y2="422" /><line x1="332" y1="455" x2="347" y2="455" />
-                            <line x1="332" y1="488" x2="347" y2="488" />
-                            <line x1="595" y1="92" x2="610" y2="92" /><line x1="595" y1="125" x2="610" y2="125" />
-                            <line x1="595" y1="158" x2="610" y2="158" /><line x1="595" y1="191" x2="610" y2="191" />
-                            <line x1="595" y1="224" x2="610" y2="224" /><line x1="595" y1="257" x2="610" y2="257" />
-                            <line x1="595" y1="290" x2="610" y2="290" /><line x1="595" y1="323" x2="610" y2="323" />
-                            <line x1="595" y1="356" x2="610" y2="356" /><line x1="595" y1="389" x2="610" y2="389" />
-                            <line x1="595" y1="422" x2="610" y2="422" /><line x1="595" y1="455" x2="610" y2="455" />
-                            <line x1="595" y1="488" x2="610" y2="488" />
-                        </g>
-                        <g>
-                            <line x1="642" y1="92" x2="657" y2="92" /><line x1="642" y1="125" x2="657" y2="125" />
-                            <line x1="642" y1="158" x2="657" y2="158" /><line x1="642" y1="191" x2="657" y2="191" />
-                            <line x1="642" y1="224" x2="657" y2="224" /><line x1="642" y1="257" x2="657" y2="257" />
-                            <line x1="642" y1="290" x2="657" y2="290" /><line x1="642" y1="323" x2="657" y2="323" />
-                            <line x1="642" y1="356" x2="657" y2="356" /><line x1="642" y1="389" x2="657" y2="389" />
-                            <line x1="642" y1="422" x2="657" y2="422" /><line x1="642" y1="455" x2="657" y2="455" />
-                            <line x1="642" y1="488" x2="657" y2="488" />
-                            <line x1="905" y1="92" x2="920" y2="92" /><line x1="905" y1="125" x2="920" y2="125" />
-                            <line x1="905" y1="158" x2="920" y2="158" /><line x1="905" y1="191" x2="920" y2="191" />
-                            <line x1="905" y1="224" x2="920" y2="224" /><line x1="905" y1="257" x2="920" y2="257" />
-                            <line x1="905" y1="290" x2="920" y2="290" /><line x1="905" y1="323" x2="920" y2="323" />
-                            <line x1="905" y1="356" x2="920" y2="356" /><line x1="905" y1="389" x2="920" y2="389" />
-                            <line x1="905" y1="422" x2="920" y2="422" /><line x1="905" y1="455" x2="920" y2="455" />
-                            <line x1="905" y1="488" x2="920" y2="488" />
-                        </g>
-                    </g>
-                    <g class="ref-long-tick">
-                        <line x1="48" y1="62" x2="82" y2="62" /><line x1="238" y1="62" x2="272" y2="62" />
-                        <line x1="358" y1="62" x2="392" y2="62" /><line x1="548" y1="62" x2="582" y2="62" />
-                        <line x1="668" y1="62" x2="702" y2="62" /><line x1="858" y1="62" x2="892" y2="62" />
-                    </g>
-
-                    <!-- ===== CHIBI NERVE FIGURE ===== -->
-                    <g id="reference-nerve-figure" class="ref-figure">
-                        <rect x="450" y="60" width="56" height="56" rx="4" class="skeleton" />
-                        <rect x="462" y="72" width="8" height="8" class="skeleton-thin" />
-                        <rect x="486" y="72" width="8" height="8" class="skeleton-thin" />
-                        <rect x="478" y="84" width="4" height="4" class="skeleton-thin" />
-                        <path d="M462 100 Q470 108 494 100" class="skeleton-thin" stroke-width="1.5" />
-                        <line x1="478" y1="116" x2="478" y2="200" class="skeleton" />
-                        <line x1="464" y1="130" x2="492" y2="130" class="skeleton" />
-                        <line x1="462" y1="140" x2="494" y2="140" class="skeleton" />
-                        <line x1="464" y1="150" x2="492" y2="150" class="skeleton" />
-                        <line x1="468" y1="135" x2="440" y2="150" class="skeleton" />
-                        <line x1="440" y1="150" x2="420" y2="150" class="skeleton" />
-                        <line x1="488" y1="135" x2="516" y2="150" class="skeleton" />
-                        <line x1="516" y1="150" x2="536" y2="150" class="skeleton" />
-                        <rect x="410" y="145" width="10" height="10" class="skeleton" />
-                        <rect x="536" y="145" width="10" height="10" class="skeleton" />
-                        <rect x="462" y="200" width="32" height="16" rx="2" class="skeleton" />
-                        <line x1="472" y1="216" x2="462" y2="260" class="skeleton" />
-                        <line x1="462" y1="260" x2="452" y2="310" class="skeleton" />
-                        <line x1="484" y1="216" x2="494" y2="260" class="skeleton" />
-                        <line x1="494" y1="260" x2="504" y2="310" class="skeleton" />
-                        <rect x="442" y="310" width="20" height="10" class="skeleton" />
-                        <rect x="494" y="310" width="20" height="10" class="skeleton" />
-                        <g class="nerve">
-                            <line x1="478" y1="116" x2="478" y2="200" />
-                            <line x1="478" y1="130" x2="460" y2="140" />
-                            <line x1="478" y1="130" x2="496" y2="140" />
-                            <line x1="478" y1="145" x2="458" y2="155" />
-                            <line x1="478" y1="145" x2="498" y2="155" />
-                            <line x1="478" y1="160" x2="460" y2="170" />
-                            <line x1="478" y1="160" x2="496" y2="170" />
-                            <line x1="460" y1="140" x2="440" y2="150" />
-                            <line x1="496" y1="140" x2="516" y2="150" />
-                            <line x1="478" y1="200" x2="462" y2="240" />
-                            <line x1="478" y1="200" x2="494" y2="240" />
-                            <line x1="462" y1="240" x2="452" y2="280" />
-                            <line x1="494" y1="240" x2="504" y2="280" />
-                        </g>
-                        <line x1="347" y1="180" x2="555" y2="180" class="ref-measure" />
-                        <rect x="342" y="173" width="12" height="14" class="ref-marker" />
-                        <rect x="549" y="173" width="12" height="14" class="ref-marker" />
-                        <rect x="348" y="270" width="60" height="28" fill="#fff" />
-                        <text x="354" y="289" class="ref-readout">6321</text>
-                        <line x1="348" y1="390" x2="382" y2="390" class="ref-long-tick" />
-                        <line x1="507" y1="390" x2="541" y2="390" class="ref-long-tick" />
-                        <text x="348" y="426" class="ref-caption">NRV // MAP</text>
-                        <text x="348" y="446" class="ref-caption-dim">Nerve grid. Signal. Reflex.</text>
-                        <text x="348" y="462" class="ref-caption-dim">Transmission. Red Shift.</text>
-                    </g>
-                </svg>
-            </div>
-
-            <div class="kindling-grid" id="grid-nerve"></div>
-        </div>
-
-        <!-- ========== VIEW: FRAME ========== -->
-        <div class="view-panel" id="view-frame">
-            <div class="figure-stage">
-                <svg viewBox="0 0 960 620" xmlns="http://www.w3.org/2000/svg" fill="none">
-                    <defs>
-                        <pattern id="blockDots3" width="4" height="4" patternUnits="userSpaceOnUse">
-                            <circle cx="1" cy="1" r=".55" fill="#000" />
-                        </pattern>
-                    </defs>
-                    <g class="ref-tick">
-                        <g>
-                            <line x1="22" y1="92" x2="37" y2="92" /><line x1="22" y1="125" x2="37" y2="125" />
-                            <line x1="22" y1="158" x2="37" y2="158" /><line x1="22" y1="191" x2="37" y2="191" />
-                            <line x1="22" y1="224" x2="37" y2="224" /><line x1="22" y1="257" x2="37" y2="257" />
-                            <line x1="22" y1="290" x2="37" y2="290" /><line x1="22" y1="323" x2="37" y2="323" />
-                            <line x1="22" y1="356" x2="37" y2="356" /><line x1="22" y1="389" x2="37" y2="389" />
-                            <line x1="22" y1="422" x2="37" y2="422" /><line x1="22" y1="455" x2="37" y2="455" />
-                            <line x1="22" y1="488" x2="37" y2="488" />
-                            <line x1="285" y1="92" x2="300" y2="92" /><line x1="285" y1="125" x2="300" y2="125" />
-                            <line x1="285" y1="158" x2="300" y2="158" /><line x1="285" y1="191" x2="300" y2="191" />
-                            <line x1="285" y1="224" x2="300" y2="224" /><line x1="285" y1="257" x2="300" y2="257" />
-                            <line x1="285" y1="290" x2="300" y2="290" /><line x1="285" y1="323" x2="300" y2="323" />
-                            <line x1="285" y1="356" x2="300" y2="356" /><line x1="285" y1="389" x2="300" y2="389" />
-                            <line x1="285" y1="422" x2="300" y2="422" /><line x1="285" y1="455" x2="300" y2="455" />
-                            <line x1="285" y1="488" x2="300" y2="488" />
-                        </g>
-                        <g>
-                            <line x1="332" y1="92" x2="347" y2="92" /><line x1="332" y1="125" x2="347" y2="125" />
-                            <line x1="332" y1="158" x2="347" y2="158" /><line x1="332" y1="191" x2="347" y2="191" />
-                            <line x1="332" y1="224" x2="347" y2="224" /><line x1="332" y1="257" x2="347" y2="257" />
-                            <line x1="332" y1="290" x2="347" y2="290" /><line x1="332" y1="323" x2="347" y2="323" />
-                            <line x1="332" y1="356" x2="347" y2="356" /><line x1="332" y1="389" x2="347" y2="389" />
-                            <line x1="332" y1="422" x2="347" y2="422" /><line x1="332" y1="455" x2="347" y2="455" />
-                            <line x1="332" y1="488" x2="347" y2="488" />
-                            <line x1="595" y1="92" x2="610" y2="92" /><line x1="595" y1="125" x2="610" y2="125" />
-                            <line x1="595" y1="158" x2="610" y2="158" /><line x1="595" y1="191" x2="610" y2="191" />
-                            <line x1="595" y1="224" x2="610" y2="224" /><line x1="595" y1="257" x2="610" y2="257" />
-                            <line x1="595" y1="290" x2="610" y2="290" /><line x1="595" y1="323" x2="610" y2="323" />
-                            <line x1="595" y1="356" x2="610" y2="356" /><line x1="595" y1="389" x2="610" y2="389" />
-                            <line x1="595" y1="422" x2="610" y2="422" /><line x1="595" y1="455" x2="610" y2="455" />
-                            <line x1="595" y1="488" x2="610" y2="488" />
-                        </g>
-                        <g>
-                            <line x1="642" y1="92" x2="657" y2="92" /><line x1="642" y1="125" x2="657" y2="125" />
-                            <line x1="642" y1="158" x2="657" y2="158" /><line x1="642" y1="191" x2="657" y2="191" />
-                            <line x1="642" y1="224" x2="657" y2="224" /><line x1="642" y1="257" x2="657" y2="257" />
-                            <line x1="642" y1="290" x2="657" y2="290" /><line x1="642" y1="323" x2="657" y2="323" />
-                            <line x1="642" y1="356" x2="657" y2="356" /><line x1="642" y1="389" x2="657" y2="389" />
-                            <line x1="642" y1="422" x2="657" y2="422" /><line x1="642" y1="455" x2="657" y2="455" />
-                            <line x1="642" y1="488" x2="657" y2="488" />
-                            <line x1="905" y1="92" x2="920" y2="92" /><line x1="905" y1="125" x2="920" y2="125" />
-                            <line x1="905" y1="158" x2="920" y2="158" /><line x1="905" y1="191" x2="920" y2="191" />
-                            <line x1="905" y1="224" x2="920" y2="224" /><line x1="905" y1="257" x2="920" y2="257" />
-                            <line x1="905" y1="290" x2="920" y2="290" /><line x1="905" y1="323" x2="920" y2="323" />
-                            <line x1="905" y1="356" x2="920" y2="356" /><line x1="905" y1="389" x2="920" y2="389" />
-                            <line x1="905" y1="422" x2="920" y2="422" /><line x1="905" y1="455" x2="920" y2="455" />
-                            <line x1="905" y1="488" x2="920" y2="488" />
-                        </g>
-                    </g>
-                    <g class="ref-long-tick">
-                        <line x1="48" y1="62" x2="82" y2="62" /><line x1="238" y1="62" x2="272" y2="62" />
-                        <line x1="358" y1="62" x2="392" y2="62" /><line x1="548" y1="62" x2="582" y2="62" />
-                        <line x1="668" y1="62" x2="702" y2="62" /><line x1="858" y1="62" x2="892" y2="62" />
-                    </g>
-
-                    <!-- ===== CHIBI FRAME FIGURE ===== -->
-                    <g id="reference-frame-figure" class="ref-figure">
-                        <rect x="750" y="60" width="56" height="56" rx="4" class="block-body" />
-                        <rect x="750" y="60" width="56" height="56" class="block-noise" />
-                        <rect x="774" y="50" width="8" height="10" class="block-body" />
-                        <rect x="762" y="72" width="8" height="8" class="block-cut" />
-                        <rect x="786" y="72" width="8" height="8" class="block-cut" />
-                        <rect x="762" y="92" width="32" height="6" class="block-cut" />
-                        <rect x="774" y="116" width="12" height="12" class="block-body" />
-                        <rect x="744" y="128" width="72" height="80" class="block-body" />
-                        <rect x="744" y="128" width="72" height="80" class="block-noise" />
-                        <rect x="730" y="128" width="100" height="16" class="block-body" />
-                        <rect x="730" y="144" width="16" height="40" class="block-body" />
-                        <rect x="814" y="144" width="16" height="40" class="block-body" />
-                        <rect x="726" y="184" width="24" height="16" class="block-body" />
-                        <rect x="810" y="184" width="24" height="16" class="block-body" />
-                        <rect x="748" y="208" width="64" height="20" class="block-body" />
-                        <rect x="752" y="228" width="20" height="60" class="block-body" />
-                        <rect x="788" y="228" width="20" height="60" class="block-body" />
-                        <rect x="744" y="288" width="36" height="16" class="block-body" />
-                        <rect x="780" y="288" width="36" height="16" class="block-body" />
-                        <line x1="657" y1="180" x2="851" y2="180" class="ref-measure" />
-                        <rect x="652" y="173" width="12" height="14" class="ref-marker" />
-                        <rect x="845" y="173" width="12" height="14" class="ref-marker" />
-                        <rect x="658" y="270" width="60" height="28" fill="#fff" />
-                        <text x="664" y="289" class="ref-readout">6321</text>
-                        <line x1="658" y1="390" x2="682" y2="390" class="ref-long-tick" />
-                        <line x1="817" y1="390" x2="851" y2="390" class="ref-long-tick" />
-                        <text x="658" y="426" class="ref-caption">FRM // SHELL</text>
-                        <text x="658" y="446" class="ref-caption-dim">Form. Mass. Structure.</text>
-                        <text x="658" y="462" class="ref-caption-dim">The Negative Box.</text>
-                    </g>
-                </svg>
-            </div>
-
-            <div class="kindling-grid" id="grid-frame"></div>
-        </div>
+        <!-- ========== KINDLING GRIDS ========== -->
+        <div class="kindling-grid" id="grid-brain"></div>
+        <div class="kindling-grid" id="grid-nerve"></div>
+        <div class="kindling-grid" id="grid-frame"></div>
 
         <!-- ========== SYNERGIES ========== -->
         <div class="synergy-section">
@@ -1056,7 +597,7 @@
             'use strict';
 
             // ------------------------------------------------------------
-            // DATA — All 18 Kindlings
+            // KINDLINGS DATA (all 18)
             // ------------------------------------------------------------
             const KINDLINGS = {
                 brain: [{
@@ -1497,14 +1038,13 @@
             };
 
             // ------------------------------------------------------------
-            // RENDER — all 18 cards in each grid, with data-group
+            // RENDER — all 18 cards in each grid
             // ------------------------------------------------------------
             function renderAllCards(containerId) {
                 const container = document.getElementById(containerId);
                 if (!container) return;
                 container.innerHTML = '';
 
-                // combine all groups into one array
                 const all = [];
                 ['brain', 'nerve', 'frame'].forEach(group => {
                     KINDLINGS[group].forEach(k => {
@@ -1517,7 +1057,6 @@
                     card.className = 'kindling-card';
                     card.dataset.group = k.group;
 
-                    // header
                     const header = document.createElement('div');
                     header.className = 'card-header';
                     header.innerHTML = `
@@ -1527,13 +1066,12 @@
                     `;
                     card.appendChild(header);
 
-                    // preview
                     const preview = document.createElement('div');
                     preview.className = 'card-preview';
-                    preview.innerHTML = `<span class="quote">${k.quote}</span><br><span style="font-size:0.65rem;color:var(--dim);">click to expand</span>`;
+                    preview.innerHTML =
+                        `<span class="quote">${k.quote}</span><br><span style="font-size:0.65rem;color:var(--dim);">click to expand</span>`;
                     card.appendChild(preview);
 
-                    // body
                     const body = document.createElement('div');
                     body.className = 'card-body';
 
@@ -1566,7 +1104,6 @@
                         body.appendChild(groupDiv);
                     });
 
-                    // toggle
                     const toggleBtn = document.createElement('button');
                     toggleBtn.className = 'card-toggle';
                     toggleBtn.textContent = 'Expand';
@@ -1579,7 +1116,6 @@
                     body.appendChild(toggleBtn);
                     card.appendChild(body);
 
-                    // click on card toggles expansion (only if active)
                     card.addEventListener('click', (e) => {
                         if (e.target.closest('.card-toggle')) return;
                         if (!card.classList.contains('active-group')) return;
@@ -1596,14 +1132,14 @@
             }
 
             // ------------------------------------------------------------
-            // VIEW SWITCHING — update active group class on grids
+            // LAYER SWITCHING
             // ------------------------------------------------------------
-            function setupViewToggles() {
-                const buttons = document.querySelectorAll('.view-btn');
-                const panels = {
-                    brain: document.getElementById('view-brain'),
-                    nerve: document.getElementById('view-nerve'),
-                    frame: document.getElementById('view-frame')
+            function setupLayerSwitching() {
+                const buttons = document.querySelectorAll('.layer-btn');
+                const layers = {
+                    brain: document.getElementById('figure-brain'),
+                    nerve: document.getElementById('figure-nerve'),
+                    frame: document.getElementById('figure-frame')
                 };
                 const grids = {
                     brain: document.getElementById('grid-brain'),
@@ -1615,19 +1151,20 @@
                     btn.addEventListener('click', () => {
                         buttons.forEach(b => b.classList.remove('active'));
                         btn.classList.add('active');
-                        const view = btn.dataset.view;
-                        // show panel
-                        Object.keys(panels).forEach(key => {
-                            panels[key].classList.toggle('active', key === view);
+                        const layer = btn.dataset.layer;
+
+                        // Show only the selected image layer
+                        Object.keys(layers).forEach(key => {
+                            layers[key].classList.toggle('active', key === layer);
                         });
-                        // update active group on all grids
+
+                        // Update active group on all grids
                         Object.keys(grids).forEach(key => {
                             const cards = grids[key].querySelectorAll('.kindling-card');
                             cards.forEach(card => {
                                 const group = card.dataset.group;
-                                card.classList.toggle('active-group', group === view);
-                                // if not active, collapse
-                                if (group !== view) {
+                                card.classList.toggle('active-group', group === layer);
+                                if (group !== layer) {
                                     card.classList.remove('expanded');
                                     const toggle = card.querySelector('.card-toggle');
                                     if (toggle) {
@@ -1640,22 +1177,18 @@
                     });
                 });
 
-                // initial activation: default view is brain
-                document.querySelector('.view-btn.active')?.click();
+                // Activate the first button by default (BRAIN)
+                document.querySelector('.layer-btn.active')?.click();
             }
 
             // ------------------------------------------------------------
             // INIT
             // ------------------------------------------------------------
             document.addEventListener('DOMContentLoaded', () => {
-                // render all cards in each grid
                 renderAllCards('grid-brain');
                 renderAllCards('grid-nerve');
                 renderAllCards('grid-frame');
-
-                // set up view toggles (will also set initial active group)
-                setupViewToggles();
-
+                setupLayerSwitching();
                 console.log('🔴 THE 18 KINDLINGS · ULTRABLACK ONLINE');
             });
 
