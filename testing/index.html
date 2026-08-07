@@ -290,6 +290,7 @@
         position:relative;
         display:flex;
         align-items:center;
+        align-self:flex-start;
         gap:7px;
         min-width:1em;
         min-height:11px;
@@ -298,8 +299,8 @@
     .hud-dot{
         position:relative;
         z-index:1;
-        width:5px;
-        height:5px;
+        width:6px;
+        height:6px;
         border-radius:50%;
         background:#fff;
         flex:none;
@@ -307,11 +308,12 @@
 
     .hud-dot-line{
         position:absolute;
-        left:2px;
-        right:2px;
+        left:3px;
+        right:3px;
         top:50%;
-        height:1px;
+        height:2px;
         background:#fff;
+        box-shadow:0 0 3px rgba(255,255,255,0.9);
         transform:translateY(-50%);
         opacity:0;
         transition:opacity 0.4s ease;
@@ -319,7 +321,7 @@
     }
 
     .hud-dots.linked .hud-dot-line{
-        opacity:0.9;
+        opacity:1;
     }
 
     /* plain rectangle gauge — one border, one solid fill, no nub or ticks */
