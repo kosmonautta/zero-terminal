@@ -174,10 +174,6 @@
             flex-shrink: 0;
         }
 
-        .hud-side .keep-slot .keep-card {
-            height: 100%;
-        }
-
         @media (max-width: 1150px) {
             .hud-side { width: 160px; }
         }
@@ -506,14 +502,21 @@
         /* ============================================================
            KINDLING GRID — all 18 cards, active/inactive styling
            ============================================================ */
+        /* ============================================================
+           KINDLING GRID — seamless hairline grid: cards sit flush,
+           1px grid lines come from the container background showing
+           through the gap, no per-card borders.
+           ============================================================ */
         .kindling-grid {
             position: relative;
             z-index: 1;
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 1.2rem;
+            gap: 1px;
+            background: var(--line);
+            border: 1px solid var(--line);
             margin-top: 0.3rem;
-            align-items: start;
+            align-items: stretch;
         }
 
         @media (max-width: 1100px) {
@@ -526,34 +529,18 @@
 
         .kindling-card {
             background: var(--bg-panel);
-            border: 1px solid var(--border-dot);
-            border-radius: 0;
-            overflow: hidden;
             overflow-wrap: anywhere;
-            transition: border-color 0.1s ease, opacity 0.12s ease, background 0.1s ease, box-shadow 0.15s ease;
+            transition: background 0.12s ease;
             cursor: pointer;
-            opacity: 0.3;
         }
 
-        .kindling-card:not(.active-group) {
-            border-style: dotted;
-            border-width: 1.5px;
-        }
-
-        .kindling-card.active-group {
-            opacity: 1;
-            border-style: solid;
-            border-color: var(--line);
-        }
-
-        .kindling-card.active-group:hover {
-            border-color: var(--fg);
+        .kindling-card:hover {
+            background: rgba(255, 255, 255, 0.06);
         }
 
         /* Selected/expanded card flips to a solid white plate with dark text — no glow, just contrast */
-        .kindling-card.active-group.expanded {
+        .kindling-card.expanded {
             background: #fff;
-            border-color: #000;
             --fg: #000;
             --dim: rgba(0, 0, 0, 0.6);
             --line: rgba(0, 0, 0, 0.25);
@@ -562,14 +549,14 @@
             --bg-panel: #fff;
         }
 
-        /* Subtle continuous shake on highlighted cards — short, snappy jumps, no sway */
-        .kindling-card.active-group {
+        /* Subtle continuous shake on cards, short and snappy — grows rougher with ignite tier */
+        .kindling-card {
             animation: cardJitterLow 0.9s infinite steps(9);
         }
-        .kindling-card.active-group.ignite-1 {
+        .kindling-card.ignite-1 {
             animation: cardJitterMed 0.55s infinite steps(9);
         }
-        .kindling-card.active-group.ignite-2 {
+        .kindling-card.ignite-2 {
             animation: cardJitterHigh 0.35s infinite steps(10);
         }
 
@@ -614,9 +601,9 @@
         }
 
         @media (prefers-reduced-motion: reduce) {
-            .kindling-card.active-group,
-            .kindling-card.active-group.ignite-1,
-            .kindling-card.active-group.ignite-2 { animation: none !important; }
+            .kindling-card,
+            .kindling-card.ignite-1,
+            .kindling-card.ignite-2 { animation: none !important; }
         }
 
         .kindling-card .card-header {
@@ -644,6 +631,11 @@
             font-weight: 600;
             letter-spacing: 0.02em;
             color: var(--fg);
+            min-height: 1.3em;
+        }
+
+        .kindling-card .card-title.shake {
+            color: var(--dim);
         }
 
         .kindling-card .card-theme {
@@ -657,11 +649,10 @@
         }
 
         .kindling-card .card-preview {
-            padding: 0.5rem 1rem 0.7rem;
+            padding: 0.5rem 1rem 0.8rem;
             font-size: 0.8rem;
             color: var(--dim);
             line-height: 1.6;
-            border-bottom: 1px solid var(--line);
         }
 
         .kindling-card .card-preview .quote {
@@ -670,155 +661,201 @@
             font-size: 0.85rem;
         }
 
-        .kindling-card .card-body {
-            display: none;
-            padding: 0.6rem 1rem 1rem;
-            border-top: 1px solid var(--line);
-        }
-
-        .kindling-card.active-group.expanded .card-body {
+        .kindling-card .card-preview .open-hint {
             display: block;
-            animation: glitchIn 0.22s steps(1) both;
-        }
-
-        .kindling-card .stage-group {
-            margin-top: 0.6rem;
-        }
-
-        .kindling-card .stage-group:first-child {
-            margin-top: 0;
-        }
-
-        .kindling-card .stage-label {
+            margin-top: 0.35rem;
             font-family: var(--font-mono);
-            font-size: 0.5rem;
+            font-size: 0.6rem;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--dim);
+        }
+
+        /* ============================================================
+           DETAIL PANEL — opens below the arrays when a kindling is
+           selected. Self escalates via Nibble/Feed/Devour tabs; Living
+           and Dead Demand are separate, always-visible blocks.
+           ============================================================ */
+        .detail-panel {
+            display: none;
+            margin-top: 1.6rem;
+        }
+
+        .detail-panel.show {
+            display: block;
+            animation: glitchIn 0.3s steps(1) both;
+        }
+
+        .detail-name {
+            font-family: var(--font-serif);
+            font-size: 1.7rem;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+            margin-bottom: 0.3rem;
+            min-height: 1.2em;
+        }
+
+        .detail-name.shake {
+            color: var(--dim);
+        }
+
+        .detail-quote {
+            font-style: italic;
+            color: var(--dim);
+            font-size: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .detail-tag-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1.4rem;
+        }
+
+        .detail-tag {
+            font-family: var(--font-mono);
+            font-size: 0.55rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            border: 1px solid var(--border-dot);
+            padding: 0.25rem 0.6rem;
+            color: var(--dim);
+        }
+
+        .detail-stage-block {
+            margin-bottom: 1.5rem;
+        }
+
+        .detail-stage-block h3 {
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
             letter-spacing: 0.2em;
             text-transform: uppercase;
             color: var(--fg);
-            border-bottom: 1px solid var(--line);
-            padding-bottom: 0.15rem;
-            margin-bottom: 0.3rem;
+            margin-bottom: 0.6rem;
         }
 
-        .kindling-card .stage-label.living {
-            color: var(--dim);
-            border-bottom-style: dashed;
-        }
-        .kindling-card .stage-label.dead {
-            color: var(--dim);
-            border-bottom-style: dotted;
-        }
-
-        .kindling-card .stage-item {
-            font-size: 0.72rem;
-            line-height: 1.6;
-            color: var(--dim);
-            padding: 0.15rem 0 0.15rem 0.6rem;
-            border-left: 1px solid var(--line);
-            margin-bottom: 0.2rem;
-        }
-
-        .kindling-card .stage-item strong {
-            color: var(--fg);
-            font-weight: 700;
-        }
-
-        .kindling-card .stage-item .effect {
-            color: var(--fg);
-        }
-
-        .kindling-card .stage-item .demand {
-            color: var(--dim);
-            font-size: 0.65rem;
-        }
-
-        /* Nibble / Feed / Devour segmented control */
-        .kindling-card .stage-select {
+        .detail-stage-tabs {
             display: flex;
-            gap: 0;
-            margin-bottom: 0.5rem;
             border: 1px solid var(--border-dot);
+            width: max-content;
         }
 
-        .kindling-card .stage-select-btn {
-            flex: 1;
+        .detail-stage-tab {
             background: transparent;
+            color: var(--dim);
             border: none;
             border-right: 1px solid var(--border-dot);
-            color: var(--dim);
             font-family: var(--font-mono);
-            font-size: 0.55rem;
-            letter-spacing: 0.12em;
+            font-size: 0.62rem;
+            letter-spacing: 0.15em;
             text-transform: uppercase;
-            padding: 0.35rem 0.3rem;
+            padding: 0.5rem 1.1rem;
             cursor: pointer;
             transition: all 0.1s ease;
         }
 
-        .kindling-card .stage-select-btn:last-child {
+        .detail-stage-tab:last-child {
             border-right: none;
         }
 
-        .kindling-card .stage-select-btn:hover {
+        .detail-stage-tab:hover {
             color: var(--fg);
         }
 
-        .kindling-card .stage-select-btn.selected {
+        .detail-stage-tab.active {
             background: var(--fg);
             color: var(--bg);
-            text-shadow: none;
+            font-weight: 700;
         }
 
-        .kindling-card .stage-item.self-stage {
-            transition: opacity 0.1s ease, filter 0.1s ease;
+        .detail-stage-body {
+            border: 1px solid var(--border-dot);
+            border-top: none;
+            padding: 1rem 1.1rem;
         }
 
-        .kindling-card .stage-item.self-stage.stage-dim {
-            opacity: 0.2;
-            filter: blur(0.2px);
+        .detail-row {
+            display: grid;
+            grid-template-columns: 90px 1fr;
+            gap: 0.7rem;
+            margin-bottom: 0.6rem;
+            align-items: baseline;
         }
 
-        .kindling-card .card-toggle {
-            display: inline-block;
+        .detail-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .detail-row-label {
             font-family: var(--font-mono);
             font-size: 0.55rem;
             letter-spacing: 0.15em;
             text-transform: uppercase;
             color: var(--dim);
-            padding: 0.2rem 0.7rem;
-            border: 1px solid var(--border-dot);
-            border-radius: 0;
-            margin-top: 0.4rem;
-            transition: all 0.1s ease;
-            background: transparent;
-            cursor: pointer;
         }
 
-        .kindling-card .card-toggle:hover {
-            border-color: var(--fg);
+        .detail-row-text {
+            font-size: 0.85rem;
+            line-height: 1.7;
             color: var(--fg);
         }
 
-        .kindling-card .card-toggle.expanded-toggle {
-            border-color: var(--fg);
-            background: var(--fg);
-            color: var(--bg);
+        .detail-row-text.demand {
+            color: var(--dim);
+            font-style: italic;
         }
 
-        .kindling-card:not(.active-group) .card-toggle {
-            display: none;
+        .demand-block {
+            border: 1px dashed var(--border-dot);
+            padding: 1rem 1.1rem;
+            margin-bottom: 1rem;
         }
-        .kindling-card:not(.active-group) .card-body {
-            display: none !important;
+
+        .demand-block:last-child {
+            margin-bottom: 0;
         }
-        .kindling-card:not(.active-group) .card-preview .quote {
-            opacity: 0.5;
+
+        .demand-head {
+            font-family: var(--font-mono);
+            font-size: 0.6rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            font-weight: 700;
+            margin-bottom: 0.7rem;
+            color: var(--fg);
         }
-        .kindling-card:not(.active-group) .card-preview span:last-child {
-            display: none;
+
+        .demand-block.living .demand-head::before {
+            content: "LIVING · ";
+            color: var(--dim);
+            font-weight: 400;
         }
-        .kindling-card:not(.active-group) .card-header .card-theme {
-            opacity: 0.4;
+
+        .demand-block.dead .demand-head::before {
+            content: "DEAD · ";
+            color: var(--dim);
+            font-weight: 400;
+        }
+
+        .detail-close {
+            margin-top: 0.3rem;
+            background: transparent;
+            border: 1px solid var(--border-dot);
+            color: var(--dim);
+            font-family: var(--font-mono);
+            font-size: 0.6rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            padding: 0.45rem 1rem;
+            cursor: pointer;
+            transition: all 0.1s ease;
+        }
+
+        .detail-close:hover {
+            border-color: var(--fg);
+            color: var(--fg);
         }
 
         .synergy-section {
@@ -871,24 +908,34 @@
 
         .keep-card {
             position: relative;
-            border: 1.5px dotted var(--border-dot);
-            padding: 1rem 1rem 0.9rem;
+            background: var(--bg-panel);
+            border: 1px dotted var(--border-dot);
+            padding: 0.95rem 1rem 1rem;
             text-align: center;
-            transition: border-color 0.1s ease, box-shadow 0.15s ease;
+            cursor: pointer;
+            transition: background 0.12s ease, border-color 0.12s ease;
             overflow-wrap: anywhere;
+            aspect-ratio: 1 / 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
         }
 
         .keep-card:hover {
             border-color: var(--fg);
         }
 
-        .keep-glyph {
-            font-family: var(--font-mono);
-            font-size: 1.5rem;
-            line-height: 1;
-            margin-bottom: 0.5rem;
-            color: #fff;
-            text-shadow: 0 0 1px #fff, 0 0 8px rgba(255, 255, 255, 0.55);
+        .keep-card.selected {
+            background: #fff;
+            border-style: solid;
+            border-color: #000;
+            --fg: #000;
+            --dim: rgba(0, 0, 0, 0.6);
+            --line: rgba(0, 0, 0, 0.25);
+            --border-dot: rgba(0, 0, 0, 0.3);
+            --bg: #fff;
+            --bg-panel: #fff;
         }
 
         .keep-name {
@@ -897,38 +944,20 @@
             font-weight: 600;
             letter-spacing: 0.02em;
             color: var(--fg);
-            margin-bottom: 0.2rem;
         }
 
         .keep-tagline {
+            display: none;
             font-family: var(--font-mono);
             font-size: 0.6rem;
             letter-spacing: 0.06em;
             color: var(--dim);
             font-style: italic;
-            margin-bottom: 0.7rem;
+            margin-top: 0.4rem;
         }
 
-        .keep-count {
-            font-family: var(--font-mono);
-            font-size: 0.55rem;
-            letter-spacing: 0.15em;
-            text-transform: uppercase;
-            color: var(--fg);
-            border-top: 1px dashed var(--line);
-            padding-top: 0.4rem;
-        }
-
-        .keep-list {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 0.25rem 0.55rem;
-            font-family: var(--font-mono);
-            font-size: 0.55rem;
-            letter-spacing: 0.06em;
-            color: var(--dim);
-            margin-top: 0.35rem;
+        .keep-card.selected .keep-tagline {
+            display: block;
         }
 
         @media (max-width: 720px) {
@@ -1033,7 +1062,7 @@
                 <div class="hud-corner tl"></div><div class="hud-corner tr"></div><div class="hud-corner bl"></div><div class="hud-corner br"></div>
                 <div class="hud-panel-header">
                     <span>BRN Array</span>
-                    <span class="hud-panel-count">06 Kindlings Loaded</span>
+                    <span class="hud-panel-count" id="count-brain">06 Kindlings Loaded</span>
                 </div>
                 <div class="hud-panel-body">
                     <div class="kindling-grid" id="grid-brain"></div>
@@ -1046,7 +1075,7 @@
                 <div class="hud-corner tl"></div><div class="hud-corner tr"></div><div class="hud-corner bl"></div><div class="hud-corner br"></div>
                 <div class="hud-panel-header">
                     <span>NRV Array</span>
-                    <span class="hud-panel-count">06 Kindlings Loaded</span>
+                    <span class="hud-panel-count" id="count-nerve">06 Kindlings Loaded</span>
                 </div>
                 <div class="hud-panel-body">
                     <div class="kindling-grid" id="grid-nerve"></div>
@@ -1059,12 +1088,21 @@
                 <div class="hud-corner tl"></div><div class="hud-corner tr"></div><div class="hud-corner bl"></div><div class="hud-corner br"></div>
                 <div class="hud-panel-header">
                     <span>FRM Array</span>
-                    <span class="hud-panel-count">06 Kindlings Loaded</span>
+                    <span class="hud-panel-count" id="count-frame">06 Kindlings Loaded</span>
                 </div>
                 <div class="hud-panel-body">
                     <div class="kindling-grid" id="grid-frame"></div>
                 </div>
             </div>
+        </div>
+
+        <div class="hud-panel detail-panel" id="detailPanel">
+            <div class="hud-corner tl"></div><div class="hud-corner tr"></div><div class="hud-corner bl"></div><div class="hud-corner br"></div>
+            <div class="hud-panel-header">
+                <span>Ritual Record</span>
+                <span class="hud-panel-count" id="detailPanelCount"></span>
+            </div>
+            <div class="hud-panel-body" id="detailPanelBody"></div>
         </div>
 
         <div class="synergy-section">
@@ -1531,10 +1569,10 @@
             };
 
             const KEEPS = [
-                { name: 'Black Nail', glyph: '☿', tagline: 'Perception, nerve, current' },
-                { name: 'Black Thread', glyph: '🜔', tagline: 'Binding, control, puppetry' },
-                { name: 'Red Salt', glyph: '🜍', tagline: 'Kinetic force, motion, distance' },
-                { name: 'Red Bone', glyph: '☉', tagline: 'Identity, presence, disguise' }
+                { name: 'Black Nail', tagline: 'Perception, nerve, current' },
+                { name: 'Black Thread', tagline: 'Binding, control, puppetry' },
+                { name: 'Red Salt', tagline: 'Kinetic force, motion, distance' },
+                { name: 'Red Bone', tagline: 'Identity, presence, disguise' }
             ];
 
             const KEEP_SLOTS = {
@@ -1544,26 +1582,184 @@
                 'Black Thread': 'keep-slot-black-thread'
             };
 
-            function renderKeeps() {
-                const all = [];
-                ['brain', 'nerve', 'frame'].forEach(group => {
-                    KINDLINGS[group].forEach(k => all.push(k));
+            // Glitchy scramble-reveal, used when a card title is opened
+            function scramble(text) {
+                const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ-—';
+                return text.split('').map(c => (c === ' ' ? c : (Math.random() < 0.55 ? alphabet[Math.floor(Math.random() * alphabet.length)] : c))).join('');
+            }
+
+            function revealText(el, finalText) {
+                if (el._glitchTimer) clearTimeout(el._glitchTimer);
+                el.classList.add('shake');
+                let frame = 0;
+                function step() {
+                    if (frame < 3) {
+                        el.textContent = finalText === '' ? '' : scramble(finalText);
+                        frame++;
+                        el._glitchTimer = setTimeout(step, 35);
+                    } else {
+                        el.textContent = finalText;
+                        el.classList.remove('shake');
+                    }
+                }
+                step();
+            }
+
+            const ALL_KINDLINGS = [];
+            ['brain', 'nerve', 'frame'].forEach(groupKey => {
+                KINDLINGS[groupKey].forEach(k => ALL_KINDLINGS.push({ ...k, group: groupKey }));
+            });
+
+            const GROUP_LABEL = { brain: 'BRN · HARD LOCK', nerve: 'NRV · RED SHIFT', frame: 'FRM · NEGATIVE BOX' };
+
+            let selectedKindlingId = null;
+            let activeStage = 'nibble';
+            const STAGE_KEYS = ['nibble', 'feed', 'devour'];
+            const STAGE_LABELS = ['Nibble', 'Feed', 'Devour'];
+
+            function updateCardSelection() {
+                document.querySelectorAll('.kindling-card').forEach(c => {
+                    c.classList.toggle('expanded', Number(c.dataset.id) === selectedKindlingId);
+                    if (Number(c.dataset.id) !== selectedKindlingId) {
+                        c.classList.remove('ignite-1', 'ignite-2');
+                        c.classList.add('ignite-0');
+                    }
+                });
+                setCardIgnite();
+            }
+
+            function setCardIgnite() {
+                if (!selectedKindlingId) return;
+                const card = document.querySelector(`.kindling-card[data-id="${selectedKindlingId}"]`);
+                if (!card) return;
+                card.classList.remove('ignite-0', 'ignite-1', 'ignite-2');
+                card.classList.add('ignite-' + STAGE_KEYS.indexOf(activeStage));
+            }
+
+            function selectKindling(id) {
+                selectedKindlingId = (selectedKindlingId === id) ? null : id;
+                activeStage = 'nibble';
+                updateCardSelection();
+                renderDetail();
+                if (selectedKindlingId) {
+                    document.getElementById('detailPanel').scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            }
+
+            function renderDetail() {
+                const panel = document.getElementById('detailPanel');
+                const countEl = document.getElementById('detailPanelCount');
+                const body = document.getElementById('detailPanelBody');
+                const k = ALL_KINDLINGS.find(x => x.id === selectedKindlingId);
+
+                if (!k) {
+                    panel.classList.remove('show');
+                    countEl.textContent = '';
+                    body.innerHTML = '';
+                    return;
+                }
+
+                panel.classList.add('show');
+                countEl.textContent = `#${String(k.id).padStart(2, '0')} / 18`;
+
+                body.innerHTML = `
+                    <div class="detail-name" id="detailName">${k.title}</div>
+                    <div class="detail-quote">${k.quote}</div>
+                    <div class="detail-tag-row">
+                        <div class="detail-tag">${GROUP_LABEL[k.group]}</div>
+                        <div class="detail-tag">THEME: ${k.theme}</div>
+                        <div class="detail-tag">KEEP: ${k.keep}</div>
+                    </div>
+
+                    <div class="detail-stage-block">
+                        <h3>Self</h3>
+                        <div class="detail-stage-tabs" id="detailStageTabs">
+                            ${STAGE_KEYS.map((s, i) => `<button type="button" class="detail-stage-tab${s === activeStage ? ' active' : ''}" data-stage="${s}">${STAGE_LABELS[i]}</button>`).join('')}
+                        </div>
+                        <div class="detail-stage-body" id="detailStageBody"></div>
+                    </div>
+
+                    <div class="demand-block living">
+                        <div class="demand-head">Living Demand</div>
+                        <div class="detail-row"><div class="detail-row-label">Effect</div><div class="detail-row-text">${k.stages.living[0].effect}</div></div>
+                        <div class="detail-row"><div class="detail-row-label">Demand</div><div class="detail-row-text demand">${k.stages.living[0].demand}</div></div>
+                    </div>
+
+                    <div class="demand-block dead">
+                        <div class="demand-head">Dead Demand</div>
+                        <div class="detail-row"><div class="detail-row-label">Effect</div><div class="detail-row-text">${k.stages.dead[0].effect}</div></div>
+                        <div class="detail-row"><div class="detail-row-label">Demand</div><div class="detail-row-text demand">${k.stages.dead[0].demand}</div></div>
+                    </div>
+
+                    <button type="button" class="detail-close" id="detailCloseBtn">Close Record</button>
+                `;
+
+                renderStageBody(k);
+
+                body.querySelectorAll('.detail-stage-tab').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        activeStage = btn.dataset.stage;
+                        body.querySelectorAll('.detail-stage-tab').forEach(b => b.classList.toggle('active', b === btn));
+                        renderStageBody(k);
+                        setCardIgnite();
+                        revealText(document.getElementById('detailName'), k.title);
+                    });
                 });
 
+                document.getElementById('detailCloseBtn').addEventListener('click', () => {
+                    selectedKindlingId = null;
+                    updateCardSelection();
+                    renderDetail();
+                });
+
+                revealText(document.getElementById('detailName'), k.title);
+            }
+
+            function renderStageBody(k) {
+                const stageBody = document.getElementById('detailStageBody');
+                const idx = STAGE_KEYS.indexOf(activeStage);
+                const s = k.stages.self[idx];
+                stageBody.innerHTML = `
+                    <div class="detail-row"><div class="detail-row-label">Effect</div><div class="detail-row-text">${s.effect}</div></div>
+                    <div class="detail-row"><div class="detail-row-label">Demand</div><div class="detail-row-text demand">${s.demand}</div></div>
+                `;
+            }
+
+            let activeKeepFilter = null;
+
+            function applyKeepFilter() {
+                const counts = { brain: 0, nerve: 0, frame: 0 };
+                document.querySelectorAll('.kindling-card').forEach(card => {
+                    const id = Number(card.dataset.id);
+                    const k = ALL_KINDLINGS.find(x => x.id === id);
+                    const match = !activeKeepFilter || k.keep.toLowerCase().includes(activeKeepFilter.toLowerCase());
+                    card.style.display = match ? '' : 'none';
+                    if (match) counts[k.group]++;
+                });
+                ['brain', 'nerve', 'frame'].forEach(g => {
+                    const el = document.getElementById('count-' + g);
+                    if (el) el.textContent = `${String(counts[g]).padStart(2, '0')} Kindling${counts[g] === 1 ? '' : 's'} Loaded`;
+                });
+            }
+
+            function renderKeeps() {
                 KEEPS.forEach(keep => {
                     const slot = document.getElementById(KEEP_SLOTS[keep.name]);
                     if (!slot) return;
                     slot.innerHTML = '';
-                    const matches = all.filter(k => k.keep.toLowerCase().includes(keep.name.toLowerCase()));
                     const card = document.createElement('div');
                     card.className = 'keep-card';
                     card.innerHTML = `
-                        <div class="keep-glyph">${keep.glyph}</div>
                         <div class="keep-name">${keep.name}</div>
                         <div class="keep-tagline">${keep.tagline}</div>
-                        <div class="keep-count">${String(matches.length).padStart(2, '0')} Kindlings Bound</div>
-                        <div class="keep-list">${matches.map(m => `<span>#${String(m.id).padStart(2, '0')}</span>`).join('')}</div>
                     `;
+                    card.addEventListener('click', () => {
+                        const turningOn = activeKeepFilter !== keep.name;
+                        document.querySelectorAll('.keep-card').forEach(c => c.classList.remove('selected'));
+                        activeKeepFilter = turningOn ? keep.name : null;
+                        if (turningOn) card.classList.add('selected');
+                        applyKeepFilter();
+                    });
                     slot.appendChild(card);
                 });
             }
@@ -1577,8 +1773,8 @@
 
                 items.forEach(k => {
                     const card = document.createElement('div');
-                    card.className = 'kindling-card active-group ignite-0';
-                    card.dataset.group = k.group;
+                    card.className = 'kindling-card ignite-0';
+                    card.dataset.id = String(k.id);
 
                     const header = document.createElement('div');
                     header.className = 'card-header';
@@ -1591,92 +1787,10 @@
 
                     const preview = document.createElement('div');
                     preview.className = 'card-preview';
-                    preview.innerHTML = `<span class="quote">${k.quote}</span><br><span style="font-size:0.65rem;color:var(--dim);">click to expand</span>`;
+                    preview.innerHTML = `<span class="quote">${k.quote}</span><span class="open-hint">open record</span>`;
                     card.appendChild(preview);
 
-                    const body = document.createElement('div');
-                    body.className = 'card-body';
-
-                    const stageTypes = [
-                        { key: 'self', label: 'Self', cls: '' },
-                        { key: 'living', label: 'Living Demand', cls: 'living' },
-                        { key: 'dead', label: 'Dead Demand', cls: 'dead' }
-                    ];
-
-                    stageTypes.forEach(st => {
-                        const items = k.stages[st.key];
-                        if (!items || items.length === 0) return;
-                        const groupDiv = document.createElement('div');
-                        groupDiv.className = 'stage-group';
-                        const label = document.createElement('div');
-                        label.className = 'stage-label' + (st.cls ? ' ' + st.cls : '');
-                        label.textContent = st.label;
-                        groupDiv.appendChild(label);
-
-                        const isSelf = st.key === 'self' && items.length === 3;
-                        if (isSelf) {
-                            const select = document.createElement('div');
-                            select.className = 'stage-select';
-                            ['Nibble', 'Feed', 'Devour'].forEach((name, idx) => {
-                                const b = document.createElement('button');
-                                b.type = 'button';
-                                b.className = 'stage-select-btn' + (idx === 0 ? ' selected' : '');
-                                b.textContent = name;
-                                b.dataset.stageIndex = String(idx);
-                                select.appendChild(b);
-                            });
-                            groupDiv.appendChild(select);
-                        }
-
-                        items.forEach((item, idx) => {
-                            const div = document.createElement('div');
-                            div.className = 'stage-item' + (isSelf ? ' self-stage' + (idx === 0 ? '' : ' stage-dim') : '');
-                            if (isSelf) div.dataset.stageIndex = String(idx);
-                            div.innerHTML = `
-                                <strong>${item.label}</strong> —
-                                <span class="effect">${item.effect}</span>
-                                <br><span class="demand">✦ ${item.demand}</span>
-                            `;
-                            groupDiv.appendChild(div);
-                        });
-                        body.appendChild(groupDiv);
-                    });
-
-                    const toggleBtn = document.createElement('button');
-                    toggleBtn.className = 'card-toggle';
-                    toggleBtn.textContent = 'Expand';
-                    toggleBtn.addEventListener('click', (e) => {
-                        e.stopPropagation();
-                        card.classList.toggle('expanded');
-                        toggleBtn.textContent = card.classList.contains('expanded') ? 'Collapse' : 'Expand';
-                        toggleBtn.classList.toggle('expanded-toggle');
-                    });
-                    body.appendChild(toggleBtn);
-                    card.appendChild(body);
-
-                    card.querySelectorAll('.stage-select-btn').forEach(btn => {
-                        btn.addEventListener('click', (e) => {
-                            e.stopPropagation();
-                            const idx = btn.dataset.stageIndex;
-                            card.querySelectorAll('.stage-select-btn').forEach(b => b.classList.remove('selected'));
-                            btn.classList.add('selected');
-                            card.querySelectorAll('.stage-item.self-stage').forEach(it => {
-                                it.classList.toggle('stage-dim', it.dataset.stageIndex !== idx);
-                            });
-                            card.classList.remove('ignite-0', 'ignite-1', 'ignite-2');
-                            card.classList.add('ignite-' + idx);
-                        });
-                    });
-
-                    card.addEventListener('click', (e) => {
-                        if (e.target.closest('.card-toggle')) return;
-                        card.classList.toggle('expanded');
-                        const btn = card.querySelector('.card-toggle');
-                        if (btn) {
-                            btn.textContent = card.classList.contains('expanded') ? 'Collapse' : 'Expand';
-                            btn.classList.toggle('expanded-toggle');
-                        }
-                    });
+                    card.addEventListener('click', () => selectKindling(k.id));
 
                     container.appendChild(card);
                 });
@@ -1706,6 +1820,10 @@
                         buttons.forEach(b => b.classList.remove('active'));
                         btn.classList.add('active');
                         const view = btn.dataset.view;
+
+                        selectedKindlingId = null;
+                        updateCardSelection();
+                        renderDetail();
 
                         // trigger the glitch/noise transition on the image + tab panel
                         if (figureStage) {
