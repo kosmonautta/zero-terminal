@@ -1582,9 +1582,14 @@
                 'Black Thread': 'keep-slot-black-thread'
             };
 
-            // Glitchy scramble-reveal, used when a card title is opened
+            // Glitchy scramble-reveal, used when a card title is opened.
+            // Mixes plain letters with box-drawing/braille static for a noisier collapse.
             function scramble(text) {
-                const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ-—';
+                const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ-—' +
+                    '░▒▓█▀▄▌▐▖▗▘▝▚▞■□▪▫◆◇▲△▼▽●○' +
+                    '─│┼┤├┬┴╬╫╪' +
+                    '⠿⠶⠛⠹⠭⠽⠾⠷' +
+                    '#%&*/\\~^';
                 return text.split('').map(c => (c === ' ' ? c : (Math.random() < 0.55 ? alphabet[Math.floor(Math.random() * alphabet.length)] : c))).join('');
             }
 
