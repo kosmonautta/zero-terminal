@@ -9,8 +9,8 @@
     :root{
         --bg:#000;
         --fg:#fff;
-        --dim:rgba(255,255,255,0.55);
-        --line:rgba(255,255,255,0.22);
+        --dim:rgba(255,255,255,0.35);
+        --line:rgba(255,255,255,0.14);
         --ab-red:rgba(255,60,60,0.55);
         --ab-cyan:rgba(60,220,255,0.55);
     }
@@ -58,11 +58,6 @@
         letter-spacing:1px;
         transform:scaleY(1.15);
         transform-origin:left top;
-        /* subtle monochrome ghost split — like a mistracked tape reading the
-           title back off a recorded frame, dialed back and colorless */
-        text-shadow:
-            1.5px 0 0 rgba(255,255,255,0.4),
-            -1.5px 0 0 rgba(0,0,0,0.6);
     }
 
     .whitebox{
@@ -139,7 +134,7 @@
         border-radius:6px;
         /* soft light bleed off the edge of the tube, like a lit phosphor
            screen glowing into the room around it */
-        box-shadow:0 0 24px rgba(255,255,255,0.05);
+        box-shadow:0 0 28px rgba(255,255,255,0.08);
     }
 
     .field-inner{
@@ -155,7 +150,7 @@
         inset:0;
         pointer-events:none;
         z-index:2;
-        background:radial-gradient(ellipse at center, transparent 58%, rgba(0,0,0,0.65) 100%);
+        background:radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,0.78) 100%);
     }
 
     /* phosphor bloom, scoped to text inside the field panel only (the HUD
@@ -164,15 +159,13 @@
     .hud{
         font-weight:700;
         text-shadow:
-            0 0 2px rgba(255,255,255,0.7),
-            0 0 6px rgba(255,255,255,0.35);
+            0 0 2px rgba(255,255,255,0.85),
+            0 0 8px rgba(255,255,255,0.45);
     }
 
     /* field-local grain: two offset dither layers that hop between two
        positions every frame, like real sensor noise rather than a static
-       print. (Previously referenced a keyframe that was never defined, so
-       this layer sat there completely still — the single biggest reason
-       the panel read as stale rather than live.) */
+       print. */
     .field-wrap::after{
         content:"";
         position:absolute;
@@ -202,8 +195,8 @@
         z-index:6;
         background:repeating-linear-gradient(
             to bottom,
-            rgba(255,255,255,0.09) 0px,
-            rgba(255,255,255,0.09) 1px,
+            rgba(255,255,255,0.15) 0px,
+            rgba(255,255,255,0.15) 1px,
             transparent 1px,
             transparent 3px
         );
@@ -218,15 +211,11 @@
         inset:0;
         pointer-events:none;
         z-index:5;
-        background:radial-gradient(ellipse at center, rgba(255,255,255,0.05) 0%, transparent 60%);
+        background:radial-gradient(ellipse at center, rgba(255,255,255,0.09) 0%, transparent 60%);
         mix-blend-mode:screen;
     }
 
-    /* ===== HUD OVERLAY (recovered-tape corner readouts) =====
-       Four fixed corners plus a bottom TYPE readout, styled after a sensor
-       recording's on-screen data: EARTH DATE, RECORDING status, TARGET lock,
-       anomaly TYPE, and a BATTERY gauge. All values are wired to real field
-       state in constellation.js — nothing here is decorative filler. */
+    /* ===== HUD OVERLAY (recovered-tape corner readouts) ===== */
     .hud{
         position:absolute;
         inset:0;
@@ -238,9 +227,6 @@
         text-transform:uppercase;
     }
 
-    /* black plates matching the panel background, with lines only on the
-       sides facing into the field — the outward sides stay flush with the
-       panel's own border so the two never double up */
     .hud-corner{
         position:absolute;
         display:flex;
@@ -252,17 +238,13 @@
     }
 
     .hud-corner span.hud-label{
-        color:rgba(255,255,255,0.55);
+        color:rgba(255,255,255,0.4);
     }
 
     .hud-tl{ top:0; left:0; border-right:2px solid #fff; border-bottom:2px solid #fff; }
     .hud-tr{ top:0; right:0; text-align:right; align-items:flex-end; border-left:2px solid #fff; border-bottom:2px solid #fff; }
     .hud-br{ bottom:0; right:0; align-items:flex-end; text-align:right; border-left:2px solid #fff; border-top:2px solid #fff; }
 
-    /* TARGET / TRACE / TYPE as one contiguous strip along the bottom edge —
-       a shared top border, flush with the panel on the left, one vertical
-       divider between each cell, and align-items:stretch so all three cells
-       come out exactly the same height regardless of content length */
     .hud-row-bottom{
         position:absolute;
         bottom:0;
@@ -283,9 +265,6 @@
         border-right:2px solid #fff;
     }
 
-    /* one dot per connected afterimage, in order, with a connecting line
-       that only lights up once the selection resolves into a formation —
-       same idea as the line the field itself draws between selected stars */
     .hud-dots{
         position:relative;
         display:flex;
@@ -319,7 +298,7 @@
         right:3px;
         top:50%;
         height:1.5px;
-        background:rgba(255,255,255,0.85);
+        background:rgba(255,255,255,0.9);
         transform:translateY(-50%);
         opacity:0;
         transition:opacity 0.4s ease;
@@ -333,7 +312,6 @@
         opacity:1;
     }
 
-    /* plain rectangle gauge — one border, one solid fill, no nub or ticks */
     .hud-battery-shell{
         width:40px;
         height:8px;
@@ -354,7 +332,7 @@
         display:block;
         position:relative;
         z-index:1;
-        filter:drop-shadow(0 0 1.5px rgba(255,255,255,0.4));
+        filter:drop-shadow(0 0 1.5px rgba(255,255,255,0.5));
     }
 
     .field-empty{
@@ -372,22 +350,19 @@
         z-index:2;
     }
 
-    /* Base look only — the actual jitter motion is driven directly from JS
-       (see startJitter/stopJitter in constellation.js) via inline transform/opacity
-       on each star's box, not CSS keyframes — that's what lets direction,
-       distance, and the interval between hops all re-roll on every single hop.
-       Each point is a small bordered box rather than a plain dot, so the field
-       reads as a set of tracked contacts rather than a clean star chart. */
+    /* Base look only — the actual jitter motion is driven directly from JS.
+       Each point is a small bordered box, sized and rounded to read as a
+       clean tracked-contact square rather than a thin outline. */
     .star-body{
-        fill:transparent;
+        fill:rgba(255,255,255,0.04);
         stroke:var(--dim);
-        stroke-width:1;
-        opacity:0.55;
-        transition:fill 0.3s ease, stroke 0.3s ease;
+        stroke-width:1.25;
+        opacity:0.4;
+        transition:fill 0.3s ease, stroke 0.3s ease, opacity 0.3s ease;
     }
 
     .field-star.lit .star-body{
-        fill:rgba(255,255,255,0.15);
+        fill:rgba(255,255,255,0.28);
         stroke:var(--fg);
         opacity:1;
     }
@@ -401,13 +376,13 @@
     }
 
     @keyframes starSettle{
-        0%, 100%{ opacity:0.9; }
-        50%{      opacity:1;   }
+        0%, 100%{ opacity:0.92; }
+        50%{      opacity:1;    }
     }
 
     .star-glow{
         fill:var(--fg);
-        opacity:0.12;
+        opacity:0.18;
     }
 
     .field-star.settled .star-glow{
@@ -415,8 +390,8 @@
     }
 
     @keyframes glowPulse{
-        0%, 100%{ opacity:0.12; }
-        50%{      opacity:0.3;  }
+        0%, 100%{ opacity:0.18; }
+        50%{      opacity:0.42; }
     }
 
     .star-label{
@@ -436,10 +411,10 @@
         transition:opacity 0.5s ease;
     }
 
-    .field-line.drawn{ opacity:0.5; }
+    .field-line.drawn{ opacity:0.6; }
 
     .field-line.closing{ stroke-width:1.3; }
-    .field-line.closing.drawn{ opacity:0.85; }
+    .field-line.closing.drawn{ opacity:0.9; }
 
     /* ===== STATS / RESULT ===== */
 
