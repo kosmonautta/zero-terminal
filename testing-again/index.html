@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>THE 18 KINDLINGS — ULTRABLACK</title>
+    <title>KINDLINGS</title>
     <style>
         /* ============================================================
            ROOT & RESET
@@ -474,22 +474,6 @@
             overflow: hidden;
         }
 
-        /* faint scanlines echoed inside the panel, ties it back to the HUD frame above */
-        .hud-panel-body::before {
-            content: "";
-            position: absolute;
-            inset: 0;
-            pointer-events: none;
-            z-index: 0;
-            background: repeating-linear-gradient(
-                to bottom,
-                rgba(255, 255, 255, 0.035) 0px,
-                rgba(255, 255, 255, 0.035) 1px,
-                transparent 1px,
-                transparent 3px
-            );
-        }
-
         @media(max-width:720px) {
             .hud-panel-header { font-size: 0.52rem; letter-spacing: 0.15em; }
             .hud-panel-header .hud-panel-count { font-size: 0.5rem; }
@@ -497,7 +481,7 @@
         }
 
         /* ============================================================
-           PINNED RITES — Self tiers pin independently of Living/Dead
+           FIXED RITES — Self tiers fix independently of Living/Dead
            ============================================================ */
         .pinned-empty {
             position: relative;
@@ -596,8 +580,6 @@
             display: inline-block;
         }
 
-
-           ============================================================ */
         /* ============================================================
            KINDLING GRID — seamless hairline grid: cards sit flush,
            1px grid lines come from the container background showing
@@ -607,20 +589,12 @@
             position: relative;
             z-index: 1;
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(2, 1fr);
             gap: 1px;
             background: var(--line);
             border: 1px solid var(--line);
             margin-top: 0.3rem;
             align-items: stretch;
-        }
-
-        @media (max-width: 1100px) {
-            .kindling-grid { grid-template-columns: repeat(2, 1fr); }
-        }
-
-        @media (max-width: 640px) {
-            .kindling-grid { grid-template-columns: 1fr; }
         }
 
         .kindling-card {
@@ -961,8 +935,17 @@
         }
 
         .synergy-item {
-            background: rgba(240, 236, 230, 0.02);
-            border: 1px dotted var(--border-dot);
+            position: relative;
+            background-color: #000;
+            background-image:
+                repeating-linear-gradient(to right, var(--border-dot) 0 9px, transparent 9px 18px),
+                repeating-linear-gradient(to right, var(--border-dot) 0 9px, transparent 9px 18px),
+                repeating-linear-gradient(to bottom, var(--border-dot) 0 9px, transparent 9px 18px),
+                repeating-linear-gradient(to bottom, var(--border-dot) 0 9px, transparent 9px 18px);
+            background-repeat: repeat-x, repeat-x, repeat-y, repeat-y;
+            background-position: top left, bottom left, top left, top right;
+            background-size: 18px 1px, 18px 1px, 1px 18px, 1px 18px;
+            border: 1px solid transparent;
             padding: 0.6rem 0.9rem;
             border-radius: 0;
             font-size: 0.75rem;
@@ -1138,7 +1121,7 @@
     <div class="container">
 
         <p class="eyebrow">NODE // 018</p>
-        <h1>THE 18 <span class="accent">KINDLINGS</span></h1>
+        <h1><span class="accent">KINDLINGS</span></h1>
         <div class="whitebox">ULTRABLACK — DOOMER TERMINAL</div>
 
         <div class="hud-layout">
@@ -1171,7 +1154,7 @@
         <div class="hud-panel pinned-panel" id="pinnedPanel">
             <div class="hud-corner tl"></div><div class="hud-corner tr"></div><div class="hud-corner bl"></div><div class="hud-corner br"></div>
             <div class="hud-panel-header">
-                <span>Pinned Rites</span>
+                <span>Fixed Rites</span>
                 <span class="hud-panel-count" id="pinnedCount">00 Active</span>
             </div>
             <div class="hud-panel-body" id="pinnedBody"></div>
@@ -1233,6 +1216,14 @@
                 <div class="synergy-item"><strong>Strip to the Bone</strong> + <strong>The Hollow Rib</strong> — burn to bone, hit like the bone is the weapon.</div>
                 <div class="synergy-item"><strong>Borrow the Shadow</strong> + <strong>The Creeping Gloom</strong> / <strong>Make the Dark Cut</strong> — arrive already striking, from inside a blade you made.</div>
                 <div class="synergy-item"><strong>Strike From Everywhere</strong> + <strong>Second Corpse</strong> — split the strikes, split the cost.</div>
+                <div class="synergy-item"><strong>Silence the Holy Tongue</strong> (Feed) + <strong>Static Lance</strong> — mouth sewn shut, the bolt lands harder and reaches further.</div>
+                <div class="synergy-item"><strong>Split the Skull</strong> (Feed) + <strong>Command the Hollow</strong> — hold the Witness and a second Concentration Kindling running at once.</div>
+                <div class="synergy-item"><strong>Cut the Strings</strong> (Devour) + <strong>Strip to the Bone</strong> — burn past exhaustion, keep swinging past what should have dropped you.</div>
+                <div class="synergy-item"><strong>Exchange Footsteps</strong> + <strong>Wear Their Face</strong> — swap into the room already wearing someone else's face.</div>
+                <div class="synergy-item"><strong>Faster! Faster! Faster!</strong> + <strong>Strike From Everywhere</strong> — extra actions spent on blink-strikes across the whole room.</div>
+                <div class="synergy-item"><strong>The Hollow Rib</strong> (Dead Demand) + <strong>The Creeping Gloom</strong> / <strong>Make the Dark Cut</strong> — a standing Sentinel that hits like a shockwave.</div>
+                <div class="synergy-item"><strong>Wear Their Face</strong> (Dead Demand) + <strong>Command the Hollow</strong> — a Vessel with perfect impersonation, no tell at all.</div>
+                <div class="synergy-item"><strong>Silence the Holy Tongue</strong> (Devour) + <strong>The Static Storm</strong> — offensive BRN ceiling feeding an already-sustained storm.</div>
             </div>
         </div>
 
@@ -1795,7 +1786,7 @@
                 renderRiteLog();
             }
 
-            // Pinned Rites — Self tiers pin independently per tier; Living/Dead pin on their own
+            // Fixed Rites — Self tiers fix independently per tier; Living/Dead fix on their own
             let pinnedRites = [];
 
             function pinKey(id, type, stage) {
@@ -1817,10 +1808,10 @@
                 const existingIdx = pinnedRites.findIndex(p => p.key === key);
                 if (existingIdx >= 0) {
                     pinnedRites.splice(existingIdx, 1);
-                    addRiteLog(`UNPINNED — "${k.title.toUpperCase()}" · ${pinLabel(type, stage)}`);
+                    addRiteLog(`UNFIXED — "${k.title.toUpperCase()}" · ${pinLabel(type, stage)}`);
                 } else {
                     pinnedRites.push({ key, id, title: k.title, type, stage });
-                    addRiteLog(`PINNED — "${k.title.toUpperCase()}" · ${pinLabel(type, stage)}`);
+                    addRiteLog(`FIXED — "${k.title.toUpperCase()}" · ${pinLabel(type, stage)}`);
                 }
                 renderPinnedPanel();
                 updateCardPinMarks();
@@ -1838,7 +1829,7 @@
                 const count = document.getElementById('pinnedCount');
                 count.textContent = `${String(pinnedRites.length).padStart(2, '0')} Active`;
                 if (pinnedRites.length === 0) {
-                    body.innerHTML = '<div class="pinned-empty">NO RITES PINNED</div>';
+                    body.innerHTML = '<div class="pinned-empty">NO RITES FIXED</div>';
                     return;
                 }
                 body.innerHTML = `<div class="pinned-list">${pinnedRites.map(p => `
@@ -1896,17 +1887,17 @@
                 const deadBtn = document.getElementById('pinDeadBtn');
                 if (selfBtn) {
                     const pinned = isPinned(k.id, 'self', activeStage);
-                    selfBtn.textContent = pinned ? `PINNED · ${STAGE_LABELS[STAGE_KEYS.indexOf(activeStage)].toUpperCase()}` : `PIN ${STAGE_LABELS[STAGE_KEYS.indexOf(activeStage)].toUpperCase()}`;
+                    selfBtn.textContent = pinned ? `FIXED · ${STAGE_LABELS[STAGE_KEYS.indexOf(activeStage)].toUpperCase()}` : `FIX ${STAGE_LABELS[STAGE_KEYS.indexOf(activeStage)].toUpperCase()}`;
                     selfBtn.classList.toggle('pinned', pinned);
                 }
                 if (livingBtn) {
                     const pinned = isPinned(k.id, 'living', null);
-                    livingBtn.textContent = pinned ? 'PINNED' : 'PIN';
+                    livingBtn.textContent = pinned ? 'FIXED' : 'FIX';
                     livingBtn.classList.toggle('pinned', pinned);
                 }
                 if (deadBtn) {
                     const pinned = isPinned(k.id, 'dead', null);
-                    deadBtn.textContent = pinned ? 'PINNED' : 'PIN';
+                    deadBtn.textContent = pinned ? 'FIXED' : 'FIX';
                     deadBtn.classList.toggle('pinned', pinned);
                 }
             }
@@ -2070,7 +2061,7 @@
                     header.className = 'card-header';
                     header.innerHTML = `
                         <span class="card-title">${k.title}</span>
-                        <span class="card-pin-mark">PINNED</span>
+                        <span class="card-pin-mark">FIXED</span>
                         <span class="card-glitch"></span>
                     `;
                     card.appendChild(header);
