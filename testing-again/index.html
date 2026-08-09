@@ -607,22 +607,11 @@
         }
 
         .kindling-card .card-header {
-            padding: 0.7rem 1rem 0.5rem;
-            border-bottom: 1px solid var(--line);
+            padding: 0.7rem 1rem 0.9rem;
             display: flex;
             align-items: baseline;
             flex-wrap: wrap;
             gap: 0.2rem 0.5rem;
-        }
-
-        .kindling-card .card-number {
-            font-family: var(--font-mono);
-            font-size: 0.55rem;
-            letter-spacing: 0.15em;
-            color: var(--dim);
-            padding: 0.05rem 0.4rem;
-            border: 1px solid var(--border-dot);
-            border-radius: 0;
         }
 
         .kindling-card .card-title {
@@ -638,37 +627,22 @@
             color: var(--dim);
         }
 
-        .kindling-card .card-theme {
-            font-family: var(--font-mono);
-            font-size: 0.55rem;
-            letter-spacing: 0.08em;
-            color: var(--dim);
-            font-style: italic;
-            width: 100%;
-            margin-top: 0.05rem;
-        }
-
-        .kindling-card .card-preview {
-            padding: 0.5rem 1rem 0.8rem;
-            font-size: 0.8rem;
-            color: var(--dim);
-            line-height: 1.6;
-        }
-
-        .kindling-card .card-preview .quote {
-            font-style: italic;
-            color: var(--fg);
-            font-size: 0.85rem;
-        }
-
-        .kindling-card .card-preview .open-hint {
+        .kindling-card .card-glitch {
             display: block;
-            margin-top: 0.35rem;
             font-family: var(--font-mono);
-            font-size: 0.6rem;
-            letter-spacing: 0.12em;
-            text-transform: uppercase;
+            font-size: 0.58rem;
+            letter-spacing: 0.06em;
             color: var(--dim);
+            width: 100%;
+            margin-top: 0.15rem;
+            min-height: 1.3em;
+            line-height: 1.5;
+            overflow-wrap: anywhere;
+        }
+
+        .kindling-card .card-glitch.is-quote {
+            color: var(--fg);
+            font-style: italic;
         }
 
         /* ============================================================
@@ -908,12 +882,20 @@
 
         .keep-card {
             position: relative;
-            background: var(--bg-panel);
-            border: 1px dotted var(--border-dot);
+            background-color: var(--bg-panel);
+            background-image:
+                repeating-linear-gradient(to right, var(--border-dot) 0 9px, transparent 9px 18px),
+                repeating-linear-gradient(to right, var(--border-dot) 0 9px, transparent 9px 18px),
+                repeating-linear-gradient(to bottom, var(--border-dot) 0 9px, transparent 9px 18px),
+                repeating-linear-gradient(to bottom, var(--border-dot) 0 9px, transparent 9px 18px);
+            background-repeat: repeat-x, repeat-x, repeat-y, repeat-y;
+            background-position: top left, bottom left, top left, top right;
+            background-size: 18px 1px, 18px 1px, 1px 18px, 1px 18px;
+            border: 1px solid transparent;
             padding: 0.95rem 1rem 1rem;
             text-align: center;
             cursor: pointer;
-            transition: background 0.12s ease, border-color 0.12s ease;
+            transition: background-color 0.12s ease;
             overflow-wrap: anywhere;
             aspect-ratio: 1 / 1;
             display: flex;
@@ -923,12 +905,12 @@
         }
 
         .keep-card:hover {
-            border-color: var(--fg);
+            --border-dot: var(--fg);
         }
 
         .keep-card.selected {
-            background: #fff;
-            border-style: solid;
+            background-color: #fff;
+            background-image: none;
             border-color: #000;
             --fg: #000;
             --dim: rgba(0, 0, 0, 0.6);
@@ -1061,7 +1043,7 @@
             <div class="hud-panel">
                 <div class="hud-corner tl"></div><div class="hud-corner tr"></div><div class="hud-corner bl"></div><div class="hud-corner br"></div>
                 <div class="hud-panel-header">
-                    <span>BRN Array</span>
+                    <span>BRN Rites</span>
                     <span class="hud-panel-count" id="count-brain">06 Kindlings Loaded</span>
                 </div>
                 <div class="hud-panel-body">
@@ -1074,7 +1056,7 @@
             <div class="hud-panel">
                 <div class="hud-corner tl"></div><div class="hud-corner tr"></div><div class="hud-corner bl"></div><div class="hud-corner br"></div>
                 <div class="hud-panel-header">
-                    <span>NRV Array</span>
+                    <span>NRV Rites</span>
                     <span class="hud-panel-count" id="count-nerve">06 Kindlings Loaded</span>
                 </div>
                 <div class="hud-panel-body">
@@ -1087,7 +1069,7 @@
             <div class="hud-panel">
                 <div class="hud-corner tl"></div><div class="hud-corner tr"></div><div class="hud-corner bl"></div><div class="hud-corner br"></div>
                 <div class="hud-panel-header">
-                    <span>FRM Array</span>
+                    <span>FRM Rites</span>
                     <span class="hud-panel-count" id="count-frame">06 Kindlings Loaded</span>
                 </div>
                 <div class="hud-panel-body">
@@ -1610,6 +1592,39 @@
                 step();
             }
 
+            // Ambient noise line under each card title — mostly box-drawing/braille
+            // static, occasionally resolving into the kindling's quote.
+            const NOISE_CHARS = '░▒▓█▀▄▌▐▖▗▘▝▚▞■□▪▫◆◇▲△▼▽●○─│┼┤├┬┴╬╫╪⠿⠶⠛⠹⠭⠽⠾⠷#%&*/\\~^';
+
+            function noiseLine(len) {
+                let out = '';
+                for (let i = 0; i < len; i++) {
+                    out += NOISE_CHARS[Math.floor(Math.random() * NOISE_CHARS.length)];
+                }
+                return out;
+            }
+
+            function startCardGlitch(el, quoteText) {
+                if (!el) return;
+                function tick() {
+                    if (!document.body.contains(el)) return;
+                    const showQuote = Math.random() < 0.16;
+                    if (showQuote) {
+                        el.textContent = quoteText;
+                        el.classList.add('is-quote');
+                        setTimeout(() => {
+                            el.classList.remove('is-quote');
+                            tick();
+                        }, 1300 + Math.random() * 900);
+                    } else {
+                        el.textContent = noiseLine(20 + Math.floor(Math.random() * 16));
+                        el.classList.remove('is-quote');
+                        setTimeout(tick, 200 + Math.random() * 260);
+                    }
+                }
+                setTimeout(tick, Math.random() * 1000);
+            }
+
             const ALL_KINDLINGS = [];
             ['brain', 'nerve', 'frame'].forEach(groupKey => {
                 KINDLINGS[groupKey].forEach(k => ALL_KINDLINGS.push({ ...k, group: groupKey }));
@@ -1784,20 +1799,16 @@
                     const header = document.createElement('div');
                     header.className = 'card-header';
                     header.innerHTML = `
-                        <span class="card-number">#${String(k.id).padStart(2, '0')}</span>
                         <span class="card-title">${k.title}</span>
-                        <span class="card-theme">${k.theme} · ${k.keep}</span>
+                        <span class="card-glitch"></span>
                     `;
                     card.appendChild(header);
-
-                    const preview = document.createElement('div');
-                    preview.className = 'card-preview';
-                    preview.innerHTML = `<span class="quote">${k.quote}</span><span class="open-hint">open record</span>`;
-                    card.appendChild(preview);
 
                     card.addEventListener('click', () => selectKindling(k.id));
 
                     container.appendChild(card);
+
+                    startCardGlitch(header.querySelector('.card-glitch'), k.quote);
                 });
             }
 
