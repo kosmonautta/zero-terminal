@@ -497,7 +497,106 @@
         }
 
         /* ============================================================
-           KINDLING GRID — all 18 cards, active/inactive styling
+           PINNED RITES — Self tiers pin independently of Living/Dead
+           ============================================================ */
+        .pinned-empty {
+            position: relative;
+            z-index: 1;
+            font-family: var(--font-mono);
+            font-size: 0.6rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--dim);
+        }
+
+        .pinned-list {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.6rem;
+        }
+
+        .pinned-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            border: 1px solid var(--border-dot);
+            padding: 0.4rem 0.4rem 0.4rem 0.7rem;
+        }
+
+        .pinned-item .pi-title {
+            font-family: var(--font-serif);
+            font-size: 0.82rem;
+            color: var(--fg);
+        }
+
+        .pinned-item .pi-tag {
+            font-family: var(--font-mono);
+            font-size: 0.52rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--dim);
+        }
+
+        .pinned-item .pi-remove {
+            background: transparent;
+            border: 1px solid var(--border-dot);
+            color: var(--dim);
+            font-family: var(--font-mono);
+            font-size: 0.6rem;
+            line-height: 1;
+            padding: 0.2rem 0.45rem;
+            cursor: pointer;
+            transition: all 0.1s ease;
+        }
+
+        .pinned-item .pi-remove:hover {
+            border-color: var(--fg);
+            color: var(--fg);
+        }
+
+        .pin-btn {
+            background: transparent;
+            border: 1px solid var(--border-dot);
+            color: var(--dim);
+            font-family: var(--font-mono);
+            font-size: 0.58rem;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            padding: 0.4rem 0.75rem;
+            cursor: pointer;
+            transition: all 0.1s ease;
+        }
+
+        .pin-btn:hover {
+            border-color: var(--fg);
+            color: var(--fg);
+        }
+
+        .pin-btn.pinned {
+            background: var(--fg);
+            color: var(--bg);
+            border-color: var(--fg);
+            font-weight: 700;
+        }
+
+        .card-pin-mark {
+            display: none;
+            font-family: var(--font-mono);
+            font-size: 0.55rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--fg);
+            border: 1px solid var(--fg);
+            padding: 0.05rem 0.35rem;
+        }
+
+        .kindling-card.has-pin .card-pin-mark {
+            display: inline-block;
+        }
+
+
            ============================================================ */
         /* ============================================================
            KINDLING GRID — seamless hairline grid: cards sit flush,
@@ -698,13 +797,21 @@
             margin-bottom: 1.5rem;
         }
 
-        .detail-stage-block h3 {
+        .detail-stage-block-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.6rem;
+            margin-bottom: 0.6rem;
+        }
+
+        .detail-stage-block-head h3 {
             font-family: var(--font-mono);
             font-size: 0.65rem;
             letter-spacing: 0.2em;
             text-transform: uppercase;
             color: var(--fg);
-            margin-bottom: 0.6rem;
+            margin-bottom: 0;
         }
 
         .detail-stage-tabs {
@@ -788,13 +895,20 @@
             margin-bottom: 0;
         }
 
+        .demand-head-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.6rem;
+            margin-bottom: 0.7rem;
+        }
+
         .demand-head {
             font-family: var(--font-mono);
             font-size: 0.6rem;
             letter-spacing: 0.2em;
             text-transform: uppercase;
             font-weight: 700;
-            margin-bottom: 0.7rem;
             color: var(--fg);
         }
 
@@ -943,42 +1057,63 @@
             .keeps-grid { grid-template-columns: repeat(2, 1fr); }
         }
 
-        .demand-note {
-            margin-top: 2.2rem;
+        .rite-log-section {
+            margin-top: 2.8rem;
             border-top: 1px solid var(--line);
-            padding-top: 1.6rem;
-            font-size: 0.7rem;
-            color: var(--dim);
+            padding-top: 1.8rem;
+        }
+
+        .rite-log-section h2 {
+            margin-top: 0;
+        }
+
+        .rite-log-intro {
             font-family: var(--font-mono);
-            letter-spacing: 0.05em;
-            line-height: 2;
+            font-size: 0.62rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--dim);
+            line-height: 1.8;
+            margin-bottom: 0.9rem;
         }
 
-        .demand-note .label-tag {
-            margin-right: 0.6rem;
+        .log-panel {
+            border: 1px solid var(--line);
+            max-height: 260px;
+            overflow-y: auto;
+            font-family: var(--font-mono);
+            font-size: 0.68rem;
+            letter-spacing: 0.03em;
+            line-height: 1.9;
         }
 
-        .demand-note .dm-item {
-            display: inline-block;
-            margin: 0 0.8rem;
+        .log-empty {
+            padding: 1rem;
+            color: var(--dim);
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            font-size: 0.62rem;
         }
 
-        .demand-note .dm-item strong {
+        .log-entry {
+            padding: 0.55rem 0.9rem;
+            border-bottom: 1px solid var(--line);
+            color: var(--dim);
+        }
+
+        .log-entry:last-child {
+            border-bottom: none;
+        }
+
+        .log-entry .le-tag {
             color: var(--fg);
-        }
-
-        .demand-note .closing {
-            display: block;
-            margin-top: 0.4rem;
-            opacity: 0.5;
-            font-size: 0.65rem;
+            margin-right: 0.5rem;
         }
 
         @media (max-width: 720px) {
             h1 { font-size: 2.0rem; }
             .kindling-card .card-title { font-size: 0.95rem; }
             .synergy-grid { grid-template-columns: 1fr; }
-            .demand-note .dm-item { display: block; margin: 0.2rem 0; }
         }
 
         ::-webkit-scrollbar { width: 4px; height: 4px; }
@@ -1031,6 +1166,15 @@
                 <div class="keep-slot" id="keep-slot-red-bone"></div>
                 <div class="keep-slot" id="keep-slot-black-thread"></div>
             </div>
+        </div>
+
+        <div class="hud-panel pinned-panel" id="pinnedPanel">
+            <div class="hud-corner tl"></div><div class="hud-corner tr"></div><div class="hud-corner bl"></div><div class="hud-corner br"></div>
+            <div class="hud-panel-header">
+                <span>Pinned Rites</span>
+                <span class="hud-panel-count" id="pinnedCount">00 Active</span>
+            </div>
+            <div class="hud-panel-body" id="pinnedBody"></div>
         </div>
 
         <div class="view-panel active" id="view-brain">
@@ -1092,12 +1236,10 @@
             </div>
         </div>
 
-        <div class="demand-note">
-            <span class="label-tag">DEMAND</span>
-            <span class="dm-item"><strong style="color:var(--fg);">Self</strong> — Your own body · Power, bought across three tiers</span>
-            <span class="dm-item"><strong style="color:var(--fg);">Living</strong> — Another's nervous system · Power taken by force</span>
-            <span class="dm-item"><strong style="color:var(--fg);">Dead</strong> — What the nervous system left behind · A vessel, an anchor, a witness</span>
-            <span class="closing">A Doomer doesn't improvise. Every ritual runs through the same object, over and over, until it stops being a coin or a nail or a thread and starts being a debt.</span>
+        <div class="rite-log-section">
+            <h2>Rite Log</h2>
+            <p class="rite-log-intro">Every Rite Banned this session records itself here — title, Self tier, or demand paid.</p>
+            <div class="log-panel" id="riteLogPanel"></div>
         </div>
 
     </div>
@@ -1631,6 +1773,89 @@
             const STAGE_KEYS = ['nibble', 'feed', 'devour'];
             const STAGE_LABELS = ['Nibble', 'Feed', 'Devour'];
 
+            // Rite Log — records every Rite Banned this session
+            let riteLog = [];
+
+            function renderRiteLog() {
+                const panel = document.getElementById('riteLogPanel');
+                if (!panel) return;
+                if (riteLog.length === 0) {
+                    panel.innerHTML = '<div class="log-empty">NO RITES BANNED</div>';
+                    return;
+                }
+                let html = '';
+                for (let i = riteLog.length - 1; i >= 0; i--) {
+                    html += `<div class="log-entry"><span class="le-tag">[${String(i + 1).padStart(2, '0')}]</span>${riteLog[i]}</div>`;
+                }
+                panel.innerHTML = html;
+            }
+
+            function addRiteLog(text) {
+                riteLog.push(text);
+                renderRiteLog();
+            }
+
+            // Pinned Rites — Self tiers pin independently per tier; Living/Dead pin on their own
+            let pinnedRites = [];
+
+            function pinKey(id, type, stage) {
+                return `${id}:${type}:${stage || ''}`;
+            }
+
+            function isPinned(id, type, stage) {
+                return pinnedRites.some(p => p.key === pinKey(id, type, stage));
+            }
+
+            function pinLabel(type, stage) {
+                if (type === 'self') return `SELF · ${STAGE_LABELS[STAGE_KEYS.indexOf(stage)].toUpperCase()}`;
+                return type.toUpperCase() + ' DEMAND';
+            }
+
+            function togglePin(id, type, stage) {
+                const key = pinKey(id, type, stage);
+                const k = ALL_KINDLINGS.find(x => x.id === id);
+                const existingIdx = pinnedRites.findIndex(p => p.key === key);
+                if (existingIdx >= 0) {
+                    pinnedRites.splice(existingIdx, 1);
+                    addRiteLog(`UNPINNED — "${k.title.toUpperCase()}" · ${pinLabel(type, stage)}`);
+                } else {
+                    pinnedRites.push({ key, id, title: k.title, type, stage });
+                    addRiteLog(`PINNED — "${k.title.toUpperCase()}" · ${pinLabel(type, stage)}`);
+                }
+                renderPinnedPanel();
+                updateCardPinMarks();
+            }
+
+            function updateCardPinMarks() {
+                const pinnedIds = new Set(pinnedRites.map(p => p.id));
+                document.querySelectorAll('.kindling-card').forEach(c => {
+                    c.classList.toggle('has-pin', pinnedIds.has(Number(c.dataset.id)));
+                });
+            }
+
+            function renderPinnedPanel() {
+                const body = document.getElementById('pinnedBody');
+                const count = document.getElementById('pinnedCount');
+                count.textContent = `${String(pinnedRites.length).padStart(2, '0')} Active`;
+                if (pinnedRites.length === 0) {
+                    body.innerHTML = '<div class="pinned-empty">NO RITES PINNED</div>';
+                    return;
+                }
+                body.innerHTML = `<div class="pinned-list">${pinnedRites.map(p => `
+                    <div class="pinned-item" data-key="${p.key}">
+                        <span class="pi-title">${p.title}</span>
+                        <span class="pi-tag">${pinLabel(p.type, p.stage)}</span>
+                        <button type="button" class="pi-remove" data-key="${p.key}">×</button>
+                    </div>
+                `).join('')}</div>`;
+                body.querySelectorAll('.pi-remove').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const pin = pinnedRites.find(p => p.key === btn.dataset.key);
+                        if (pin) togglePin(pin.id, pin.type, pin.stage);
+                    });
+                });
+            }
+
             function updateCardSelection() {
                 document.querySelectorAll('.kindling-card').forEach(c => {
                     c.classList.toggle('expanded', Number(c.dataset.id) === selectedKindlingId);
@@ -1651,12 +1876,38 @@
             }
 
             function selectKindling(id) {
-                selectedKindlingId = (selectedKindlingId === id) ? null : id;
+                const opening = selectedKindlingId !== id;
+                selectedKindlingId = opening ? id : null;
                 activeStage = 'nibble';
                 updateCardSelection();
                 renderDetail();
                 if (selectedKindlingId) {
                     document.getElementById('detailPanel').scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    if (opening) {
+                        const k = ALL_KINDLINGS.find(x => x.id === id);
+                        addRiteLog(`BANNED — "${k.title.toUpperCase()}" · SELF · NIBBLE`);
+                    }
+                }
+            }
+
+            function refreshPinButtons(k) {
+                const selfBtn = document.getElementById('pinSelfBtn');
+                const livingBtn = document.getElementById('pinLivingBtn');
+                const deadBtn = document.getElementById('pinDeadBtn');
+                if (selfBtn) {
+                    const pinned = isPinned(k.id, 'self', activeStage);
+                    selfBtn.textContent = pinned ? `PINNED · ${STAGE_LABELS[STAGE_KEYS.indexOf(activeStage)].toUpperCase()}` : `PIN ${STAGE_LABELS[STAGE_KEYS.indexOf(activeStage)].toUpperCase()}`;
+                    selfBtn.classList.toggle('pinned', pinned);
+                }
+                if (livingBtn) {
+                    const pinned = isPinned(k.id, 'living', null);
+                    livingBtn.textContent = pinned ? 'PINNED' : 'PIN';
+                    livingBtn.classList.toggle('pinned', pinned);
+                }
+                if (deadBtn) {
+                    const pinned = isPinned(k.id, 'dead', null);
+                    deadBtn.textContent = pinned ? 'PINNED' : 'PIN';
+                    deadBtn.classList.toggle('pinned', pinned);
                 }
             }
 
@@ -1686,7 +1937,10 @@
                     </div>
 
                     <div class="detail-stage-block">
-                        <h3>Self</h3>
+                        <div class="detail-stage-block-head">
+                            <h3>Self</h3>
+                            <button type="button" class="pin-btn" id="pinSelfBtn"></button>
+                        </div>
                         <div class="detail-stage-tabs" id="detailStageTabs">
                             ${STAGE_KEYS.map((s, i) => `<button type="button" class="detail-stage-tab${s === activeStage ? ' active' : ''}" data-stage="${s}">${STAGE_LABELS[i]}</button>`).join('')}
                         </div>
@@ -1694,13 +1948,19 @@
                     </div>
 
                     <div class="demand-block living">
-                        <div class="demand-head">Living Demand</div>
+                        <div class="demand-head-row">
+                            <div class="demand-head">Living Demand</div>
+                            <button type="button" class="pin-btn" id="pinLivingBtn"></button>
+                        </div>
                         <div class="detail-row"><div class="detail-row-label">Effect</div><div class="detail-row-text">${k.stages.living[0].effect}</div></div>
                         <div class="detail-row"><div class="detail-row-label">Demand</div><div class="detail-row-text demand">${k.stages.living[0].demand}</div></div>
                     </div>
 
                     <div class="demand-block dead">
-                        <div class="demand-head">Dead Demand</div>
+                        <div class="demand-head-row">
+                            <div class="demand-head">Dead Demand</div>
+                            <button type="button" class="pin-btn" id="pinDeadBtn"></button>
+                        </div>
                         <div class="detail-row"><div class="detail-row-label">Effect</div><div class="detail-row-text">${k.stages.dead[0].effect}</div></div>
                         <div class="detail-row"><div class="detail-row-label">Demand</div><div class="detail-row-text demand">${k.stages.dead[0].demand}</div></div>
                     </div>
@@ -1709,6 +1969,20 @@
                 `;
 
                 renderStageBody(k);
+                refreshPinButtons(k);
+
+                document.getElementById('pinSelfBtn').addEventListener('click', () => {
+                    togglePin(k.id, 'self', activeStage);
+                    refreshPinButtons(k);
+                });
+                document.getElementById('pinLivingBtn').addEventListener('click', () => {
+                    togglePin(k.id, 'living', null);
+                    refreshPinButtons(k);
+                });
+                document.getElementById('pinDeadBtn').addEventListener('click', () => {
+                    togglePin(k.id, 'dead', null);
+                    refreshPinButtons(k);
+                });
 
                 body.querySelectorAll('.detail-stage-tab').forEach(btn => {
                     btn.addEventListener('click', () => {
@@ -1716,7 +1990,9 @@
                         body.querySelectorAll('.detail-stage-tab').forEach(b => b.classList.toggle('active', b === btn));
                         renderStageBody(k);
                         setCardIgnite();
+                        refreshPinButtons(k);
                         revealText(document.getElementById('detailName'), k.title);
+                        addRiteLog(`BANNED — "${k.title.toUpperCase()}" · SELF · ${STAGE_LABELS[STAGE_KEYS.indexOf(activeStage)].toUpperCase()}`);
                     });
                 });
 
@@ -1794,6 +2070,7 @@
                     header.className = 'card-header';
                     header.innerHTML = `
                         <span class="card-title">${k.title}</span>
+                        <span class="card-pin-mark">PINNED</span>
                         <span class="card-glitch"></span>
                     `;
                     card.appendChild(header);
@@ -1880,6 +2157,8 @@
                 renderGroupCards('grid-nerve', 'nerve');
                 renderGroupCards('grid-frame', 'frame');
                 renderKeeps();
+                renderRiteLog();
+                renderPinnedPanel();
                 setupViewToggles();
                 console.log('🔴 THE 18 KINDLINGS · ULTRABLACK ONLINE');
             });
