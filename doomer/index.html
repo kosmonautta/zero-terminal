@@ -38,7 +38,7 @@
     }
 
     .head-left{
-        max-width:640px;
+        max-width:560px;
     }
 
     .eyebrow{
@@ -63,15 +63,6 @@
         word-break:break-word;
     }
 
-    h1 .title-primary{
-        display:block;
-    }
-
-    h1 .title-secondary{
-        display:block;
-        margin-top:6px;
-    }
-
     .whitebox{
         background:var(--fg);
         color:var(--bg);
@@ -86,18 +77,6 @@
 
     .hero-tag{
         margin-top:18px;
-    }
-
-    .hero-lead{
-        margin-top:20px;
-        padding-left:14px;
-        border-left:1px solid var(--line);
-        font-family:"Times New Roman", serif;
-        font-size:16px;
-        font-style:italic;
-        line-height:1.6;
-        color:var(--fg);
-        max-width:560px;
     }
 
     .columns{
@@ -166,8 +145,6 @@
         margin:0 0 10px 0;
     }
 
-    /* Article headers rendered as whitebox badges. Two-class selector keeps
-       this ahead of both .article-label and .whitebox regardless of source order. */
     .article-label.whitebox{
         background:var(--fg);
         color:var(--bg);
@@ -261,7 +238,15 @@
         border-color:var(--bg);
     }
 
-    /* Lets wide tables scroll horizontally instead of breaking the page on narrow screens */
+    .small-table{
+        font-size:13px;
+    }
+
+    .small-table td,
+    .small-table th{
+        padding:8px 8px;
+    }
+
     .table-scroll{
         width:100%;
         overflow-x:auto;
@@ -314,69 +299,29 @@
         -webkit-column-break-inside:avoid;
     }
 
-    /* Overdrive crosstab — category columns x row numbers, Bale name in each cell */
-    .overdrive-grid{
-        width:100%;
-        margin:18px 0 20px;
-        min-width:600px;
-    }
-
-    .overdrive-grid table{
-        margin:0;
-        table-layout:fixed;
+    .keep-title{
+        font-family:"Courier New", monospace;
         font-size:13px;
-    }
-
-    .overdrive-grid th{
-        background:var(--fg);
-        color:var(--bg);
-    }
-
-    .overdrive-grid th.corner{
-        background:var(--bg);
-        color:var(--fg);
-        border-color:var(--line);
-    }
-
-    .overdrive-grid th.axis-signal{
-        background:var(--bg);
-        color:var(--fg);
-        border-color:var(--line);
-        text-align:left;
-    }
-
-    .overdrive-grid td.dread-cell{
-        background:#0a0a0a;
-        text-align:center;
-        padding:16px 8px;
-        vertical-align:middle;
-    }
-
-    .overdrive-grid td.dread-cell .dread-name{
-        font-family:"Courier New", monospace;
-        font-weight:700;
-        font-size:14px;
-        letter-spacing:1.5px;
-        color:var(--fg);
-        display:block;
-    }
-
-    .overdrive-grid td.dread-cell .dread-pair{
-        display:block;
-        margin-top:5px;
-        font-family:"Courier New", monospace;
-        font-size:9.5px;
-        letter-spacing:1px;
-        color:var(--dim);
+        letter-spacing:2px;
         text-transform:uppercase;
+        font-weight:700;
+        color:var(--bg);
+        background:var(--fg);
+        display:inline-block;
+        padding:4px 9px;
+        margin:22px 0 6px 0;
     }
 
-    .overdrive-dossier{
-        margin-top:6px;
+    .keep-title:first-of-type{
+        margin-top:4px;
     }
 
-    .overdrive-dossier .param-table th{
-        font-size:10.5px;
+    .kindling-head{
+        margin:18px 0 4px 0;
+    }
+
+    .kindling-head strong{
+        font-size:15px;
     }
 
     .nav-link{
@@ -410,8 +355,8 @@
         .part-title{ font-size:32px; }
         table{ font-size:12px; }
         .param-table{ font-size:11.5px; }
+        .small-table{ font-size:12px; }
         .echo-register ul{ column-count:1; }
-        .overdrive-grid td.dread-cell .dread-name{ font-size:12px; }
     }
 </style>
 </head>
@@ -421,64 +366,63 @@
     <div class="page-head">
         <div class="head-left">
             <p class="eyebrow">NODE // 002</p>
-            <h1><span class="title-primary">KIND-II OPERATOR</span><span class="title-secondary">DOOMER</span></h1>
-            <div class="whitebox hero-tag">ULTRABLACK</div>
-            </div>
+            <h1>KIND-II OPERATOR<br>DOOMER</h1>
+            <div class="whitebox hero-tag">UNFILED</div>
+        </div>
     </div>
 
     <div class="columns">
 
         <section>
             <div class="article-label whitebox">ARTICLE I — DEFINITIONS</div>
-            <p><strong>§1.1</strong> A KIND-II Operator (Doomer) is an individual whose interface with ESP exceeds passive reception but does not reach structural mastery. Contact is confirmed. Control is not.</p>
-            <p><strong>§1.2</strong> The Doomer channels and discharges ESP without possessing the refinement Kind-I Operators exhibit. The Doomer does not build. The Doomer takes.</p>
-            <p><strong>§1.3</strong> Absence of refinement is not absence of yield. Doomer output trades frequency for magnitude. Foundational gaps recorded under <span class="mono">[REDACTED]</span>.</p>
-            <p><strong>§1.4</strong> Liminal Phase is the only phase a KIND-II Operator's ESP occupies — origin and terminus both. Focal Phase, and the return path to it, belongs to Kind-I Operators alone.</p>
-            <div class="callout">&gt;&gt; INPUT UNSTABLE<br>&gt;&gt; PARAMETER COLLAPSE REFUSED</div>
+            <p><strong>§1.1</strong> A Doomer is a KIND-II Operator. Their interface with ESP is Traffick: a direct dive into the OTHER SIDE to bargain and commune with entities dwelling beyond causal law.</p>
+            <p><strong>§1.2</strong> The OTHER SIDE is herein defined as: the absence of Parameter. The place every Operant model has, to date, failed to return from intact.</p>
+            <p><strong>§1.3</strong> The dive, the Traffick, and the binding that follows are together herein defined as Banning.</p>
+            <p><strong>§1.4</strong> Nothing a Doomer does collapses into a measurable form.</p>
+            <div class="callout">&gt;&gt; INPUT REJECTED<br>&gt;&gt; NO PARAMETER FOUND</div>
         </section>
 
         <section>
-            <div class="article-label whitebox">ARTICLE II — BANNING &amp; KINDLING</div>
-            <p><strong>§2.1</strong> ESP activity accessible to a KIND-II Operator cannot be collapsed into Hex Grave. It cannot be built, filed, or fixed in advance. It is Banned — during Banning, and nowhere else.</p>
-            <p><strong>§2.2</strong> A Bale is theft of coherence from ambient static, held briefly legible before it decays back into noise. The Bale is the base liminal form, the raw material of the Kindling process.</p>
-            <p><strong>§2.3</strong> Banning requires the operator to force two axes into agreement, chosen in the same instant the theft closes:</p>
-            <div class="callout">&gt;&gt; Signal<br>&gt;&gt; Noise</div>
-            <p><strong>§2.4</strong> A Bale not bound at the moment of Banning dissolves. No record. No recovery. No second attempt on the same static.</p>
-            <p><strong>§2.5</strong> Repeated failure to bind results in reclassification under Protocol Katabasis.</p>
-            <div class="callout">&gt;&gt; SIGNAL LOSS DETECTED<br>&gt;&gt; STATIC UNRECOVERABLE</div>
+            <div class="article-label whitebox">ARTICLE II — THE FOUR KEEPS</div>
+            <p><strong>§2.1</strong> The OTHER SIDE answers through four standing Keeps.</p>
+            <div class="callout">&gt;&gt; Black Nail<br>&gt;&gt; Black Thread<br>&gt;&gt; Red Salt<br>&gt;&gt; Red Bone</div>
+            <p><strong>§2.2</strong> Black Nail binds, fixes, punctures. It holds a fate in place.</p>
+            <p><strong>§2.3</strong> Black Thread connects and severs. It finds what is owed between two things and acts on it.</p>
+            <p><strong>§2.4</strong> Red Salt corrodes and wards, souring flesh and ground in equal measure.</p>
+            <p><strong>§2.5</strong> Red Bone remembers and raises, answering with what the dead still know.</p>
+            <p><strong>§2.6</strong> Every Kindling is bound to at least one Keep. A Doomer treats with whichever Keep stands behind the Kindling they Bann.</p>
         </section>
 
         <section>
-            <div class="article-label whitebox">ARTICLE III — THE LIMINAL BINARY</div>
-            <p><strong>§3.1</strong> KIND-II Operators have no access to Focal Phase. The stabilizing apparatus that permits Hex Grave — and the return path to Focal Phase an ESPer relies on — is structurally absent in Doomer physiology. The Doomer is Liminal, permanently.</p>
-            <p><strong>§3.2</strong> KIND-II ESP exists only within the Liminal binary: Bale, the base liminal form drawn directly from static, and Dread, the trace residue thrown off when that same Bale is Kindled past its threshold. Neither end of this binary touches Focal Phase.</p>
-            <p><strong>§3.3</strong> The binary trades predictability for magnitude. Doomer output is fewer in number and greater in consequence than Kind-I output.</p>
-            <p><strong>§3.4</strong> Kindling does not reverse phase. There is none left to reverse into, and KIND-II ESP was never Focal to begin with. Kindling escalates: a Fixed Bale driven past its own threshold, burning off as a Dread — trace residual ESP, not a mirrored form of the Bale it came from.</p>
+            <div class="article-label whitebox">ARTICLE III — KINDLINGS</div>
+            <p><strong>§3.1</strong> A Kindling is what the Doomer calls out of a Keep and delivers to the field.</p>
+            <p><strong>§3.2</strong> All eighteen recorded Kindlings sort into three registers: Hard Lock, Red Shift, and Negative Box.</p>
+            <p><strong>§3.3</strong> A Kindling escalates through three Self tiers — Nibble, Feed, Devour — each stronger, each pricier. The Doomer chooses the tier. The Keep sets what it costs.</p>
+            <p><strong>§3.4</strong> Every Kindling also carries a Living Demand and a Dead Demand: the same rite, worked instead through a living subject or a corpse, each priced on its own terms.</p>
+            <div class="callout">&gt;&gt; COLLAPSE REFUSED<br>&gt;&gt; FULL OUTPUT RETAINED</div>
         </section>
 
         <section>
-            <div class="article-label whitebox">ARTICLE IV — VOLATILITY</div>
-            <p><strong>§4.1</strong> Doomer output is inherently volatile — redlined by design, not by accident — against the surrounding environment, the causal continuum, and the Operator's own Readings.</p>
-            <p><strong>§4.2</strong> The Operant does not possess a complete model for KIND-II cascade failure.</p>
-            <p><strong>§4.3</strong> KIND-II manifestations are to be:</p>
-            <div class="callout">&gt;&gt; monitored without interruption<br>&gt;&gt; never left unsupervised<br>&gt;&gt; logged after discharge, never before</div>
-            <p><strong>§4.4</strong> KIND-II escalation does not follow Rites. It follows Kindling. There is no ritual buffer between a Bale Fixed and a Dread Kindled.</p>
-            <div class="callout">&gt;&gt; INPUT UNSTABLE<br>&gt;&gt; DREAD VARIANCE LOGGED</div>
+            <div class="article-label whitebox">ARTICLE IV — DEMANDS</div>
+            <p><strong>§4.1</strong> The OTHER SIDE does not lend. Every Banning is paid, either on the spot or as a Debt the Keep sets aside and collects later, unannounced.</p>
+            <p><strong>§4.2</strong> A Self Demand lands on the Doomer, always.</p>
+            <p><strong>§4.3</strong> A Living Demand usually lands on the Doomer too, mirrored, delayed, or split through the subject they worked it on.</p>
+            <p><strong>§4.4</strong> A Dead Demand is rarely owed at all. In the Operant's records, the dead have already paid theirs.</p>
         </section>
 
         <section>
-            <div class="article-label whitebox">ARTICLE V — REGISTRATION AND BRIEF STRUCTURE</div>
-            <p><strong>§5.1</strong> Each KIND-II Operator shall maintain an Intake Brief containing:</p>
-            <div class="callout">&gt;&gt; every Bale Banned<br>&gt;&gt; every Dread Kindled<br>&gt;&gt; associated cost incurred</div>
-            <p><strong>§5.2</strong> Bales and Dreads shall be treated as: operational liability disclosures, not capability disclosures.</p>
-            <p><strong>§5.3</strong> Cross-record inconsistencies will be flagged under Review Code 9.</p>
+            <div class="article-label whitebox">ARTICLE V — LIMINAL LOCK</div>
+            <p><strong>§5.1</strong> The Doomer holds no Focal Phase. There is no Parameter form of Kindling to file into an intake record.</p>
+            <p><strong>§5.2</strong> Phase Reversal is unavailable to this Class. Liminal is the only Phase a Doomer has ever occupied.</p>
+            <p><strong>§5.3</strong> The Operant maintains no containment model for the Doomer's output. This Article records that absence.</p>
+            <div class="callout">&gt;&gt; SIGNAL DRIFT: PERMANENT<br>&gt;&gt; COLLAPSE: NOT AVAILABLE</div>
         </section>
 
         <section>
             <div class="article-label whitebox">ARTICLE VI — CONTAINMENT PRINCIPLE</div>
-            <p><strong>§6.1</strong> The Operant assumes control over the Doomer and their ESP under government oversight, to the extent that control remains available.</p>
-            <p><strong>§6.2</strong> The Operant establishes: frameworks within which KIND-II ESP behaves as if under containment or custody, acknowledging that no such containment has ever fully held.</p>
-            <div class="terminal-note">IF YOU CAN READ THIS<br>THE COST IS ALREADY OWED<br>NOTHING TAKEN RETURNS</div>
+            <p><strong>§6.1</strong> The Operant assumes control over Doomer and Kindling under government oversight. For this Class, the assumption is administrative only.</p>
+            <p><strong>§6.2</strong> No framework exists within which a Banning behaves as though contained. The Operant tracks the Demand paid. Nothing more.</p>
+            <div class="terminal-note">IT KNOWS YOUR NAME NOW<br>DO NOT ANSWER BACK<br>THE TOLL IS ALREADY SET</div>
         </section>
 
         <section class="span-all break-block">
@@ -489,158 +433,334 @@
 
         <section class="span-all">
             <h2 class="part-title">DOOMER FIELD PROCEDURE</h2>
-            <p class="mono">On Banning, Kindling, and the cost of a Dread Fixed</p>
+            <p class="mono">On Banning, Kindlings, Tiers, and the Demand the Other Side collects</p>
             <hr>
         </section>
 
         <section class="span-all">
-            <h2>KINDLING PROCEDURE DIRECTIVES</h2>
-            <h3 class="field-subtitle">Banning (creating a Bale)</h3>
-            <p>A Bale is Banned during Banning — mid-mission, not before it. There is no briefing stage for a Doomer, no study, no preparation ahead of the theft. The operator forces one Signal and one Noise into agreement in that same motion and the static yields, or it does not. A Banned Bale occupies one inventory slot. Failed Banning attempts cost the action and nothing else — the static simply refuses to close.</p>
+            <h2>BANNING PROCEDURE DIRECTIVES</h2>
+            <h3 class="field-subtitle">Banning</h3>
+            <p>Banning happens live, in the field, at the point of need, through a Full Action. It is always a Rite Action: uninterrupted incantation, offering, marking, evocation, or utterance, sustained without break until it resolves. This Class carries no Observation Action. The Other Side must be addressed directly and the rite completed, or it goes unheard. An interrupted Rite still owes — the Keep collects a partial Demand for the attempt, resolved or not.</p>
             <br>
-            <h3 class="field-subtitle">Fixing (the Bale)</h3>
-            <p>At any point, during the operator's turn, they can Fix a Bale with a Half-Action. This is its base use. Fixing a Bale does not remove it from inventory, but it cannot be Fixed again until it has been Kindled.</p>
+            <h3 class="field-subtitle">Paying</h3>
+            <p>The Demand is paid at one of two moments: on the spot, the instant the Kindling resolves, or as a Debt the Keep sets aside and collects later, on its own schedule and without notice. The Doomer does not choose which. The Keep does.</p>
             <br>
-            <h3 class="field-subtitle">Kindling (Bale → Dread)</h3>
-            <p>After a Bale has been Fixed, the operator may choose to Kindle it. This is not phase reversal — the Bale was never Focal, and what spills out of it isn't either. Kindling drives an already-liminal Signal and Noise past their own threshold, burning the excess off as a Dread: trace residual ESP thrown clear of the spent Bale, not a mirror of it. Kindling is a Full Action. There is no Rite Action and no Observation Action available to a Doomer; Kindling either completes on this turn or the Bale is spent for nothing.</p>
-            <br>
-            <h3 class="field-subtitle">Fixing (the Dread)</h3>
-            <p>A Kindled Dread must be Fixed to resolve. Fixing a Dread always pays its Cost in full, immediately, regardless of outcome. There is no partial payment and no refusal once Kindling has completed. A Dread Fixed does not settle back toward the Bale's base state — there is no lighter state left to settle toward. The Bale beneath it is spent; what's left is residue only.</p>
+            <h3 class="field-subtitle">Rebanning</h3>
+            <p>A Doomer may Bann any Kindling from any Keep they hold standing with, in any scene, as many times as their body and their debts allow. Marks persist across missions — scars, brands, severances, and unpaid Debts remain until the Keep considers them settled.</p>
         </section>
 
         <section class="span-all">
-            <h2>BALE BANNING</h2>
-            <p>A Bale is not rolled blind. Banning happens here — one Signal forced against one Noise, chosen by the Doomer in the same breath the theft closes; the static offers no other axes. Signal is the shape of the force itself: a SPIKE is a singular point of penetration or projection, a LOOP is recurrence and sustained continuation, a SEAM is junction and transition between states, a LENS is direction, concentration, and convergence. Noise is what the static does with it once forced: ECHO reflects and propagates it, DRIFT displaces and destabilizes it, SCAR leaves it as persistent, permanent imprint, NULL suppresses and erases it outright.</p>
-            <p>A Bale is named by its pair: Signal over Noise. SPIKE / ECHO. LENS / NULL. Sixteen possible pairs. Each is a debt not yet called.</p>
-        </section>
+            <h2>KINDLING REGISTER</h2>
+            <p>Every Kindling sorts into one of three registers. Tier is chosen at the moment of Banning; output does not scale with it — the Other Side always delivers in full. Only the Demand grows.</p>
 
-        <section class="span-all">
-            <h2>DREAD KINDLING</h2>
-            <p>Every Fixed Bale carries a Dread state, reached only through Kindling — trace residual ESP burned off the spent Bale, not a mirror of it. Cross-reference category against row below to find it. This is not a second roll; the pairing was fixed the moment the Bale was Banned.</p>
-
-            <div class="table-scroll overdrive-grid">
-                <table>
+            <div class="table-scroll">
+                <table class="small-table">
                     <thead>
                         <tr>
-                            <th class="corner">ROW \ CATEGORY</th>
-                            <th>HARD LOCK</th>
-                            <th>RED SHIFT</th>
-                            <th>LOST TRACK</th>
-                            <th>SHADOWBOX</th>
+                            <th>Hard Lock</th>
+                            <th>Red Shift</th>
+                            <th>Negative Box</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <th class="axis-signal">1</th>
-                            <td class="dread-cell"><span class="dread-name">FALLOW</span><span class="dread-pair">HARD LOCK · 1</span></td>
-                            <td class="dread-cell"><span class="dread-name">KERN</span><span class="dread-pair">RED SHIFT · 1</span></td>
-                            <td class="dread-cell"><span class="dread-name">DREAR</span><span class="dread-pair">LOST TRACK · 1</span></td>
-                            <td class="dread-cell"><span class="dread-name">FEN</span><span class="dread-pair">SHADOWBOX · 1</span></td>
-                        </tr>
-                        <tr>
-                            <th class="axis-signal">2</th>
-                            <td class="dread-cell"><span class="dread-name">BOLT</span><span class="dread-pair">HARD LOCK · 2</span></td>
-                            <td class="dread-cell"><span class="dread-name">WOLD</span><span class="dread-pair">RED SHIFT · 2</span></td>
-                            <td class="dread-cell"><span class="dread-name">FORLORN</span><span class="dread-pair">LOST TRACK · 2</span></td>
-                            <td class="dread-cell"><span class="dread-name">GLOOM</span><span class="dread-pair">SHADOWBOX · 2</span></td>
-                        </tr>
-                        <tr>
-                            <th class="axis-signal">3</th>
-                            <td class="dread-cell"><span class="dread-name">WANE</span><span class="dread-pair">HARD LOCK · 3</span></td>
-                            <td class="dread-cell"><span class="dread-name">WITHER</span><span class="dread-pair">RED SHIFT · 3</span></td>
-                            <td class="dread-cell"><span class="dread-name">ORDEAL</span><span class="dread-pair">LOST TRACK · 3</span></td>
-                            <td class="dread-cell"><span class="dread-name">GRIM</span><span class="dread-pair">SHADOWBOX · 3</span></td>
-                        </tr>
-                        <tr>
-                            <th class="axis-signal">4</th>
-                            <td class="dread-cell"><span class="dread-name">SUNDER</span><span class="dread-pair">HARD LOCK · 4</span></td>
-                            <td class="dread-cell"><span class="dread-name">RIVEN</span><span class="dread-pair">RED SHIFT · 4</span></td>
-                            <td class="dread-cell"><span class="dread-name">CINDER</span><span class="dread-pair">LOST TRACK · 4</span></td>
-                            <td class="dread-cell"><span class="dread-name">BLIGHT</span><span class="dread-pair">SHADOWBOX · 4</span></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <p class="mono">Dossier — Bale and Dread, full effect and cost, cross-referenced against the grid above</p>
-
-            <h3 class="field-subtitle">Hard Lock — offense. No windup, no escape, fires the instant you reach it.</h3>
-            <div class="table-scroll overdrive-dossier">
-                <table class="param-table">
-                    <colgroup>
-                        <col style="width:14%"><col style="width:43%"><col style="width:43%">
-                    </colgroup>
-                    <thead><tr><th>Pairing</th><th>Bale</th><th>Dread</th></tr></thead>
-                    <tbody>
-                        <tr><td><strong>FALLOW</strong><br>Hard Lock · 1</td><td>Effect: Choose an area nearby. Everyone inside takes a HEAVY FRM Hit and is hurled to just outside its edge.<br>Cost: HAZE FRM Hit to you, or knocked prone.</td><td><strong>BLACK FALLOW</strong><br>Effect: The chosen area is erased outright; everyone inside takes a HYPER FRM Hit instead.<br>Cost: HEAVY FRM Hit to you, no save.</td></tr>
-                        <tr><td><strong>BOLT</strong><br>Hard Lock · 2</td><td>Effect: Accelerate your own mass, close the distance to any visible enemy instantly, and slam into them for a HEAVY FRM Hit; they're hurled clear.<br>Cost: HAZE FRM Hit to you on landing.</td><td><strong>DEAD BOLT</strong><br>Effect: Ram every visible enemy in sequence, one HEAVY FRM Hit each, before the round ends.<br>Cost: HEAVY FRM Hit to you once the sequence stops.</td></tr>
-                        <tr><td><strong>WANE</strong><br>Hard Lock · 3</td><td>Effect: Reach into a target's near future and detonate it early — their next HAZE Hit lands as HEAVY, or their next HEAVY Hit lands as HYPER.<br>Cost: The same escalation is loaded on you — your next Hit taken escalates one step, whenever it lands.</td><td><strong>FINAL WANE</strong><br>Effect: Every Hit, from anyone, escalates one tier for the rest of the scene. Once this scene, rewrite a Hit that already landed a tier worse.<br>Cost: The escalation applies to you too, permanently, and the rewrite can be turned back on a Hit you already took.</td></tr>
-                        <tr><td><strong>SUNDER</strong><br>Hard Lock · 4</td><td>Effect: A line cuts through everyone standing between two points you choose. Everything it crosses takes a HEAVY Hit (Attribute of your choice) and is knocked aside.<br>Cost: HAZE Hit, same Attribute, to you.</td><td><strong>GREAT SUNDER</strong><br>Effect: The fault becomes a wall for the rest of the scene; crossing it costs a HYPER Hit.<br>Cost: You don't choose which side you're on when it closes.</td></tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <h3 class="field-subtitle">Red Shift — movement. Blink, teleport, avoid reactions, outrun the moment.</h3>
-            <div class="table-scroll overdrive-dossier">
-                <table class="param-table">
-                    <colgroup>
-                        <col style="width:14%"><col style="width:43%"><col style="width:43%">
-                    </colgroup>
-                    <thead><tr><th>Pairing</th><th>Bale</th><th>Dread</th></tr></thead>
-                    <tbody>
-                        <tr><td><strong>KERN</strong><br>Red Shift · 1</td><td>Effect: Blink to a point you can see, no reaction provoked. Everything nearby is dragged toward it; anyone caught in the pull takes a HEAVY FRM Hit.<br>Cost: HAZE NRV Hit — the pull spends your next reaction.</td><td><strong>BLACK KERN</strong><br>Effect: Everything nearby collapses toward the point, HYPER FRM Hit on collision.<br>Cost: HEAVY NRV Hit, you're at the center same as everyone.</td></tr>
-                        <tr><td><strong>WOLD</strong><br>Red Shift · 2</td><td>Effect: Swap positions with any creature in sight, any distance, no reaction provoked either way.<br>Cost: HAZE NRV Hit — you're the one who has to reassemble first.</td><td><strong>DEAD WOLD</strong><br>Effect: Place every creature anywhere you choose within sight, no reactions provoked anywhere.<br>Cost: HEAVY NRV Hit — your own landing spot isn't yours to pick.</td></tr>
-                        <tr><td><strong>WITHER</strong><br>Red Shift · 3</td><td>Effect: Blink to touch or target a creature, no reaction provoked, then mark them: every Hit they take before your next turn is increased one tier.<br>Cost: HAZE NRV Hit to you the instant the mark lands.</td><td><strong>TRUE WITHER</strong><br>Effect: Every Hit inflicted for the rest of the scene is upgraded one tier.<br>Cost: HEAVY NRV Hit, permanently in effect on you too.</td></tr>
-                        <tr><td><strong>RIVEN</strong><br>Red Shift · 4</td><td>Effect: Open two linked fractures that stay open for the rest of the scene. Anything entering one exits the other at full speed, no reaction provoked.<br>Cost: HAZE FRM Hit to you the first time each scene it's used.</td><td><strong>OPEN RIVEN</strong><br>Effect: Anyone crossing the breach can be redirected anywhere visible, any time, for the rest of the scene.<br>Cost: HEAVY FRM Hit if the Static redirects you through it instead.</td></tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <h3 class="field-subtitle">Lost Track — unaccounted for. Off the sensor, off the record, off your own memory.</h3>
-            <div class="table-scroll overdrive-dossier">
-                <table class="param-table">
-                    <colgroup>
-                        <col style="width:14%"><col style="width:43%"><col style="width:43%">
-                    </colgroup>
-                    <thead><tr><th>Pairing</th><th>Bale</th><th>Dread</th></tr></thead>
-                    <tbody>
-                        <tr><td><strong>DREAR</strong><br>Lost Track · 1</td><td>Effect: A pressure wave rolls out from you — every enemy nearby takes a HAZE NRV Hit and is pushed directly away, no traceable source.<br>Cost: HAZE NRV Hit to you — you don't remember casting it until someone tells you.</td><td><strong>DEEP DREAR</strong><br>Effect: HEAVY NRV Hit, everyone thrown well clear of you, still no visible cause.<br>Cost: HEAVY NRV Hit — you lose the whole exchange, not just the cast.</td></tr>
-                        <tr><td><strong>FORLORN</strong><br>Lost Track · 2</td><td>Effect: Remove a target entirely until the start of their next turn, then place them anywhere you choose.<br>Cost: HAZE NRV Hit — allies can't reach you for aid during that span.</td><td><strong>LAST FORLORN</strong><br>Effect: Every enemy banished until the end of the scene, then redistributed by the Static.<br>Cost: HEAVY NRV Hit — you're off the grid the same span.</td></tr>
-                        <tr><td><strong>ORDEAL</strong><br>Lost Track · 3</td><td>Effect: Force BRN, NRV, and FRM tests on a target. Each failure is a HAZE Hit to the matching Attribute.<br>Cost: You take the same three tests, hidden from you until they resolve.</td><td><strong>FINAL ORDEAL</strong><br>Effect: Every enemy takes all three HAZE tests before further tests can escalate them.<br>Cost: You take them too, unwarned.</td></tr>
-                        <tr><td><strong>CINDER</strong><br>Lost Track · 4</td><td>Effect: Detonate every anomaly or hazard clinging near a target — everyone close to them takes a HEAVY FRM Hit, no identifiable epicenter.<br>Cost: HAZE FRM Hit to you, untraceable for the rest of the scene.</td><td><strong>CINDER RAIN</strong><br>Effect: The area around every combatant becomes hazardous for the rest of the scene; ending a turn anywhere costs a HAZE FRM Hit.<br>Cost: Including wherever you're standing, always.</td></tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <h3 class="field-subtitle">Shadowbox — a shade double stands in. What happens to it happens to whoever it's bound to.</h3>
-            <div class="table-scroll overdrive-dossier">
-                <table class="param-table">
-                    <colgroup>
-                        <col style="width:14%"><col style="width:43%"><col style="width:43%">
-                    </colgroup>
-                    <thead><tr><th>Pairing</th><th>Bale</th><th>Dread</th></tr></thead>
-                    <tbody>
-                        <tr><td><strong>FEN</strong><br>Shadowbox · 1</td><td>Effect: Split off a shade double of a target in sight. Anyone who strikes it lands the Hit — HAZE FRM — on the real target instead, wherever they are.<br>Cost: HAZE FRM Hit to you when the binding is cut, by time or by force.</td><td><strong>BLACK FEN</strong><br>Effect: The shade holds for the rest of the scene; anyone can strike it to land a HEAVY FRM Hit on the real target from anywhere.<br>Cost: HEAVY FRM Hit to you if it's ever destroyed early.</td></tr>
-                        <tr><td><strong>GLOOM</strong><br>Shadowbox · 2</td><td>Effect: Split off a shade double where you stand; you may immediately move anywhere nearby. Attacks against "you" this exchange strike the double.<br>Cost: HAZE NRV Hit if the double is destroyed before your next turn.</td><td><strong>TOTAL GLOOM</strong><br>Effect: Every ally gets a shade for the round; the field fills with echoes enemies can't sort from real.<br>Cost: HEAVY NRV Hit to you if your own double falls.</td></tr>
-                        <tr><td><strong>GRIM</strong><br>Shadowbox · 3</td><td>Effect: Bind a target to a shade double only you can see and strike. Your next Hit against the double lands on them instead, undefended.<br>Cost: HAZE Hit (BRN) — your next attack roll against anyone else suffers.</td><td><strong>GRIM HOUR</strong><br>Effect: The bound double takes every Hit you land for the rest of the scene, all undefended.<br>Cost: The link is permanent this fight — whatever finally destroys the double reaches back to you too, full severity.</td></tr>
-                        <tr><td><strong>BLIGHT</strong><br>Shadowbox · 4</td><td>Effect: Seed shade motes on everyone you choose. Your next offensive working relays through their mote onto them too.<br>Cost: You're wearing a mote too — there's a real chance your own next casting relays back onto you.</td><td><strong>DEEP BLIGHT</strong><br>Effect: Every casting for the rest of the scene relays through a mote onto another bound target automatically.<br>Cost: Permanent exposure — your own mote is always live too.</td></tr>
+                        <tr><td>Remove the Righteous Eyes</td><td>Faster! Faster! Faster!</td><td>Borrow the Shadow</td></tr>
+                        <tr><td>Silence the Holy Tongue</td><td>Exchange Footsteps</td><td>The Creeping Gloom</td></tr>
+                        <tr><td>Split the Skull</td><td>Drink the Lightning</td><td>Make the Dark Cut</td></tr>
+                        <tr><td>Static Lance</td><td>The Static Storm</td><td>The Hollow Rib</td></tr>
+                        <tr><td>Command the Hollow</td><td>Cut the Strings</td><td>Wear Their Face</td></tr>
+                        <tr><td>Strip to the Bone</td><td>Strike From Everywhere</td><td>Second Corpse</td></tr>
                     </tbody>
                 </table>
             </div>
         </section>
 
         <section class="span-all">
-            <h2>SEQUENCE REGISTER</h2>
-            <div class="card echo-register">
-                <ul>
-                    <li><strong>Ban a Bale</strong> — full action. force Signal and Noise into agreement against the static, during Banning.</li>
-                    <li><strong>Get a Bale</strong> — the theft closes. One inventory slot spent.</li>
-                    <li><strong>Fix a Bale</strong> — use it. Half-Action.</li>
-                    <li><strong>Kindle a Dread</strong> — full action. drive a Fixed Bale into Overdrive, burning it off as trace residual ESP, becoming a Dread. Full Action.</li>
-                    <li><strong>Get a Dread</strong> — trace esp is burned. No return to the Bale's base state.</li>
-                    <li><strong>Fix a Dread</strong> — use it. Half-action. Cost is paid in full, immediately.</li>
-                </ul>
+            <h2>DEMAND TIER TABLE</h2>
+            <p>Independent of register, the tier and mode set the shape of what the Other Side takes back.</p>
+            <div class="table-scroll">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Mode</th>
+                            <th>Output</th>
+                            <th>Demand</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Self — Nibble</td><td>Small, local, reversible effect.</td><td>Minor and immediate, paid by the Doomer.</td></tr>
+                        <tr><td>Self — Feed</td><td>Significant effect, felt across the scene.</td><td>Substantial, paid by the Doomer, sometimes as a running condition.</td></tr>
+                        <tr><td>Self — Devour</td><td>Permanent, field-altering effect.</td><td>Permanent, paid in full by the Doomer.</td></tr>
+                        <tr><td>Living Demand</td><td>Worked on a living subject instead of the self.</td><td>Usually mirrored or delayed back onto the Doomer.</td></tr>
+                        <tr><td>Dead Demand</td><td>Worked on a corpse instead of the self.</td><td>Usually none. The dead have already paid theirs.</td></tr>
+                    </tbody>
+                </table>
             </div>
+        </section>
+
+        <section class="span-all">
+            <h2>FULL KINDLING DESCRIPTIONS</h2>
+            <p class="mono">Effect and Demand for each Kindling, by register and tier</p>
+
+            <div class="keep-title">HARD LOCK</div>
+
+            <div class="kindling-head"><strong>Remove the Righteous Eyes</strong> — <em>"You will not need them again."</em> — <span class="mono">KEEP: BLACK NAIL, BLACK THREAD</span></div>
+            <div class="table-scroll">
+                <table class="param-table">
+                    <thead><tr><th>Tier</th><th>Effect</th><th>Demand</th></tr></thead>
+                    <tbody>
+                        <tr><td>Nibble</td><td>Nails through the lids. See through walls, briefly. Immune to Surprise. Advantage on Initiative.</td><td>The nails stay. No blinking.</td></tr>
+                        <tr><td>Feed</td><td>Thread through the lids, pulled shut. Feel the Static directly. Advantage on all Hard Lock Kindlings.</td><td>Blind, mundane-blind, for as long as the thread holds.</td></tr>
+                        <tr><td>Devour</td><td>See the Static outright. See every mind nearby, walls or no walls.</td><td>Permanent. Nothing grows back.</td></tr>
+                        <tr><td>Living Demand</td><td>Nail, then thread, driven into someone else's eyes. Blind them. Or wear their sight instead.</td><td>Every hour behind their eyes, yours go a little darker.</td></tr>
+                        <tr><td>Dead Demand</td><td>Same, on a corpse. A permanent Witness — see through it, always.</td><td>None owed by the Doomer. The corpse carries this one.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="kindling-head"><strong>Silence the Holy Tongue</strong> — <em>"Every prayer leaves through the mouth. Close it."</em> — <span class="mono">KEEP: BLACK THREAD</span></div>
+            <div class="table-scroll">
+                <table class="param-table">
+                    <thead><tr><th>Tier</th><th>Effect</th><th>Demand</th></tr></thead>
+                    <tbody>
+                        <tr><td>Nibble</td><td>Three stitches, one knot, pulled free. Hard Lock Kindlings can't be interrupted. Ignore Concentration checks.</td><td>The thread scars. Each use costs more silence.</td></tr>
+                        <tr><td>Feed</td><td>Six stitches, held until torn loose. Offensive Hard Lock Kindlings hit harder, spread wider.</td><td>No speech until the stitches tear.</td></tr>
+                        <tr><td>Devour</td><td>Sewn through permanently. Thought becomes Static outright — offensive Hard Lock reaches its ceiling.</td><td>Speech gone. Forever.</td></tr>
+                        <tr><td>Living Demand</td><td>Thread through another's lips. Silences them; strips one spoken memory or command loose.</td><td>Their silence borrows against the Doomer's — their own voice thins.</td></tr>
+                        <tr><td>Dead Demand</td><td>Sew a corpse's mouth shut, then open it again. It answers what's asked.</td><td>None. The dead already paid theirs.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="kindling-head"><strong>Split the Skull</strong> — <em>"Thought was never meant to stay quiet."</em> — <span class="mono">KEEP: BLACK NAIL</span></div>
+            <div class="table-scroll">
+                <table class="param-table">
+                    <thead><tr><th>Tier</th><th>Effect</th><th>Demand</th></tr></thead>
+                    <tbody>
+                        <tr><td>Nibble</td><td>Nail to the temple. Read intent. Predict one creature's next move.</td><td>A headache that doesn't fade on its own.</td></tr>
+                        <tr><td>Feed</td><td>Nail flat to the brow. Hold two Concentration Kindlings at once.</td><td>Nosebleeds. Migraines that stack.</td></tr>
+                        <tr><td>Devour</td><td>Driven in below the hairline. Permanent. Futures, seen constantly, passively.</td><td>The present grows harder to trust.</td></tr>
+                        <tr><td>Living Demand</td><td>Nail to another's temple. Force hallucination. Rewrite a decision.</td><td>Their fracture echoes back — the Doomer carries a sliver.</td></tr>
+                        <tr><td>Dead Demand</td><td>Nail through a corpse's skull. Walk its last memories like rooms.</td><td>None. The memories were already spent.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="kindling-head"><strong>Static Lance</strong> — <em>"Point. Release."</em> — <span class="mono">KEEP: RED SALT</span></div>
+            <div class="table-scroll">
+                <table class="param-table">
+                    <thead><tr><th>Tier</th><th>Effect</th><th>Demand</th></tr></thead>
+                    <tbody>
+                        <tr><td>Nibble</td><td>Charge at the palm, released. Bolt strikes one target.</td><td>A burn across the palm that doesn't heal by nightfall.</td></tr>
+                        <tr><td>Feed</td><td>Charge arced hand to hand. Bolt pierces, strikes a line.</td><td>The burn spreads up the forearm.</td></tr>
+                        <tr><td>Devour</td><td>The current never fully discharges. Bolt splits, strikes several at once.</td><td>A faint, constant hum.</td></tr>
+                        <tr><td>Living Demand</td><td>Charge forced into another's closed fist. Damage lands as a mental wound.</td><td>Feedback — the Doomer takes a fraction of what they take.</td></tr>
+                        <tr><td>Dead Demand</td><td>Charge driven into a corpse. Cast future Lances from its location instead.</td><td>None.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="kindling-head"><strong>Command the Hollow</strong> — <em>"The dead do what they're told."</em> — <span class="mono">KEEP: BLACK THREAD</span> — requires a prepared Witness</div>
+            <div class="table-scroll">
+                <table class="param-table">
+                    <thead><tr><th>Tier</th><th>Effect</th><th>Demand</th></tr></thead>
+                    <tbody>
+                        <tr><td>Nibble</td><td>One thread, finger to wrist. The Witness performs one small action.</td><td>A pull behind the Doomer's own sternum.</td></tr>
+                        <tr><td>Feed</td><td>Threads to both wrists and the jaw. It walks. It repeats short phrases.</td><td>The Doomer feels what it feels — cold, stillness, nothing.</td></tr>
+                        <tr><td>Devour</td><td>Threads sewn into the Doomer's own fingers. It moves when they move. Near-perfect impersonation.</td><td>One permanent point of Hard Lock, spent per hour run.</td></tr>
+                        <tr><td>Living Demand</td><td>An unnoticed thread looped around a living finger. Force one sentence, one action.</td><td>They remember the pull. Word gets around.</td></tr>
+                        <tr><td>Dead Demand</td><td>Full set of threads, sewn permanently into an already-prepared Witness. Full Vessel.</td><td>None, so long as the body holds together.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="kindling-head"><strong>Strip to the Bone</strong> — <em>"Flesh is fuel."</em> — <span class="mono">KEEP: RED SALT</span></div>
+            <div class="table-scroll">
+                <table class="param-table">
+                    <thead><tr><th>Tier</th><th>Effect</th><th>Demand</th></tr></thead>
+                    <tbody>
+                        <tr><td>Nibble</td><td>Powder rubbed into the forearms, sparked. Ignore exhaustion. Minor boost to output.</td><td>Hunger food doesn't touch for the rest of the day.</td></tr>
+                        <tr><td>Feed</td><td>Powder packed along the ribs, ignited. Increased strike damage.</td><td>Visibly thinner, in front of witnesses.</td></tr>
+                        <tr><td>Devour</td><td>A fistful swallowed, ignited from within. Near-skeletal, striking with immense force.</td><td>Never looks fed again.</td></tr>
+                        <tr><td>Living Demand</td><td>Powder forced into another's mouth, ignited. Their body cannibalizes itself.</td><td>The Doomer tastes it too — ash and iron, every round it burns.</td></tr>
+                        <tr><td>Dead Demand</td><td>Chest cavity packed, ignited. Rises as a Husk, one action of extreme force.</td><td>None. There's nothing left to owe.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="keep-title">RED SHIFT</div>
+
+            <div class="kindling-head"><strong>Faster! Faster! Faster!</strong> — <em>"Outrun your own signal."</em> — <span class="mono">KEEP: RED SALT</span></div>
+            <div class="table-scroll">
+                <table class="param-table">
+                    <thead><tr><th>Tier</th><th>Effect</th><th>Demand</th></tr></thead>
+                    <tbody>
+                        <tr><td>Nibble</td><td>Charge built in the legs. Double movement speed.</td><td>Legs shake for the rest of the scene.</td></tr>
+                        <tr><td>Feed</td><td>Two charges released together. Two full actions.</td><td>Joints ache like they've run twice as far.</td></tr>
+                        <tr><td>Devour</td><td>The charge never fully discharges. Four full actions, blinking between each.</td><td>Can't sit still anymore. Ever.</td></tr>
+                        <tr><td>Living Demand</td><td>Charge forced into another's legs. Their movement becomes the Doomer's.</td><td>Their stumble lands in the Doomer's own knees.</td></tr>
+                        <tr><td>Dead Demand</td><td>Lingering charge driven into a corpse's legs. Blink to its location at will.</td><td>None.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="kindling-head"><strong>Exchange Footsteps</strong> — <em>"Pay the road."</em> — <span class="mono">KEEP: RED SALT</span></div>
+            <div class="table-scroll">
+                <table class="param-table">
+                    <thead><tr><th>Tier</th><th>Effect</th><th>Demand</th></tr></thead>
+                    <tbody>
+                        <tr><td>Nibble</td><td>A pinch of Red Salt struck alight at the heel. Short blink.</td><td>The burn mark fades. So does feeling in the feet.</td></tr>
+                        <tr><td>Feed</td><td>Two pinches, two points. Double range, one free blink per round.</td><td>Vertigo that lingers a full round after landing.</td></tr>
+                        <tr><td>Devour</td><td>A grain burned on every threshold crossed. Chain unlimited blinks.</td><td>Never fully sure which step is real anymore.</td></tr>
+                        <tr><td>Living Demand</td><td>Red Salt struck against another's heel. Swap two creatures' positions.</td><td>Whatever ground they stood on, the Doomer feels underfoot.</td></tr>
+                        <tr><td>Dead Demand</td><td>Salt burned into the ground beneath a corpse's feet. Permanent Anchor.</td><td>None.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="kindling-head"><strong>Drink the Lightning</strong> — <em>"Teach the nerves what thunder feels like."</em> — <span class="mono">KEEP: BLACK NAIL</span></div>
+            <div class="table-scroll">
+                <table class="param-table">
+                    <thead><tr><th>Tier</th><th>Effect</th><th>Demand</th></tr></thead>
+                    <tbody>
+                        <tr><td>Nibble</td><td>Nail held between the palms until it hums. Bolt strikes one target.</td><td>Hands numb through the next action.</td></tr>
+                        <tr><td>Feed</td><td>Two nails crossed, arced. Bolt chains to a second target.</td><td>Numbness climbs to the elbow.</td></tr>
+                        <tr><td>Devour</td><td>The nail swallowed. Every enemy nearby, struck at once.</td><td>Metal near the Doomer sparks unprompted.</td></tr>
+                        <tr><td>Living Demand</td><td>A nail pressed into another's palm. They conduct — every bolt chains through them.</td><td>The chain runs both ways. Some of it comes back.</td></tr>
+                        <tr><td>Dead Demand</td><td>Nail driven into a corpse's palm. Lightning Rod.</td><td>None.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="kindling-head"><strong>The Static Storm</strong> — <em>"Make the sky answer to you."</em> — <span class="mono">KEEP: RED SALT</span></div>
+            <div class="table-scroll">
+                <table class="param-table">
+                    <thead><tr><th>Tier</th><th>Effect</th><th>Demand</th></tr></thead>
+                    <tbody>
+                        <tr><td>Nibble</td><td>Static built across the whole body. One bolt, one point, area damage.</td><td>Ears ring the rest of the scene.</td></tr>
+                        <tr><td>Feed</td><td>Held through a full breath. A second automatic strike, next turn.</td><td>The ringing becomes a headache that doesn't quit.</td></tr>
+                        <tr><td>Devour</td><td>A permanent charge, carried in the heartbeat. Sustained storm, random strikes.</td><td>Metal, glass — it isn't always the enemy that gets hit.</td></tr>
+                        <tr><td>Living Demand</td><td>Charge forced into another. Storm converges entirely on them.</td><td>Holding them there costs the Doomer's full attention.</td></tr>
+                        <tr><td>Dead Demand</td><td>Standing charge driven into a corpse. Permanent Storm Well.</td><td>None.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="kindling-head"><strong>Cut the Strings</strong> — <em>"The body mistakes Static for commands."</em> — <span class="mono">KEEP: BLACK THREAD</span></div>
+            <div class="table-scroll">
+                <table class="param-table">
+                    <thead><tr><th>Tier</th><th>Effect</th><th>Demand</th></tr></thead>
+                    <tbody>
+                        <tr><td>Nibble</td><td>One knot against the skin, pulled loose. Ignore restraints.</td><td>Skin left raw where the knot sat.</td></tr>
+                        <tr><td>Feed</td><td>Thread wound around a limb. That limb keeps working past what should disable it.</td><td>When the scene ends, so does the limb.</td></tr>
+                        <tr><td>Devour</td><td>Thread sewn beneath the skin. Keep moving past what would be fatal.</td><td>Every scene survived this way shortens the ones after it.</td></tr>
+                        <tr><td>Living Demand</td><td>Thread tied to another's wrist. Force one action or movement.</td><td>The Doomer's own hands twitch with it after.</td></tr>
+                        <tr><td>Dead Demand</td><td>Thread knotted around a corpse's wrist. A Marionette.</td><td>None.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="kindling-head"><strong>Strike From Everywhere</strong> — <em>"Arrive already finished."</em> — <span class="mono">KEEP: RED SALT</span></div>
+            <div class="table-scroll">
+                <table class="param-table">
+                    <thead><tr><th>Tier</th><th>Effect</th><th>Demand</th></tr></thead>
+                    <tbody>
+                        <tr><td>Nibble</td><td>A spark carries the Doomer to a target. Blink and strike once.</td><td>Disorientation on landing.</td></tr>
+                        <tr><td>Feed</td><td>A second charge held ready. Blink-strike two targets in sequence.</td><td>Disorientation doubles.</td></tr>
+                        <tr><td>Devour</td><td>The charge sits permanently. Blink-strike up to four targets.</td><td>Arrives places a half-second before meaning to.</td></tr>
+                        <tr><td>Living Demand</td><td>Charge driven into another. Blink to them, strike from any angle.</td><td>Their mark lingers on the Doomer's own skin.</td></tr>
+                        <tr><td>Dead Demand</td><td>Permanent charge driven into a corpse. A Beacon.</td><td>None.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="keep-title">NEGATIVE BOX</div>
+
+            <div class="kindling-head"><strong>Borrow the Shadow</strong> — <em>"Leave the body behind."</em> — <span class="mono">KEEP: RED SALT</span> — Failsafe, reactive swap</div>
+            <div class="table-scroll">
+                <table class="param-table">
+                    <thead><tr><th>Tier</th><th>Effect</th><th>Demand</th></tr></thead>
+                    <tbody>
+                        <tr><td>Nibble</td><td>Edge of the Doomer's shadow traced in powder. Once per scene, swap places with the Shade instantly.</td><td>The Shade holds for one exchange only.</td></tr>
+                        <tr><td>Feed</td><td>Traced again at dusk. The swap unwinds the last wound taken. Usable twice per scene.</td><td>What gets unwound catches up all at once when the scene ends.</td></tr>
+                        <tr><td>Devour</td><td>Burned into the ground where the Doomer's shadow always falls. Swap no longer limited — full shadow travel.</td><td>Casts no shadow at all anymore.</td></tr>
+                        <tr><td>Living Demand</td><td>Another's shadow traced and one edge ignited. Their speed halved, the Doomer's doubled.</td><td>The drag catches up all at once.</td></tr>
+                        <tr><td>Dead Demand</td><td>A corpse's shadow traced at death. A permanent doorway.</td><td>None.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="kindling-head"><strong>The Creeping Gloom</strong> — <em>"Every shadow is a blade waiting for permission."</em> — <span class="mono">KEEP: BLACK NAIL</span></div>
+            <div class="table-scroll">
+                <table class="param-table">
+                    <thead><tr><th>Tier</th><th>Effect</th><th>Demand</th></tr></thead>
+                    <tbody>
+                        <tr><td>Nibble</td><td>A nail driven into the nearest dark corner. A tendril lashes out, strikes one target.</td><td>The corner stays cold after.</td></tr>
+                        <tr><td>Feed</td><td>A second nail, driven into the target's own shadow. Strikes ignore cover and distance.</td><td>Their shadow remembers the Doomer now.</td></tr>
+                        <tr><td>Devour</td><td>A nail into the Doomer's own shadow. Every shadow in the area strikes at once.</td><td>The Doomer's own shadow is armed, always.</td></tr>
+                        <tr><td>Living Demand</td><td>A nail driven into another's shadow directly. Their shadow turns on them automatically.</td><td>Its hunger lingers near the Doomer after.</td></tr>
+                        <tr><td>Dead Demand</td><td>A nail through a corpse's shadow. A standing Sentinel.</td><td>None.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="kindling-head"><strong>Make the Dark Cut</strong> — <em>"Light it. Let what's left do the cutting."</em> — <span class="mono">KEEP: RED SALT</span></div>
+            <div class="table-scroll">
+                <table class="param-table">
+                    <thead><tr><th>Tier</th><th>Effect</th><th>Demand</th></tr></thead>
+                    <tbody>
+                        <tr><td>Nibble</td><td>A line of powder struck alight. A residual blade slashes one target.</td><td>Eyes ache in bright light.</td></tr>
+                        <tr><td>Feed</td><td>Ignited in a wider arc. The blade sweeps a line, striking all in front.</td><td>Disadvantage in any lit space.</td></tr>
+                        <tr><td>Devour</td><td>Both hands coated. Every strike leaves a following shadow-blade.</td><td>Flinches from light now, reflexively.</td></tr>
+                        <tr><td>Living Demand</td><td>Powder rubbed into another's shadow, ignited. Their shadow cuts at them.</td><td>The light burns the Doomer's eyes too.</td></tr>
+                        <tr><td>Dead Demand</td><td>Powder packed into a corpse's eyes and mouth, ignited. Its shadow permanently arms itself.</td><td>None.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="kindling-head"><strong>The Hollow Rib</strong> — <em>"Bone remembers weight it was never built for."</em> — <span class="mono">KEEP: BLACK NAIL</span></div>
+            <div class="table-scroll">
+                <table class="param-table">
+                    <thead><tr><th>Tier</th><th>Effect</th><th>Demand</th></tr></thead>
+                    <tbody>
+                        <tr><td>Nibble</td><td>A nail carried in a closed fist. Next strike, increased force.</td><td>The carrying hand goes numb.</td></tr>
+                        <tr><td>Feed</td><td>The nail swallowed. Resist knockback; strikes shockwave outward.</td><td>Every meal tastes faintly of iron.</td></tr>
+                        <tr><td>Devour</td><td>The nail replaces a rib. Momentum becomes a crushing blow.</td><td>Breathing never feels quite complete.</td></tr>
+                        <tr><td>Living Demand</td><td>A nail pressed to another's chest. Their defense drops, the Doomer's rises.</td><td>Their labored breath echoes in the Doomer's own chest.</td></tr>
+                        <tr><td>Dead Demand</td><td>A nail driven into a corpse, buried. Nearby Negative Box Kindlings hit harder.</td><td>None.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="kindling-head"><strong>Wear Their Face</strong> — <em>"Identity has a price."</em> — <span class="mono">KEEP: RED BONE</span></div>
+            <div class="table-scroll">
+                <table class="param-table">
+                    <thead><tr><th>Tier</th><th>Effect</th><th>Demand</th></tr></thead>
+                    <tbody>
+                        <tr><td>Nibble</td><td>A shard of the Doomer's own bone, pressed under the skin. Avoid casual recognition.</td><td>The Doomer's own face feels wrong to them.</td></tr>
+                        <tr><td>Feed</td><td>The shard moved to the throat. Unplaceable — voice and presence both.</td><td>The real voice takes longer to come back.</td></tr>
+                        <tr><td>Devour</td><td>The shard Kindles permanently. Featureless — unreadable to magic, memory, and sight.</td><td>No one remembers the Doomer's face anymore.</td></tr>
+                        <tr><td>Living Demand</td><td>A shard taken from another, pressed under the Doomer's own skin. Steal their appearance.</td><td>Forgets one small true thing about their own face.</td></tr>
+                        <tr><td>Dead Demand</td><td>A shard of corpse-bone, fused under the skin. Perfect impersonation.</td><td>None.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="kindling-head"><strong>Second Corpse</strong> — <em>"One body survives. One remembers."</em> — <span class="mono">KEEP: BLACK THREAD</span></div>
+            <div class="table-scroll">
+                <table class="param-table">
+                    <thead><tr><th>Tier</th><th>Effect</th><th>Demand</th></tr></thead>
+                    <tbody>
+                        <tr><td>Nibble</td><td>Thread knotted into a small likeness. A Shade forms; damage splits.</td><td>Every hit it takes lands dull, delayed, on the Doomer.</td></tr>
+                        <tr><td>Feed</td><td>The likeness burned. The Shade can be targeted independently; carries out one Kindling.</td><td>Whatever it does, the Doomer is spent as if they'd done it themselves.</td></tr>
+                        <tr><td>Devour</td><td>The likeness sewn under the skin. The Shade acts as a second, fully independent body.</td><td>Split attention, split self — never fully anywhere.</td></tr>
+                        <tr><td>Living Demand</td><td>A likeness of a living victim knotted and burned over their shadow. Their Shade.</td><td>The tether runs the whole time — their pulse alongside the Doomer's.</td></tr>
+                        <tr><td>Dead Demand</td><td>A likeness of a corpse knotted, buried beneath the body. Its shadow animates.</td><td>None.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="span-all">
             <a class="nav-link" href="../kindling">→ KINDLING</a>
             <a class="nav-link" href="../spiritbox">→ SPIRITBOX</a>
             <a class="nav-link" href="../operator-registry">→ OPERATOR REGISTRY</a>
