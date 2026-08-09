@@ -58,7 +58,11 @@
   .frame-corner.fc-br{bottom:-0.2rem;right:-0.4rem;}
 
   .ambient-rule{font-family:var(--font-mono);font-size:0.52rem;letter-spacing:0.03em;line-height:1.2;color:rgba(255,255,255,0.28);white-space:nowrap;overflow:hidden;margin:0.9rem 0;user-select:none;transition:opacity 0.15s linear;}
+  .ambient-rule.dense{color:rgba(255,255,255,0.4);margin:0.6rem 0;}
+  .ambient-rule.small{font-size:0.48rem;margin:0.35rem 0;opacity:0.7;}
   .ambient-tag{font-family:var(--font-mono);font-size:0.5rem;letter-spacing:0.12em;color:rgba(255,255,255,0.4);white-space:nowrap;overflow:hidden;user-select:none;}
+
+  .glitch-flash-line{position:absolute;font-family:var(--font-mono);font-size:0.55rem;letter-spacing:0.02em;color:#fff;white-space:nowrap;pointer-events:none;opacity:0.9;background:#000;padding:0 0.15rem;z-index:8;}
 
   /* big image focus */
   .hero-figure{border:1px solid var(--line);background:#000;margin-bottom:1.2rem;position:relative;}
@@ -101,6 +105,15 @@
   .viewer-inner{transition:opacity 0.06s linear;}
   .viewer-inner.glitching{animation:glitchShake 0.32s steps(3,end);}
   .viewer-inner.glitch-in{animation:glitchIn 0.28s ease-out;}
+  .viewer-inner.jitter-burst{animation:jitterBurst 0.16s steps(2,end);}
+
+  @keyframes jitterBurst{
+    0%{transform:translate(0,0);filter:none;}
+    25%{transform:translate(-2px,1px) skewX(0.6deg);filter:contrast(1.35) hue-rotate(8deg);}
+    50%{transform:translate(2px,-1px);filter:brightness(1.25);}
+    75%{transform:translate(-1px,-1px) skewX(-0.4deg);filter:none;}
+    100%{transform:translate(0,0);filter:none;}
+  }
 
   @keyframes glitchShake{
     0%{transform:translate(0,0);filter:none;}
@@ -120,7 +133,7 @@
   }
 
   @media (prefers-reduced-motion:reduce){
-    .viewer-inner.glitching,.viewer-inner.glitch-in{animation:none;}
+    .viewer-inner.glitching,.viewer-inner.glitch-in,.viewer-inner.jitter-burst{animation:none;}
     .glitch-overlay{transition:none;}
   }
 
@@ -281,11 +294,13 @@ const FILES = [
     render: () => `
       <div class="stamp">REDACTED</div>
       <div class="v-header"><span>SUBJECT 04 — KOMETA-KRAI ENGAGEMENT</span><span class="hp-status">TERMINAL · KIA</span></div>
+      <div class="ambient-rule dense"></div>
       <p class="case-id-line">DESIGNATION: <span class="redact w4"></span> · KEEP OF RECORD: <span class="redact w2"></span></p>
       <div class="hero-figure">
         <img src="../images/terminal-doomer.png" alt="Subject 04, terminal file">
         <div class="cf-label"><span>FIELD RECOVERY — TERMINAL FILE</span><span>04-A</span></div>
       </div>
+      <div class="ambient-rule dense"></div>
       <div class="detail-tag-row">
         <div class="detail-tag">KIA — CONFIRMED</div>
         <div class="detail-tag">HOSTILE CONTACT — OSNOVA</div>
@@ -293,9 +308,12 @@ const FILES = [
       </div>
       <div class="case-stat-grid">
         <div class="case-stat-row"><div class="case-stat-label">Engagement</div><div class="case-stat-text">Subject engaged <span class="redact w2"></span> OSNOVA operatives outside the <span class="redact w3"></span> perimeter, KOMETA-KRAI sector. Contact lasted approximately <span class="redact w1"></span>.</div></div>
+        <div class="ambient-rule dense small"></div>
         <div class="case-stat-row"><div class="case-stat-label">Cause of Death</div><div class="case-stat-text">Kindling repertoire exceeded containment threshold prior to death. <span class="redact w5"></span>. Full sequence withheld pending review.</div></div>
+        <div class="ambient-rule dense small"></div>
         <div class="case-stat-row"><div class="case-stat-label">Recovery</div><div class="case-stat-text">Recovery team reports <span class="redact w4"></span>. Remains released to <span class="redact w3"></span> only.</div></div>
       </div>
+      <div class="ambient-rule dense"></div>
       <p class="case-notes">Most of this file remains sealed at Division level. What's cleared for cross-reference is limited to the engagement summary above.</p>
     `
   }
@@ -412,6 +430,79 @@ function paintCurrent(){
   });
 
   refreshAmbient();
+  syncRedactedJitter();
+}
+
+let redactedJitterTimeout = null;
+
+function stopRedactedJitter(){
+  if(redactedJitterTimeout){
+    clearTimeout(redactedJitterTimeout);
+    redactedJitterTimeout = null;
+  }
+}
+
+function spawnGlitchFlash(){
+  const count = 1 + Math.floor(Math.random()*2);
+  for(let i=0;i<count;i++){
+    const line = document.createElement("div");
+    line.className = "glitch-flash-line";
+    line.textContent = noiseLine(18 + Math.floor(Math.random()*26));
+    line.style.top = (Math.random()*88) + "%";
+    line.style.left = (Math.random()*55) + "%";
+    viewerInner.appendChild(line);
+    setTimeout(()=>{ line.remove(); }, 110 + Math.random()*120);
+  }
+}
+
+function triggerJitterBurst(){
+  viewerInner.classList.remove("jitter-burst");
+  // force reflow so the animation can restart even on back-to-back bursts
+  void viewerInner.offsetWidth;
+  viewerInner.classList.add("jitter-burst");
+
+  const stamp = viewerInner.querySelector(".stamp");
+  if(stamp && Math.random() < 0.55){
+    stamp.style.opacity = (0.25 + Math.random()*0.65).toFixed(2);
+    stamp.style.transform = `rotate(${(-9 + Math.random()*6).toFixed(1)}deg)`;
+    setTimeout(()=>{ stamp.style.opacity = ""; stamp.style.transform = ""; }, 130);
+  }
+
+  if(Math.random() < 0.5){
+    const bars = viewerInner.querySelectorAll(".redact");
+    bars.forEach(b=>{
+      if(Math.random() < 0.4) b.style.opacity = (0.3 + Math.random()*0.5).toFixed(2);
+    });
+    setTimeout(()=>{ bars.forEach(b=>{ b.style.opacity = ""; }); }, 140);
+  }
+
+  refreshAmbient();
+  spawnGlitchFlash();
+
+  setTimeout(()=>{ viewerInner.classList.remove("jitter-burst"); }, 160);
+}
+
+function scheduleRedactedJitter(){
+  const delay = 180 + Math.random()*950;
+  redactedJitterTimeout = setTimeout(()=>{
+    if(FILES[current].id === "redacted" && !switching && !reduceMotion){
+      triggerJitterBurst();
+      // occasional rapid double-flicker for extra erraticness
+      if(Math.random() < 0.3){
+        setTimeout(()=>{
+          if(FILES[current].id === "redacted" && !switching) triggerJitterBurst();
+        }, 90 + Math.random()*80);
+      }
+    }
+    scheduleRedactedJitter();
+  }, delay);
+}
+
+function syncRedactedJitter(){
+  stopRedactedJitter();
+  if(!reduceMotion && FILES[current].id === "redacted"){
+    scheduleRedactedJitter();
+  }
 }
 
 function goTo(idx){
