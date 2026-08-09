@@ -140,10 +140,10 @@ const TOTAL_FORMATIONS = CONSTELLATIONS.length + 1;
 // the field-wrap panel keeps its own fixed 62/92px padding around the SVG,
 // which is where the HUD corner plates live, so growing this value only
 // fills more of the field itself and never pushes a square under the HUD.
-const STAR_SIZE = 15;
+const STAR_SIZE = 11;
 const STAR_HALF = STAR_SIZE / 2;
-const STAR_GLOW_RADIUS = 16;
-const STAR_LABEL_OFFSET = -(STAR_HALF + 7);
+const STAR_GLOW_RADIUS = 12;
+const STAR_LABEL_OFFSET = -(STAR_HALF + 6.5);
 
 const afterimageByName = {};
 AFTERIMAGES.forEach(a => afterimageByName[a.name] = a);
