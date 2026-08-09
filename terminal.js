@@ -50,11 +50,9 @@ const ACCESS = {
 
     "DOOMER": "doomer/",
 
-    "FINETUNING": "finetuning-and-kindling/",
+    "KINDLING": "kindling/",
 
-    "KINDLING": "finetuning-and-kindling/",
-    
-    "FINETUNING AND KINDLING": "finetuning-and-kindling/"
+    "6321": "6321/"
 };
 
 function targetURL(relPath){
