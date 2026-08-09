@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FILE 6321 — MEDICAL DIVISION</title>
+    <style>
+        :root {
+            --bg: #000;
+            --fg: #fff;
+            --dim: rgba(255, 255, 255, 0.55);
+            --line: rgba(255, 255, 255, 0.22);
+            --border-dot: rgba(255, 255, 255, 0.22);
+            --font-serif: "Times New Roman", Georgia, "Palatino Linotype", serif;
+            --font-mono: "Courier New", "SF Mono", "Menlo", monospace;
+        }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        html {
+            background: var(--bg);
+            color: var(--fg);
+            font-family: var(--font-serif);
+            font-size: 17px;
+            line-height: 1.7;
+        }
+
+        body { padding: 1.8rem 1.2rem 5rem; min-height: 100vh; }
+
+        .container { max-width: 1080px; margin: 0 auto; }
+
+        .eyebrow {
+            font-family: var(--font-mono);
+            font-size: 0.6rem;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            color: var(--dim);
+            margin-bottom: 0.15rem;
+        }
+
+        h1 {
+            font-family: var(--font-serif);
+            font-size: 3rem;
+            font-weight: 600;
+            line-height: 1.0;
+            letter-spacing: -0.01em;
+            margin-bottom: 0.15rem;
+        }
+
+        .whitebox {
+            background: var(--fg);
+            color: var(--bg);
+            display: inline-block;
+            padding: 0.35rem 0.7rem;
+            font-family: var(--font-mono);
+            font-size: 0.6rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            font-weight: 700;
+            margin-bottom: 0.8rem;
+        }
+
+        .intake-note {
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            letter-spacing: 0.05em;
+            color: var(--dim);
+            max-width: 640px;
+            line-height: 1.9;
+            margin-bottom: 1.8rem;
+        }
+
+        /* ============================================================
+           INDEX
+           ============================================================ */
+        .index {
+            border: 1px solid var(--line);
+            margin-bottom: 2.4rem;
+        }
+
+        .index-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            padding: 0.7rem 1rem;
+            border-bottom: 1px solid var(--line);
+            text-decoration: none;
+            color: var(--fg);
+            font-family: var(--font-mono);
+            font-size: 0.66rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            transition: background 0.12s ease;
+        }
+
+        .index-row:last-child { border-bottom: none; }
+        .index-row:hover { background: rgba(255,255,255,0.06); }
+
+        .index-row .idx-id { color: var(--dim); margin-right: 0.8rem; }
+        .index-row .idx-status { color: var(--dim); }
+        .index-row .idx-status.living { color: #fff; }
+
+        /* ============================================================
+           HUD PANEL shell — shared with rest of archive
+           ============================================================ */
+        .hud-panel {
+            position: relative;
+            border: 2px solid #fff;
+            background: #000;
+            margin-bottom: 2.6rem;
+            scroll-margin-top: 2rem;
+        }
+
+        .hud-corner {
+            position: absolute;
+            width: 11px;
+            height: 11px;
+            z-index: 3;
+            pointer-events: none;
+        }
+        .hud-corner.tl { top: -2px; left: -2px; border-top: 2px solid #fff; border-left: 2px solid #fff; }
+        .hud-corner.tr { top: -2px; right: -2px; border-top: 2px solid #fff; border-right: 2px solid #fff; }
+        .hud-corner.bl { bottom: -2px; left: -2px; border-bottom: 2px solid #fff; border-left: 2px solid #fff; }
+        .hud-corner.br { bottom: -2px; right: -2px; border-bottom: 2px solid #fff; border-right: 2px solid #fff; }
+
+        .hud-panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.4rem 1rem;
+            padding: 0.6rem 1.1rem;
+            border-bottom: 2px solid #fff;
+            font-family: var(--font-mono);
+            font-size: 0.62rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+        }
+
+        .hud-panel-header .hp-status {
+            color: var(--dim);
+            letter-spacing: 0.15em;
+        }
+
+        .hud-panel-body { padding: 1.4rem 1.4rem 1.6rem; }
+
+        /* ============================================================
+           CASE LAYOUT
+           ============================================================ */
+        .case-layout {
+            display: grid;
+            grid-template-columns: 260px 1fr;
+            gap: 1.6rem;
+            align-items: start;
+        }
+
+        @media (max-width: 720px) {
+            .case-layout { grid-template-columns: 1fr; }
+        }
+
+        .case-photos {
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+        }
+
+        .case-photo-frame {
+            position: relative;
+            border: 1px solid var(--line);
+            background: #000;
+            overflow: hidden;
+        }
+
+        .case-photo-frame img {
+            display: block;
+            width: 100%;
+            height: auto;
+            filter: brightness(0.72) contrast(1.85) saturate(0);
+            image-rendering: pixelated;
+        }
+
+        .case-photo-frame .cf-label {
+            font-family: var(--font-mono);
+            font-size: 0.5rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--dim);
+            padding: 0.3rem 0.5rem;
+            border-top: 1px solid var(--line);
+        }
+
+        .detail-tag-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .detail-tag {
+            font-family: var(--font-mono);
+            font-size: 0.55rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            border: 1px solid var(--border-dot);
+            padding: 0.25rem 0.6rem;
+            color: var(--dim);
+        }
+
+        .case-stat-grid {
+            border: 1px dashed var(--border-dot);
+            padding: 0.9rem 1rem;
+            margin-bottom: 1.1rem;
+        }
+
+        .case-stat-row {
+            display: grid;
+            grid-template-columns: 120px 1fr;
+            gap: 0.8rem;
+            margin-bottom: 0.7rem;
+            align-items: baseline;
+        }
+
+        .case-stat-row:last-child { margin-bottom: 0; }
+
+        .case-stat-label {
+            font-family: var(--font-mono);
+            font-size: 0.55rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--dim);
+        }
+
+        .case-stat-text {
+            font-size: 0.85rem;
+            line-height: 1.7;
+        }
+
+        .case-notes {
+            font-size: 0.9rem;
+            line-height: 1.8;
+            color: var(--fg);
+        }
+
+        .case-notes.dim { color: var(--dim); font-style: italic; }
+
+        .case-id-line {
+            font-family: var(--font-mono);
+            font-size: 0.62rem;
+            letter-spacing: 0.08em;
+            color: var(--dim);
+            margin-bottom: 1rem;
+        }
+
+        /* ============================================================
+           REDACTION
+           ============================================================ */
+        .redact {
+            display: inline-block;
+            background: #000;
+            color: transparent;
+            user-select: none;
+            height: 0.82em;
+            vertical-align: text-bottom;
+            border-radius: 1px;
+        }
+
+        .redact.w1 { width: 2.2ch; }
+        .redact.w2 { width: 4.4ch; }
+        .redact.w3 { width: 7ch; }
+        .redact.w4 { width: 10ch; }
+        .redact.w5 { width: 14ch; }
+
+        /* Subject 04's file renders as a scanned printed sheet sitting inside the black terminal */
+        .case-file.printed .hud-panel-body {
+            background: #eee9e0;
+            color: #0a0a0a;
+            position: relative;
+        }
+
+        .case-file.printed .hud-panel-body::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            background:
+                radial-gradient(ellipse at 20% 15%, rgba(0,0,0,0.06), transparent 40%),
+                radial-gradient(ellipse at 80% 85%, rgba(0,0,0,0.08), transparent 45%);
+        }
+
+        .case-file.printed .case-stat-label,
+        .case-file.printed .case-id-line { color: rgba(0,0,0,0.55); }
+
+        .case-file.printed .case-notes { color: #0a0a0a; }
+
+        .case-file.printed .detail-tag {
+            border-color: rgba(0,0,0,0.35);
+            color: rgba(0,0,0,0.6);
+        }
+
+        .case-file.printed .case-stat-grid { border-color: rgba(0,0,0,0.35); }
+
+        .case-file.printed .redact {
+            background: #0a0a0a;
+        }
+
+        .stamp {
+            position: absolute;
+            top: 1.1rem;
+            right: 1.3rem;
+            border: 3px solid #7a1414;
+            color: #7a1414;
+            font-family: var(--font-mono);
+            font-weight: 700;
+            font-size: 0.9rem;
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            padding: 0.3rem 0.7rem;
+            transform: rotate(-6deg);
+            opacity: 0.75;
+            z-index: 1;
+        }
+
+        /* ============================================================
+           KEEPS ADDENDUM
+           ============================================================ */
+        .keeps-addendum {
+            display: grid;
+            grid-template-columns: 220px 1fr;
+            gap: 1.6rem;
+            align-items: start;
+        }
+
+        @media (max-width: 720px) {
+            .keeps-addendum { grid-template-columns: 1fr; }
+        }
+
+        .keeps-addendum img {
+            display: block;
+            width: 100%;
+            height: auto;
+            filter: brightness(0.72) contrast(1.85) saturate(0);
+            border: 1px solid var(--line);
+        }
+
+        .keeps-addendum p {
+            font-size: 0.9rem;
+            line-height: 1.85;
+        }
+
+        .keeps-addendum p + p { margin-top: 0.9rem; }
+
+        footer.file-footer {
+            font-family: var(--font-mono);
+            font-size: 0.58rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--dim);
+            text-align: center;
+            margin-top: 2.4rem;
+            border-top: 1px solid var(--line);
+            padding-top: 1rem;
+        }
+
+        @media (max-width: 720px) {
+            h1 { font-size: 2.1rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+
+        <p class="eyebrow">CASE FILE // MEDICAL DIVISION ARCHIVE</p>
+        <h1>FILE 6321</h1>
+        <div class="whitebox">Classified — Doomer Program — Eyes Only</div>
+        <p class="intake-note">Five records pulled for cross-reference against Kindling usage logs. Compiled from field intake, recovery reports, and archive backfill. Subject designations reflect file status at time of retrieval, not confirmed identity.</p>
+
+        <nav class="index">
+            <a class="index-row" href="#subject-01"><span><span class="idx-id">01</span>Tissue &amp; Nerve Intake — Active Monitoring</span><span class="idx-status living">LIVING</span></a>
+            <a class="index-row" href="#subject-02"><span><span class="idx-id">02</span>Recovered Remains — Cult Compound</span><span class="idx-status">DECEASED</span></a>
+            <a class="index-row" href="#subject-03"><span><span class="idx-id">03</span>Operator Zero — Origin File</span><span class="idx-status">FLATLINED</span></a>
+            <a class="index-row" href="#subject-04"><span><span class="idx-id">04</span>KOMETA-KRAI Engagement — OSNOVA</span><span class="idx-status">TERMINAL</span></a>
+            <a class="index-row" href="#addendum-keeps"><span><span class="idx-id">A1</span>Addendum — The Four Keeps</span><span class="idx-status">REFERENCE</span></a>
+        </nav>
+
+        <!-- ============================== SUBJECT 01 ============================== -->
+        <section class="hud-panel case-file" id="subject-01">
+            <div class="hud-corner tl"></div><div class="hud-corner tr"></div><div class="hud-corner bl"></div><div class="hud-corner br"></div>
+            <div class="hud-panel-header">
+                <span>SUBJECT 01 — TISSUE &amp; NERVE INTAKE</span>
+                <span class="hp-status">LIVING · ACTIVE MONITORING</span>
+            </div>
+            <div class="hud-panel-body">
+                <p class="case-id-line">DESIGNATION: UNVERIFIED · FIELD ALIAS "SPARROW" · KEEP OF RECORD: RED SALT</p>
+                <div class="case-layout">
+                    <div class="case-photos">
+                        <div class="case-photo-frame">
+                            <img src="../images/limbs-doomer.png" alt="Subject 01 limb tissue survey">
+                            <div class="cf-label">TISSUE SURVEY — LIMBS</div>
+                        </div>
+                        <div class="case-photo-frame">
+                            <img src="../images/redshift-doomer.png" alt="Subject 01 nervous system imaging">
+                            <div class="cf-label">RED SHIFT — NERVOUS SYSTEM</div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="detail-tag-row">
+                            <div class="detail-tag">DEGRADATION: LOW–MODERATE</div>
+                            <div class="detail-tag">NRV EXPOSURE: SUSTAINED</div>
+                            <div class="detail-tag">BASELINE SAMPLE</div>
+                        </div>
+                        <div class="case-stat-grid">
+                            <div class="case-stat-row">
+                                <div class="case-stat-label">Skin</div>
+                                <div class="case-stat-text">Visible thinning across both forearms and calves, consistent with repeat Nibble/Feed-tier Strip to the Bone. Salt-burn scarring at ignition points has not closed between sessions.</div>
+                            </div>
+                            <div class="case-stat-row">
+                                <div class="case-stat-label">Muscle</div>
+                                <div class="case-stat-text">Measurable atrophy in both legs, consistent with overuse of Faster! Faster! Faster!. Mass loss tracked across three monitoring windows, trending downward.</div>
+                            </div>
+                            <div class="case-stat-row">
+                                <div class="case-stat-label">Nervous System</div>
+                                <div class="case-stat-text">Numbness climbing past the elbow on the dominant side, pattern-matched to Drink the Lightning demand accrual. Reflex delay logged following Exchange Footsteps use. Subject self-reports difficulty distinguishing which step is "real" — consistent with Devour-tier disorientation.</div>
+                            </div>
+                        </div>
+                        <p class="case-notes">Earliest-stage degradation in the current sample set. Retained as baseline for comparison against Subjects 02 through 04. No Living or Dead Demand activity recorded — Self-tier use only, to date.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================== SUBJECT 02 ============================== -->
+        <section class="hud-panel case-file" id="subject-02">
+            <div class="hud-corner tl"></div><div class="hud-corner tr"></div><div class="hud-corner bl"></div><div class="hud-corner br"></div>
+            <div class="hud-panel-header">
+                <span>SUBJECT 02 — RECOVERED REMAINS</span>
+                <span class="hp-status">DECEASED · FRAGMENTARY RECOVERY</span>
+            </div>
+            <div class="hud-panel-body">
+                <p class="case-id-line">DESIGNATION: NONE ON RECORD · RECOVERED FROM CULT COMPOUND, SITE UNDISCLOSED · KEEP MARKERS: BLACK NAIL, BLACK THREAD, RED SALT</p>
+                <div class="case-layout">
+                    <div class="case-photos">
+                        <div class="case-photo-frame">
+                            <img src="../images/severed-doomer.png" alt="Recovered limbs, Subject 02">
+                            <div class="cf-label">RECOVERED LIMBS — NO ASSOCIATED REMAINS</div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="detail-tag-row">
+                            <div class="detail-tag">REMAINS ONLY</div>
+                            <div class="detail-tag">NO STRUGGLE MARKERS</div>
+                            <div class="detail-tag">RITUAL ORIGIN, PRESUMED</div>
+                        </div>
+                        <div class="case-stat-grid">
+                            <div class="case-stat-row">
+                                <div class="case-stat-label">Recovery</div>
+                                <div class="case-stat-text">Limbs recovered separately from any torso or head; no matching remains found on site. No infection present at severance points, no tearing — consistent with clean ritual removal rather than combat or accident.</div>
+                            </div>
+                            <div class="case-stat-row">
+                                <div class="case-stat-label">Markings</div>
+                                <div class="case-stat-text">Nail punctures clustered at every major joint. Burn striations along both forearms, spacing consistent with Make the Dark Cut or Borrow the Shadow ignition. Thread looped tight around the wrist bones, embedded past old scar tissue — matches the Living Demand pattern for Second Corpse.</div>
+                            </div>
+                            <div class="case-stat-row">
+                                <div class="case-stat-label">Nervous System</div>
+                                <div class="case-stat-text">Not assessable — no CNS tissue recovered.</div>
+                            </div>
+                        </div>
+                        <p class="case-notes dim">Compound raided after unrelated activity flagged nearby. No subject located, living or dead. Filed under Negative Box for the marking pattern alone.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================== SUBJECT 03 ============================== -->
+        <section class="hud-panel case-file" id="subject-03">
+            <div class="hud-corner tl"></div><div class="hud-corner tr"></div><div class="hud-corner bl"></div><div class="hud-corner br"></div>
+            <div class="hud-panel-header">
+                <span>SUBJECT 03 — OPERATOR ZERO</span>
+                <span class="hp-status">FLATLINED · SUSTAINED, NONTERMINAL</span>
+            </div>
+            <div class="hud-panel-body">
+                <p class="case-id-line">DESIGNATION: OPERATOR ZERO · OLDEST FILE IN ARCHIVE, ORIGINAL CASE NUMBER LOST · KEEP OF RECORD: RED BONE</p>
+                <div class="case-layout">
+                    <div class="case-photos">
+                        <div class="case-photo-frame">
+                            <img src="../images/nonterminal-doomer.png" alt="Subject 03, Operator Zero">
+                            <div class="cf-label">LONG-TERM HOLDING — NONTERMINAL</div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="detail-tag-row">
+                            <div class="detail-tag">NO CORTICAL ACTIVITY</div>
+                            <div class="detail-tag">SUSTAINED BODY FUNCTION</div>
+                            <div class="detail-tag">ORIGIN OF RED BONE STUDIES</div>
+                        </div>
+                        <div class="case-stat-grid">
+                            <div class="case-stat-row">
+                                <div class="case-stat-label">Status</div>
+                                <div class="case-stat-text">No cortical activity recorded across the monitored period. Body temperature, tissue growth, and bone regeneration continue at reduced rate — classification held at "nonterminal" rather than deceased pending further review.</div>
+                            </div>
+                            <div class="case-stat-row">
+                                <div class="case-stat-label">Facial Structure</div>
+                                <div class="case-stat-text">Noted as unstable across imaging sessions — measurements shift slightly frame to frame with no external cause identified. Consistent with permanent Wear Their Face (Devour) use logged prior to flatline.</div>
+                            </div>
+                            <div class="case-stat-row">
+                                <div class="case-stat-label">Significance</div>
+                                <div class="case-stat-text">First recorded subject of any bone-based Kindling. All current Red Bone Keep research traces back to this file.</div>
+                            </div>
+                        </div>
+                        <p class="case-notes">Held in long-term observation. Every attempt to close the file has been overturned — the archive treats Operator Zero as a live reference, not a closed case.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================== SUBJECT 04 ============================== -->
+        <section class="hud-panel case-file printed" id="subject-04">
+            <div class="hud-corner tl"></div><div class="hud-corner tr"></div><div class="hud-corner bl"></div><div class="hud-corner br"></div>
+            <div class="hud-panel-header">
+                <span>SUBJECT 04 — KOMETA-KRAI ENGAGEMENT</span>
+                <span class="hp-status">TERMINAL · KIA</span>
+            </div>
+            <div class="hud-panel-body">
+                <div class="stamp">REDACTED</div>
+                <p class="case-id-line">DESIGNATION: <span class="redact w4"></span> · KEEP OF RECORD: <span class="redact w2"></span></p>
+                <div class="case-layout">
+                    <div class="case-photos">
+                        <div class="case-photo-frame" style="border-color: rgba(0,0,0,0.35);">
+                            <img src="../images/terminal-doomer.png" alt="Subject 04, terminal file">
+                            <div class="cf-label" style="color: rgba(0,0,0,0.55); border-color: rgba(0,0,0,0.25);">FIELD RECOVERY — TERMINAL FILE</div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="detail-tag-row">
+                            <div class="detail-tag">KIA — CONFIRMED</div>
+                            <div class="detail-tag">HOSTILE CONTACT — OSNOVA</div>
+                            <div class="detail-tag">LOCATION: KOMETA-KRAI</div>
+                        </div>
+                        <div class="case-stat-grid">
+                            <div class="case-stat-row">
+                                <div class="case-stat-label">Engagement</div>
+                                <div class="case-stat-text">Subject engaged <span class="redact w2"></span> OSNOVA operatives outside the <span class="redact w3"></span> perimeter, KOMETA-KRAI sector. Contact lasted approximately <span class="redact w1"></span>.</div>
+                            </div>
+                            <div class="case-stat-row">
+                                <div class="case-stat-label">Cause of Death</div>
+                                <div class="case-stat-text">Kindling repertoire exceeded containment threshold prior to death. <span class="redact w5"></span>. Full sequence withheld pending review.</div>
+                            </div>
+                            <div class="case-stat-row">
+                                <div class="case-stat-label">Recovery</div>
+                                <div class="case-stat-text">Recovery team reports <span class="redact w4"></span>. Remains released to <span class="redact w3"></span> only.</div>
+                            </div>
+                        </div>
+                        <p class="case-notes">Most of this file remains sealed at Division level. What's cleared for cross-reference is limited to the engagement summary above.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================== ADDENDUM: KEEPS ============================== -->
+        <section class="hud-panel" id="addendum-keeps">
+            <div class="hud-corner tl"></div><div class="hud-corner tr"></div><div class="hud-corner bl"></div><div class="hud-corner br"></div>
+            <div class="hud-panel-header">
+                <span>ADDENDUM A1 — THE FOUR KEEPS</span>
+                <span class="hp-status">REFERENCE</span>
+            </div>
+            <div class="hud-panel-body">
+                <div class="keeps-addendum">
+                    <img src="../images/keeps-doomer.png" alt="The four Keeps">
+                    <div>
+                        <p>Every Kindling routes through one of four Keeps — the object that carries its debt forward. Black Nail governs perception, nerve, and current; Black Thread governs binding, control, and puppetry; Red Salt governs kinetic force, motion, and distance; Red Bone governs identity, presence, and disguise.</p>
+                        <p>None of the subjects above drew from only one. Degradation compounds fastest where two or more Keeps are worked against the same tissue — the pattern common to every file in this archive.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer class="file-footer">FILE 6321 — MEDICAL DIVISION — DISTRIBUTION RESTRICTED</footer>
+
+    </div>
+</body>
+</html>
