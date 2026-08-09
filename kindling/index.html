@@ -1093,6 +1093,27 @@
             margin-right: 0.5rem;
         }
 
+        /* ============================================================
+           NAV LINKS — matches the .nav-link styling used on the
+           DOOMER page (same monospace/uppercase, bottom-border style)
+           ============================================================ */
+        .nav-link{
+            display:block;
+            margin-top:18px;
+            font-family:"Courier New", monospace;
+            font-size:13px;
+            letter-spacing:2px;
+            text-transform:uppercase;
+            border-bottom:1px solid var(--line);
+            color:var(--fg);
+            text-decoration:none;
+            width:max-content;
+        }
+
+        .nav-link:hover{
+            border-bottom-color:var(--fg);
+        }
+
         @media (max-width: 720px) {
             h1 { font-size: 2.0rem; }
             .kindling-card .card-title { font-size: 0.95rem; }
