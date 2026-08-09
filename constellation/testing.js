@@ -135,6 +135,16 @@ const CONSTELLATION_ZERO = {
 
 const TOTAL_FORMATIONS = CONSTELLATIONS.length + 1;
 
+// Star square footprint, in SVG user units (viewBox is 600×340). Bumped up
+// from the original 11×11 so points read as larger, more legible squares —
+// the field-wrap panel keeps its own fixed 62/92px padding around the SVG,
+// which is where the HUD corner plates live, so growing this value only
+// fills more of the field itself and never pushes a square under the HUD.
+const STAR_SIZE = 15;
+const STAR_HALF = STAR_SIZE / 2;
+const STAR_GLOW_RADIUS = 16;
+const STAR_LABEL_OFFSET = -(STAR_HALF + 7);
+
 const afterimageByName = {};
 AFTERIMAGES.forEach(a => afterimageByName[a.name] = a);
 
@@ -283,18 +293,20 @@ function drawStar(container, star, lit, settled){
 
     if(settled){
         const glow = ns("circle");
-        glow.setAttribute("r", 12);
+        glow.setAttribute("r", STAR_GLOW_RADIUS);
         glow.setAttribute("class", "star-glow");
         g.appendChild(glow);
     }
 
     // a small bordered box rather than a plain dot — each afterimage reads as
-    // a tracked contact on the field, not just a point of light
+    // a tracked contact on the field, not just a point of light. Sized from
+    // STAR_SIZE so it fills more of the field while the HUD's own padding
+    // clearance is untouched.
     const body = ns("rect");
-    body.setAttribute("x", -5.5);
-    body.setAttribute("y", -5.5);
-    body.setAttribute("width", 11);
-    body.setAttribute("height", 11);
+    body.setAttribute("x", -STAR_HALF);
+    body.setAttribute("y", -STAR_HALF);
+    body.setAttribute("width", STAR_SIZE);
+    body.setAttribute("height", STAR_SIZE);
     body.setAttribute("class", "star-body");
     body.setAttribute("filter", "url(#starGrain)");
     if(settled){
@@ -314,7 +326,7 @@ function drawStar(container, star, lit, settled){
     if(lit){
         const label = ns("text");
         label.setAttribute("class", "star-label");
-        label.setAttribute("y", -12);
+        label.setAttribute("y", STAR_LABEL_OFFSET);
         label.setAttribute("text-anchor", "middle");
         label.textContent = `${star.code} ${star.name}`;
         g.appendChild(label);
