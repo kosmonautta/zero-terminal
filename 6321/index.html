@@ -56,12 +56,9 @@
   .frame-corner.fc-tl{top:-1.4rem;left:-0.4rem;}
   .frame-corner.fc-tr{top:-1.4rem;right:-0.4rem;}
   .frame-corner.fc-br{bottom:-0.2rem;right:-0.4rem;}
-  /* corners sit in the outer black viewer margin even for printed sheets, so they stay light */
 
   .ambient-rule{font-family:var(--font-mono);font-size:0.52rem;letter-spacing:0.03em;line-height:1.2;color:rgba(255,255,255,0.28);white-space:nowrap;overflow:hidden;margin:0.9rem 0;user-select:none;transition:opacity 0.15s linear;}
-  .printed .ambient-rule{color:rgba(0,0,0,0.28);}
   .ambient-tag{font-family:var(--font-mono);font-size:0.5rem;letter-spacing:0.12em;color:rgba(255,255,255,0.4);white-space:nowrap;overflow:hidden;user-select:none;}
-  .printed .ambient-tag{color:rgba(0,0,0,0.4);}
 
   /* big image focus */
   .hero-figure{border:1px solid var(--line);background:#000;margin-bottom:1.2rem;position:relative;}
@@ -84,20 +81,10 @@
   .case-notes.dim{color:var(--dim);font-style:italic;}
 
   /* redaction */
-  .redact{display:inline-block;background:#000;color:transparent;user-select:none;height:0.82em;vertical-align:text-bottom;border-radius:1px;}
+  .redact{display:inline-block;background:#e8e8e8;color:transparent;user-select:none;height:0.82em;vertical-align:text-bottom;border-radius:1px;}
   .redact.w1{width:2.2ch;} .redact.w2{width:4.4ch;} .redact.w3{width:7ch;} .redact.w4{width:10ch;} .redact.w5{width:14ch;}
 
-  .printed .v-body-inner{background:#eee9e0;color:#0a0a0a;position:relative;padding:1.3rem 1.3rem 1.5rem;}
-  .printed .v-body-inner::before{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse at 20% 15%,rgba(0,0,0,0.06),transparent 40%),radial-gradient(ellipse at 80% 85%,rgba(0,0,0,0.08),transparent 45%);}
-  .printed .case-stat-label,.printed .case-id-line{color:rgba(0,0,0,0.55);}
-  .printed .case-notes{color:#0a0a0a;}
-  .printed .detail-tag{border-color:rgba(0,0,0,0.35);color:rgba(0,0,0,0.6);}
-  .printed .case-stat-grid{border-color:rgba(0,0,0,0.35);}
-  .printed .redact{background:#0a0a0a;}
-  .printed .hero-figure{border-color:rgba(0,0,0,0.35);}
-  .printed .hero-figure .cf-label{color:rgba(0,0,0,0.55);border-color:rgba(0,0,0,0.25);}
-
-  .stamp{position:absolute;top:1rem;right:1.1rem;border:3px solid var(--accent);color:var(--accent);font-family:var(--font-mono);font-weight:700;font-size:0.85rem;letter-spacing:0.25em;text-transform:uppercase;padding:0.3rem 0.65rem;transform:rotate(-6deg);opacity:0.8;z-index:2;}
+  .stamp{position:absolute;top:1rem;right:1.1rem;border:3px solid var(--accent);color:var(--accent);font-family:var(--font-mono);font-weight:700;font-size:0.85rem;letter-spacing:0.25em;text-transform:uppercase;padding:0.3rem 0.65rem;transform:rotate(-6deg);opacity:0.9;z-index:2;}
 
   /* keeps addendum */
   .keeps-layout{display:grid;grid-template-columns:1fr;gap:1rem;}
@@ -147,13 +134,13 @@
 
   <h1>FILE 6321</h1>
   <div class="whitebox">Classified — Doomer Program — Eyes Only</div>
-  <p class="intake-note">Five records pulled for cross-reference against Kindling usage logs. Compiled from field intake, recovery reports, and archive backfill. Subject designations reflect file status at time of retrieval, not confirmed identity.</p>
+  <p class="intake-note">Six records pulled for cross-reference against Kindling usage logs. Compiled from field intake, recovery reports, and archive backfill. Subject designations reflect file status at time of retrieval, not confirmed identity.</p>
 
   <div class="app">
     <nav class="file-nav">
       <div class="nav-head">┌─ INDEX ────────────</div>
       <ul class="nav-list" id="nav-list"></ul>
-      <div class="nav-foot">└─ 5 FILES LOADED<br>&nbsp;&nbsp;CROSS-REF: KINDLING LOGS</div>
+      <div class="nav-foot">└─ 6 FILES LOADED<br>&nbsp;&nbsp;CROSS-REF: KINDLING LOGS</div>
     </nav>
 
     <div class="viewer" id="viewer">
@@ -216,6 +203,30 @@ const FILES = [
     `
   },
   {
+    id: "severed",
+    label: "RECOVERED REMAINS",
+    status: "DECEASED",
+    render: () => `
+      <div class="v-header"><span>SUBJECT 02 — RECOVERED REMAINS</span><span class="hp-status">DECEASED · FRAGMENTARY RECOVERY</span></div>
+      <p class="case-id-line">DESIGNATION: NONE ON RECORD · RECOVERED FROM CULT COMPOUND, SITE UNDISCLOSED · KEEP MARKERS: BLACK NAIL, BLACK THREAD, RED SALT</p>
+      <div class="hero-figure">
+        <img src="../images/severed-doomer.png" alt="Recovered limbs, Subject 02, no associated remains">
+        <div class="cf-label"><span>RECOVERED LIMBS — NO ASSOCIATED REMAINS</span><span>02-A</span></div>
+      </div>
+      <div class="detail-tag-row">
+        <div class="detail-tag">REMAINS ONLY</div>
+        <div class="detail-tag">NO STRUGGLE MARKERS</div>
+        <div class="detail-tag">RITUAL ORIGIN, PRESUMED</div>
+      </div>
+      <div class="case-stat-grid">
+        <div class="case-stat-row"><div class="case-stat-label">Recovery</div><div class="case-stat-text">Limbs recovered separately from any torso or head; no matching remains found on site. No infection present at severance points, no tearing — consistent with clean ritual removal rather than combat or accident.</div></div>
+        <div class="case-stat-row"><div class="case-stat-label">Markings</div><div class="case-stat-text">Nail punctures clustered at every major joint. Burn striations along both forearms, spacing consistent with Make the Dark Cut or Borrow the Shadow ignition. Thread looped tight around the wrist bones, embedded past old scar tissue — matches the Living Demand pattern for Second Corpse.</div></div>
+        <div class="case-stat-row"><div class="case-stat-label">Nervous System</div><div class="case-stat-text">Not assessable — no CNS tissue recovered.</div></div>
+      </div>
+      <p class="case-notes dim">Compound raided after unrelated activity flagged nearby. No subject located, living or dead. Filed under Negative Box for the marking pattern alone.</p>
+    `
+  },
+  {
     id: "face",
     label: "FACE INTAKE",
     status: "LIVING",
@@ -267,28 +278,25 @@ const FILES = [
     id: "redacted",
     label: "KOMETA-KRAI ENGAGEMENT",
     status: "TERMINAL",
-    printed: true,
     render: () => `
-      <div class="v-body-inner">
-        <div class="stamp">REDACTED</div>
-        <div class="v-header" style="border-color:rgba(0,0,0,0.4);"><span>SUBJECT 04 — KOMETA-KRAI ENGAGEMENT</span><span class="hp-status">TERMINAL · KIA</span></div>
-        <p class="case-id-line">DESIGNATION: <span class="redact w4"></span> · KEEP OF RECORD: <span class="redact w2"></span></p>
-        <div class="hero-figure">
-          <img src="../images/terminal-doomer.png" alt="Subject 04, terminal file">
-          <div class="cf-label"><span>FIELD RECOVERY — TERMINAL FILE</span><span>04-A</span></div>
-        </div>
-        <div class="detail-tag-row">
-          <div class="detail-tag">KIA — CONFIRMED</div>
-          <div class="detail-tag">HOSTILE CONTACT — OSNOVA</div>
-          <div class="detail-tag">LOCATION: KOMETA-KRAI</div>
-        </div>
-        <div class="case-stat-grid">
-          <div class="case-stat-row"><div class="case-stat-label">Engagement</div><div class="case-stat-text">Subject engaged <span class="redact w2"></span> OSNOVA operatives outside the <span class="redact w3"></span> perimeter, KOMETA-KRAI sector. Contact lasted approximately <span class="redact w1"></span>.</div></div>
-          <div class="case-stat-row"><div class="case-stat-label">Cause of Death</div><div class="case-stat-text">Kindling repertoire exceeded containment threshold prior to death. <span class="redact w5"></span>. Full sequence withheld pending review.</div></div>
-          <div class="case-stat-row"><div class="case-stat-label">Recovery</div><div class="case-stat-text">Recovery team reports <span class="redact w4"></span>. Remains released to <span class="redact w3"></span> only.</div></div>
-        </div>
-        <p class="case-notes">Most of this file remains sealed at Division level. What's cleared for cross-reference is limited to the engagement summary above.</p>
+      <div class="stamp">REDACTED</div>
+      <div class="v-header"><span>SUBJECT 04 — KOMETA-KRAI ENGAGEMENT</span><span class="hp-status">TERMINAL · KIA</span></div>
+      <p class="case-id-line">DESIGNATION: <span class="redact w4"></span> · KEEP OF RECORD: <span class="redact w2"></span></p>
+      <div class="hero-figure">
+        <img src="../images/terminal-doomer.png" alt="Subject 04, terminal file">
+        <div class="cf-label"><span>FIELD RECOVERY — TERMINAL FILE</span><span>04-A</span></div>
       </div>
+      <div class="detail-tag-row">
+        <div class="detail-tag">KIA — CONFIRMED</div>
+        <div class="detail-tag">HOSTILE CONTACT — OSNOVA</div>
+        <div class="detail-tag">LOCATION: KOMETA-KRAI</div>
+      </div>
+      <div class="case-stat-grid">
+        <div class="case-stat-row"><div class="case-stat-label">Engagement</div><div class="case-stat-text">Subject engaged <span class="redact w2"></span> OSNOVA operatives outside the <span class="redact w3"></span> perimeter, KOMETA-KRAI sector. Contact lasted approximately <span class="redact w1"></span>.</div></div>
+        <div class="case-stat-row"><div class="case-stat-label">Cause of Death</div><div class="case-stat-text">Kindling repertoire exceeded containment threshold prior to death. <span class="redact w5"></span>. Full sequence withheld pending review.</div></div>
+        <div class="case-stat-row"><div class="case-stat-label">Recovery</div><div class="case-stat-text">Recovery team reports <span class="redact w4"></span>. Remains released to <span class="redact w3"></span> only.</div></div>
+      </div>
+      <p class="case-notes">Most of this file remains sealed at Division level. What's cleared for cross-reference is limited to the engagement summary above.</p>
     `
   }
 ];
