@@ -105,7 +105,10 @@
   .viewer-inner{transition:opacity 0.06s linear;}
   .viewer-inner.glitching{animation:glitchShake 0.32s steps(3,end);}
   .viewer-inner.glitch-in{animation:glitchIn 0.28s ease-out;}
-  .viewer-inner.jitter-burst{animation:jitterBurst 0.16s steps(2,end);}
+
+  /* Per-element jitter target: applied only to non-image blocks so the
+     hero image never warps/distorts during ambient glitch bursts. */
+  .glitch-jitter{animation:jitterBurst 0.16s steps(2,end);}
 
   @keyframes jitterBurst{
     0%{transform:translate(0,0);filter:none;}
@@ -133,7 +136,7 @@
   }
 
   @media (prefers-reduced-motion:reduce){
-    .viewer-inner.glitching,.viewer-inner.glitch-in,.viewer-inner.jitter-burst{animation:none;}
+    .viewer-inner.glitching,.viewer-inner.glitch-in,.glitch-jitter{animation:none;}
     .glitch-overlay{transition:none;}
   }
 
@@ -455,11 +458,24 @@ function spawnGlitchFlash(){
   }
 }
 
+// Returns the direct children of .file-frame that should visually jitter
+// during a glitch burst — everything EXCEPT the hero image block(s), so the
+// photo itself never warps, shakes, or gets filter-distorted.
+function getJitterTargets(){
+  const frame = viewerInner.querySelector(".file-frame");
+  if(!frame) return [];
+  return Array.from(frame.children).filter(el =>
+    !el.classList.contains("hero-figure") && !el.classList.contains("hero-row")
+  );
+}
+
 function triggerJitterBurst(){
-  viewerInner.classList.remove("jitter-burst");
-  // force reflow so the animation can restart even on back-to-back bursts
-  void viewerInner.offsetWidth;
-  viewerInner.classList.add("jitter-burst");
+  const targets = getJitterTargets();
+  targets.forEach(el=>{
+    el.classList.remove("glitch-jitter");
+    void el.offsetWidth; // force reflow so back-to-back bursts restart cleanly
+    el.classList.add("glitch-jitter");
+  });
 
   const stamp = viewerInner.querySelector(".stamp");
   if(stamp && Math.random() < 0.55){
@@ -479,7 +495,9 @@ function triggerJitterBurst(){
   refreshAmbient();
   spawnGlitchFlash();
 
-  setTimeout(()=>{ viewerInner.classList.remove("jitter-burst"); }, 160);
+  setTimeout(()=>{
+    targets.forEach(el=> el.classList.remove("glitch-jitter"));
+  }, 160);
 }
 
 function scheduleRedactedJitter(){
